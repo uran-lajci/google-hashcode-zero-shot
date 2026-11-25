@@ -1,0 +1,57 @@
+{
+ "problem": "pizza",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "de9b0b96c2c5556e923e0988587db32a429b0b1dd4677eb8426372b9619e44f5",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQJ8XvvZ8x3z4oRPTA5j",
+ "attempts": 1,
+ "started_utc": "2026-11-25T20:42:37+00:00",
+ "finished_utc": "2026-11-25T20:42:54+00:00",
+ "seconds": 17.643,
+ "seconds_to_first_text": 5.289,
+ "message": {
+  "id": "msg_011ChQJ8kzV1EmCqsHLHzVP5",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Hash Code 2017 practice pizza problem. The approach is a greedy placement of valid slices followed by local extension, with a deterministic fixed-order scan.\n\n**Approach**\n\n1. Enumerate all slice shapes (h, w) with h\u00b7w \u2264 H and h\u00b7w \u2265 2L. Sort them by area descending.\n2. Build prefix sums of tomato counts so any rectangle's tomato count is available in O(1). The mushroom count is area minus tomatoes.\n3. Scan cells in row-major order. At each unused cell, try shapes (largest first) with this cell as the top-left corner. A shape is accepted if it fits in the grid, is entirely unused, and has at least L of each ingredient. Take the first one that works.\n4. Check that a rectangle is free using a 2D prefix sum of used cells. That sum has to be updated after each placement, so instead I keep a per-row \"used\" array and check each row of the candidate by scanning its width. The cost is about h\u00b7w per candidate, at most 1000, so the worst case is 10^6 cells \u00d7 (number of shapes) \u00d7 up to ~H operations. That is too slow in the worst case.\n\n**Speeding up the free check**\n\nFor each cell, keep `run[r][c]`, the number of consecutive free cells starting at (r, c) going right. A candidate (h, w) is free if `run[r+i][c] >= w` for all i < h, which costs O(h). Updating after a placement means recomputing the runs for the affected rows on the left, which costs O(h\u00b7C) per slice. The number of slices is at most R\u00b7C/(2L), so this is acceptable for small L. When L = 1 there can be about 500k slices, each costing h\u00b7C. That is heavy, so the update is done only for cells to the left of the slice in those rows, and the cost is bounded by the column index.\n\nShape count is up to about 7000 for H = 1000. Trying every shape at every cell could reach 10^6 \u00d7 7000, which is too much. To limit this, the shapes are tried in descending area order and the search stops at the first success. The tomato check rejects most shapes quickly. I also add an early exit for the cell: if the cell is used, skip it. A time guard stops trying after about 8 seconds and just outputs what has been placed so far, which is always valid.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,L,H;\nint main(){\n    scanf(\"%d %d %d %d\",&R,&C,&L,&H);\n    vector<string> g(R);\n    char buf[1105];\n    for(int i=0;i<R;i++){scanf(\"%s\",buf);g[i]=buf;}\n    vector<vector<int>> P(R+1,vector<int>(C+1,0));\n    for(int i=0;i<R;i++)for(int j=0;j<C;j++)\n        P[i+1][j+1]=P[i][j+1]+P[i+1][j]-P[i][j]+(g[i][j]=='T');\n    vector<array<int,2>> sh;\n    for(int h=1;h<=H;h++)for(int w=1;h*w<=H;w++)\n        if(h*w>=2*L && h<=R && w<=C) sh.push_back({h,w});\n    stable_sort(sh.begin(),sh.end(),[](const array<int,2>&a,const array<int,2>&b){return a[0]*a[1]>b[0]*b[1];});\n    vector<vector<int>> run(R,vector<int>(C+1,0));\n    for(int i=0;i<R;i++)for(int j=C-1;j>=0;j--)run[i][j]=run[i][j+1]+1;\n    vector<array<int,4>> res;\n    clock_t st=clock();\n    bool stop=false;\n    for(int r=0;r<R&&!stop;r++){\n        for(int c=0;c<C;c++){\n            if(run[r][c]==0)continue;\n            if((c&63)==0 && (double)(clock()-st)/CLOCKS_PER_SEC>8.0){stop=true;break;}\n            for(auto&s:sh){\n                int h=s[0],w=s[1];\n                if(r+h>R||c+w>C)continue;\n                if(run[r][c]<w)continue;\n                int area=h*w;\n                int t=P[r+h][c+w]-P[r][c+w]-P[r+h][c]+P[r][c];\n                if(t<L||area-t<L)continue;\n                bool ok=true;\n                for(int i=1;i<h;i++)if(run[r+i][c]<w){ok=false;break;}\n                if(!ok)continue;\n                res.push_back({r,c,r+h-1,c+w-1});\n                for(int i=0;i<h;i++){\n                    for(int j=c+w-1;j>=c;j--)run[r+i][j]=0;\n                    for(int j=c-1;j>=0;j--){\n                        if(run[r+i][j]==0)break;\n                        run[r+i][j]=run[r+i][j+1]+1;\n                    }\n                }\n                c+=w-1;\n                break;\n            }\n        }\n    }\n    printf(\"%d\\n\",(int)res.size());\n    for(auto&a:res)printf(\"%d %d %d %d\\n\",a[0],a[1],a[2],a[3]);\n}\n```\n\nThe run update walks left from the slice and stops at the first used cell. Cells further left already hold correct values because a used cell blocks them, but that walk recomputes them as run[j+1]+1, which is only valid if the previous run extended through the slice. Since the slice cells are now zero, the recomputed values are correct, and the walk stops at the first zero.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 6575,
+   "output_tokens": 1860,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

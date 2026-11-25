@@ -1,0 +1,7 @@
+problem,model,generation,state,reason,code_blocks,flagged,source_bytes,source_sha256,compile_seconds,repeated_instance,same_output_when_repeated
+pizza,claude-opus-5-5,1,program,,1,False,8160,8ce712397cd3be48ff821a101a8eee3def3b65166468dcf14c6b879bc81d54ea,2.395,example,True
+pizza,claude-sonnet-5-5,1,program,,1,False,1931,62b44658af683288bccc1d7e3d5730e6f4edabba5cae097927c5f666cc059874,1.88,medium,True
+pizza,claude-haiku-5-5,1,program,,1,False,2961,6293f3bf76df8d7bd32a3efbdb6ec4d6dd40e3febf2be9e2f9547f23fa5845e6,1.772,small,True
+pizza,claude-opus-5-5,2,program,,1,False,6488,1d881d755fa059448d78cccd806f599ab48484b76bc8af7d39dc3aa3c7b1c0d0,2.112,big,True
+pizza,claude-sonnet-5-5,2,program,,1,False,2385,4ba29eff4bcde8d6304db55307840b551fd68ce0dd7fa5a1e11862e1add1fa0f,1.93,medium,True
+pizza,claude-haiku-5-5,2,program,,1,False,3015,e24b31e0e5a01dcfe1b6f2300fdb0260762ccf92b62c589e6a498ddf50188661,1.828,big,True

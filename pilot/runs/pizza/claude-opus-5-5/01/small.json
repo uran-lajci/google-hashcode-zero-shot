@@ -1,0 +1,15 @@
+{
+ "problem": "pizza",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "small",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.161,
+ "output_bytes": 123,
+ "output_sha256": "7e40aca17f674991e3051e43a63a61c16e97a1f6f32d2ba6f75a90f1de68c15b",
+ "cpu": 10,
+ "score": 40,
+ "judge_seconds": 0.052,
+ "judge_message": ""
+}

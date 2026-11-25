@@ -1,0 +1,12 @@
+{
+ "problem": "pizza",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 1931,
+ "source_sha256": "62b44658af683288bccc1d7e3d5730e6f4edabba5cae097927c5f666cc059874",
+ "compile_seconds": 1.88
+}

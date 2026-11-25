@@ -1,0 +1,7 @@
+problem,model,generation,started_utc,model_returned,stop_reason,input_tokens,output_tokens,thinking_tokens,seconds,seconds_to_first_text,cost_usd,attempts,request_id
+pizza,claude-opus-5-5,1,2026-11-25T20:42:37+00:00,claude-opus-5-5,end_turn,6575,7902,3559,75.656,44.937,0.1843,1,req_011ChQJ8XsxVSps71rb7yaDH
+pizza,claude-sonnet-5-5,1,2026-11-25T20:42:37+00:00,claude-sonnet-5-5,end_turn,6575,1860,0,17.643,5.289,0.0318,1,req_011ChQJ8XvvZ8x3z4oRPTA5j
+pizza,claude-haiku-5-5,1,2026-11-25T20:42:37+00:00,claude-haiku-5-5,end_turn,6575,7361,5970,40.15,36.266,0.0043,1,req_011ChQJ8Y9ZujL9M61jLUCvA
+pizza,claude-opus-5-5,2,2026-11-25T20:42:54+00:00,claude-opus-5-5,end_turn,6575,6764,2590,58.102,29.03,0.1616,1,req_011ChQJ9jBsKRevsucGquRss
+pizza,claude-sonnet-5-5,2,2026-11-25T20:43:17+00:00,claude-sonnet-5-5,end_turn,6575,2061,0,15.565,1.674,0.0338,1,req_011ChQJBPVWERxmzy9Ja4iU1
+pizza,claude-haiku-5-5,2,2026-11-25T20:43:32+00:00,claude-haiku-5-5,end_turn,6575,5409,3883,26.486,21.897,0.0034,1,req_011ChQJCXy1rdo2m5DMCkKBp

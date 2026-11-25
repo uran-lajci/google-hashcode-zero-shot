@@ -1,0 +1,10 @@
+{
+ "problem": "pizza",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "medium",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.033,
+ "first_seconds_wall": 0.031
+}

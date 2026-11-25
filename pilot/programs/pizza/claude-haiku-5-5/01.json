@@ -1,0 +1,12 @@
+{
+ "problem": "pizza",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2961,
+ "source_sha256": "6293f3bf76df8d7bd32a3efbdb6ec4d6dd40e3febf2be9e2f9547f23fa5845e6",
+ "compile_seconds": 1.772
+}

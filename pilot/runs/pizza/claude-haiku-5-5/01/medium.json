@@ -1,0 +1,15 @@
+{
+ "problem": "pizza",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "instance": "medium",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.011,
+ "output_bytes": 57539,
+ "output_sha256": "22bb857cc053dab14d4219da277f2fcbc0014103bc8ccd6f7f4945af21ec174d",
+ "cpu": 10,
+ "score": 49216,
+ "judge_seconds": 0.103,
+ "judge_message": ""
+}
