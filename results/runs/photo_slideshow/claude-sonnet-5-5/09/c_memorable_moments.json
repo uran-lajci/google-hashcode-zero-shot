@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "instance": "c_memorable_moments",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.019,
+ "output_bytes": 3894,
+ "output_sha256": "07f15734da7e9bee62734decda86e043cc5d7ea5055c2c28c17c2388d7e27337",
+ "cpu": 2,
+ "score": 1458,
+ "judge_seconds": 0.058,
+ "judge_message": ""
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "loon",
+ "model": "claude-haiku-5-5",
+ "generation": 4,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 7193,
+ "source_sha256": "6055259d09a8361ea03e0f1c5c3800dc809d6c5cffcab96ba3bcb885aed711d6",
+ "compile_seconds": 1.625
+}

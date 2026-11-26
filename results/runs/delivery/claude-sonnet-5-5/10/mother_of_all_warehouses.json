@@ -1,0 +1,15 @@
+{
+ "problem": "delivery",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "instance": "mother_of_all_warehouses",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.015,
+ "output_bytes": 164218,
+ "output_sha256": "e2b291f79e34855551015843ed378ff62a3009b68df022325cc74c876e479035",
+ "cpu": 6,
+ "score": 74181,
+ "judge_seconds": 0.212,
+ "judge_message": ""
+}

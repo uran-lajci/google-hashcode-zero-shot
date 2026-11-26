@@ -1,0 +1,10 @@
+{
+ "problem": "router_placement",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "instance": "charleston_road",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.073,
+ "first_seconds_wall": 0.071
+}

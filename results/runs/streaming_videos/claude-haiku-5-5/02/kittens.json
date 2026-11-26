@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "kittens",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 11.322,
+ "output_bytes": 54646,
+ "output_sha256": "37fe1347619de449043ebc72e1ed02f316d623066f7322ceda79807a212dc1b5",
+ "cpu": 0,
+ "score": 1021680,
+ "judge_seconds": 1.793,
+ "judge_message": ""
+}

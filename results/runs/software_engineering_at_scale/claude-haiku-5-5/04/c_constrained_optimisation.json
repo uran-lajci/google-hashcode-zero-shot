@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-haiku-5-5",
+ "generation": 4,
+ "instance": "c_constrained_optimisation",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.022,
+ "output_bytes": 876,
+ "output_sha256": "1b543b89b647d4979637679b4e5e1dbd01cd1a1f8ac6bf1033834cda79511696",
+ "cpu": 8,
+ "score": 1206895,
+ "judge_seconds": 0.074,
+ "judge_message": ""
+}

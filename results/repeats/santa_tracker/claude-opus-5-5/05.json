@@ -1,0 +1,10 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "instance": "c_carousel",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 16.273,
+ "first_seconds_wall": 15.526
+}

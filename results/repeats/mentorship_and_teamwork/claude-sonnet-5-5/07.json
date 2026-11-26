@@ -1,0 +1,10 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "instance": "c_collaboration",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.072,
+ "first_seconds_wall": 0.073
+}

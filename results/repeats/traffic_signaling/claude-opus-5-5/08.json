@@ -1,0 +1,10 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "instance": "b_ocean",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 2.803,
+ "first_seconds_wall": 2.804
+}

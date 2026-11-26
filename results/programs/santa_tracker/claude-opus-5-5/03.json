@@ -1,0 +1,12 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 12617,
+ "source_sha256": "98c83dc2527e7c4fbc6cc56aaf0c92b2c0269577957ac11c33a29da17b54066c",
+ "compile_seconds": 2.329
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-haiku-5-5",
+ "generation": 6,
+ "instance": "c_carousel",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.148,
+ "output_bytes": 51171,
+ "output_sha256": "b7e46aaa9b813dd98ecb61a58fe35c1cdd0e16e2f835541f6da0247607f8fbc3",
+ "cpu": 4,
+ "score": 7894,
+ "judge_seconds": 0.145,
+ "judge_message": ""
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "d_pet_pictures",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 9.325,
+ "output_bytes": 528896,
+ "output_sha256": "63a5b5d6ae53a9619a0af8e69bde4f9b1236937e42e63184a263a2cec58871b0",
+ "cpu": 10,
+ "score": 400072,
+ "judge_seconds": 1.647,
+ "judge_message": ""
+}

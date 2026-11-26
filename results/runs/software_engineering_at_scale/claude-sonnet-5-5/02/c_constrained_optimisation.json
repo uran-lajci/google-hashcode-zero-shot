@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "c_constrained_optimisation",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.016,
+ "output_bytes": 34397,
+ "output_sha256": "1ffcda8a35fdb9b78380a4b5907278db47c0316e48b2a62e57845c1707e449c1",
+ "cpu": 8,
+ "score": 25573764,
+ "judge_seconds": 0.085,
+ "judge_message": ""
+}

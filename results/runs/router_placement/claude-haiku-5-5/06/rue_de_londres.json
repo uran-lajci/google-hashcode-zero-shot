@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 6,
+ "instance": "rue_de_londres",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.195,
+ "output_bytes": 33365,
+ "output_sha256": "8e8a3fd897a9ac7f420eede2ad3cc5660894685b379afcb742ec8a71c9f87f5c",
+ "cpu": 4,
+ "score": 54363000,
+ "judge_seconds": 0.082,
+ "judge_message": ""
+}

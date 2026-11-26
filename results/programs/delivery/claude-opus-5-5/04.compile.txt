@@ -1,0 +1,28 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:40:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   40 |     scanf("%d",&P); wt.resize(P); for(auto&x:wt) scanf("%d",&x);
+      |     ~~~~~^~~~~~~~~
+/source/program.cpp:40:55: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   40 |     scanf("%d",&P); wt.resize(P); for(auto&x:wt) scanf("%d",&x);
+      |                                                  ~~~~~^~~~~~~~~
+/source/program.cpp:41:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   41 |     scanf("%d",&W); wr.resize(W); wc.resize(W); stockv.assign((size_t)W*P,0);
+      |     ~~~~~^~~~~~~~~
+/source/program.cpp:42:32: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   42 |     for(int w=0;w<W;w++){ scanf("%d %d",&wr[w],&wc[w]); for(int p=0;p<P;p++) scanf("%d",&stockv[(size_t)w*P+p]); }
+      |                           ~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:42:83: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   42 |     for(int w=0;w<W;w++){ scanf("%d %d",&wr[w],&wc[w]); for(int p=0;p<P;p++) scanf("%d",&stockv[(size_t)w*P+p]); }
+      |                                                                              ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:43:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   43 |     scanf("%d",&C); ord.resize(C);
+      |     ~~~~~^~~~~~~~~
+/source/program.cpp:45:21: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   45 |         int L; scanf("%d %d",&ord[i].r,&ord[i].c); scanf("%d",&L);
+      |                ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:45:57: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   45 |         int L; scanf("%d %d",&ord[i].r,&ord[i].c); scanf("%d",&L);
+      |                                                    ~~~~~^~~~~~~~~
+/source/program.cpp:46:58: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   46 |         map<int,int> m; for(int j=0;j<L;j++){int p; scanf("%d",&p); m[p]++;}
+      |                                                     ~~~~~^~~~~~~~~

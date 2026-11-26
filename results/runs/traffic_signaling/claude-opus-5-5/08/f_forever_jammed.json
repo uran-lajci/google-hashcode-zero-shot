@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "instance": "f_forever_jammed",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 5.533,
+ "output_bytes": 65350,
+ "output_sha256": "3961bbe5b339141dece52334bc4077138087ac6702d0eadbf82cd63d57ba5149",
+ "cpu": 10,
+ "score": 1128242,
+ "judge_seconds": 0.315,
+ "judge_message": ""
+}

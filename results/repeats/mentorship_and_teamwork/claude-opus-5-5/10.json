@@ -1,0 +1,10 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-opus-5-5",
+ "generation": 10,
+ "instance": "d_dense_schedule",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.163,
+ "first_seconds_wall": 0.163
+}

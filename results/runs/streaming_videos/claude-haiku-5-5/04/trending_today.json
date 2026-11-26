@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-haiku-5-5",
+ "generation": 4,
+ "instance": "trending_today",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.427,
+ "output_bytes": 49149,
+ "output_sha256": "5ddf4910afa569a09c1c9a0b181f3dd2a7b9277c51ee5c05e509f392210cadd7",
+ "cpu": 2,
+ "score": 499966,
+ "judge_seconds": 0.489,
+ "judge_message": ""
+}

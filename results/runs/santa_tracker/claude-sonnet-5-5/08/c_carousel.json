@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "c_carousel",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.245,
+ "output_bytes": 41976,
+ "output_sha256": "5932ebd0166eec8fe3abdf741b1fa3bad4804a0ef33a34e853ddb83e47ad8ed8",
+ "cpu": 2,
+ "score": 88466,
+ "judge_seconds": 0.089,
+ "judge_message": ""
+}

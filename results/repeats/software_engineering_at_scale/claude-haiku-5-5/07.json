@@ -1,0 +1,10 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "instance": "c_constrained_optimisation",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.023,
+ "first_seconds_wall": 0.023
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 8008,
+ "source_sha256": "0b45305cd807cd15ace9d77faaa0cd0392302ff18b2d4b3351ee91c85c20b442",
+ "compile_seconds": 2.41
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "loon",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 8059,
+ "source_sha256": "7aeac1ff76ff22c4e6df1c713da36bb790d9562424a6e4bb59cdabd1a1d1773d",
+ "compile_seconds": 1.783
+}

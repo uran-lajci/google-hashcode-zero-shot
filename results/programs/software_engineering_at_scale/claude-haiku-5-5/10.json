@@ -1,0 +1,12 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-haiku-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 7615,
+ "source_sha256": "1877a7674a8898c5fc5c21fe1f86a6bd154b4f8edf1d8ac36feb86980956bcea",
+ "compile_seconds": 2.5
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "instance": "charleston_road",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.146,
+ "output_bytes": 11300,
+ "output_sha256": "a6ad62fae36a4de9be674f13543b6d8876662e19f500d65008d7db81f673ca2a",
+ "cpu": 0,
+ "score": 21960674,
+ "judge_seconds": 0.064,
+ "judge_message": ""
+}

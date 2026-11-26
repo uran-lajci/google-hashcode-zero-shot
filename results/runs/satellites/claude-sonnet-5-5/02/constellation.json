@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "constellation",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.541,
+ "output_bytes": 94542,
+ "output_sha256": "80270f83988951d734bb6a89317d9368850d474f540b5b7bbfafe21bbce41b62",
+ "cpu": 2,
+ "score": 0,
+ "judge_seconds": 0.102,
+ "judge_message": "Invalid output: line 31: satellite 22 needs the orientation [-1394, 643586] at turn 922, expected each value from -4433 to 4433"
+}

@@ -1,0 +1,16 @@
+15
+LoadCarrots 10
+LoadGift Bob
+AccDown 6
+Float 1
+AccDown 6
+Float 1
+AccDown 6
+Float 1
+AccDown 3
+Float 1
+AccDown 1
+Float 1
+AccUp 1
+Float 1
+DeliverGift Bob

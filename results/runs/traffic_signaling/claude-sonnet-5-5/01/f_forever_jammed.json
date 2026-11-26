@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "f_forever_jammed",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.031,
+ "output_bytes": 65350,
+ "output_sha256": "74cb5b9a5d3e44805de0ec9d4272f7a18593f5eb9237554395a278ad1cf6624e",
+ "cpu": 6,
+ "score": 819303,
+ "judge_seconds": 0.283,
+ "judge_message": ""
+}

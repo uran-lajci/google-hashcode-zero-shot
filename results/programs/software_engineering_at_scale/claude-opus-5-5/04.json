@@ -1,0 +1,12 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 4391,
+ "source_sha256": "37ecc74df7522de80cdda6c3ce9e0cd8533ab6ea73f723f3ee00c497a473a863",
+ "compile_seconds": 2.127
+}

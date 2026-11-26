@@ -1,0 +1,10 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "f_festive_flyover",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.016,
+ "first_seconds_wall": 0.017
+}

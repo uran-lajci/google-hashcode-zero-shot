@@ -1,0 +1,15 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "instance": "hashcode_2014_final_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.149,
+ "output_bytes": 170024,
+ "output_sha256": "423f5d89d3fb26de1a79a7c5a84507b8f4cf09fb753d4494483ec5a897c69c1d",
+ "cpu": 4,
+ "score": 1879711,
+ "judge_seconds": 0.294,
+ "judge_message": ""
+}

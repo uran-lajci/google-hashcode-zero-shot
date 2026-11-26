@@ -1,0 +1,12 @@
+{
+ "problem": "delivery",
+ "model": "claude-haiku-5-5",
+ "generation": 9,
+ "instance": "redundancy",
+ "state": "runtime_error",
+ "exit_code": 134,
+ "seconds_wall": 0.147,
+ "output_bytes": 0,
+ "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "cpu": 6
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "me_at_the_zoo",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.01,
+ "output_bytes": 153,
+ "output_sha256": "0051e89a6ffb8e33227b82b04e6472cf44a587fce6f8a32e3ddb437464222707",
+ "cpu": 6,
+ "score": 507906,
+ "judge_seconds": 0.044,
+ "judge_message": ""
+}

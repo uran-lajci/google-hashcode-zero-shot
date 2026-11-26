@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "constellation",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.238,
+ "output_bytes": 9230,
+ "output_sha256": "4c2847bfe5ddb10cc835d7ba01c1c7a70e51d108d3a5f50e2d9b9f27f2d0faf2",
+ "cpu": 2,
+ "score": 0,
+ "judge_seconds": 0.106,
+ "judge_message": "Invalid output: line 32: satellite 3 turns its camera from [0, 0] at turn 0 (the start) to [6432, 176] at turn 295, a change of 6432 in 295 turns, expected at most w * 295 = 5015"
+}

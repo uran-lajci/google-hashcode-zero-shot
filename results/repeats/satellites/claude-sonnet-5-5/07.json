@@ -1,0 +1,10 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "instance": "constellation",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.195,
+ "first_seconds_wall": 0.191
+}

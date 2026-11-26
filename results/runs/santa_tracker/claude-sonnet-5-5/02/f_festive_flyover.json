@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "f_festive_flyover",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.019,
+ "output_bytes": 16256,
+ "output_sha256": "044ea0ff545e6239c0af4a07e8757ac0a0ddb332d4ef12b915dc557e09f4af7c",
+ "cpu": 4,
+ "score": 66915,
+ "judge_seconds": 0.085,
+ "judge_message": ""
+}

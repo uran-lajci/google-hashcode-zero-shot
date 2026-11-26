@@ -1,0 +1,10 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-haiku-5-5",
+ "generation": 9,
+ "instance": "d_typical",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.013,
+ "first_seconds_wall": 0.014
+}

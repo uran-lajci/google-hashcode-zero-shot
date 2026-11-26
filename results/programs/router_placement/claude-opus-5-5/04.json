@@ -1,0 +1,12 @@
+{
+ "problem": "router_placement",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5320,
+ "source_sha256": "d5dc53b6bee4e62fc6fe77287f270ad0a41a0844a64ba086c234e5ee954d9d55",
+ "compile_seconds": 1.78
+}

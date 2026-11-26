@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "kittens",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 3.811,
+ "output_bytes": 54647,
+ "output_sha256": "19256442d5670c47ec6dfbdb0bf3041c33107f65b9c4572dfe8094737ce1826a",
+ "cpu": 0,
+ "score": 1021681,
+ "judge_seconds": 1.855,
+ "judge_message": ""
+}

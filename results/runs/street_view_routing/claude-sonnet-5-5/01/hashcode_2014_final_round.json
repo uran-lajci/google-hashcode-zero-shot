@@ -1,0 +1,15 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "hashcode_2014_final_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.545,
+ "output_bytes": 173968,
+ "output_sha256": "ce741511769be158c1d9878a225c89c9fa6aa08f494010c3eb12a1bf0e4c5a45",
+ "cpu": 10,
+ "score": 1888864,
+ "judge_seconds": 0.31,
+ "judge_message": ""
+}

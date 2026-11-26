@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "weekend",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.573,
+ "output_bytes": 86704,
+ "output_sha256": "7128ba385cff46b533dc3bb0a1642d684d76edb143724689d428935f48bb8cd4",
+ "cpu": 2,
+ "score": 0,
+ "judge_seconds": 0.124,
+ "judge_message": "Invalid output: line 17: satellite 2 needs the orientation [-3503, 647353] at turn 540, expected each value from -3508 to 3508"
+}

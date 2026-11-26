@@ -1,0 +1,12 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 6129,
+ "source_sha256": "a84725916d0ef9b4c938270c4c7fce3b25accb0c84b5c4f9cdcbc6d09d8930e5",
+ "compile_seconds": 2.153
+}

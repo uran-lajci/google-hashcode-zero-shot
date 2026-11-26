@@ -1,0 +1,12 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2653,
+ "source_sha256": "618b04d97adca566ed38b9b74f6d8fa96bb3320d4eeb77a59bb4f04877ffcf64",
+ "compile_seconds": 1.575
+}

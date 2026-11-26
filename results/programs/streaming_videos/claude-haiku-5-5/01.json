@@ -1,0 +1,12 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3458,
+ "source_sha256": "d4734da49333297b04d987ce5b99a25eb55b5b5dda60e5569511c04223d20c6d",
+ "compile_seconds": 1.681
+}

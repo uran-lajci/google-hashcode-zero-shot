@@ -1,0 +1,10 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "c_urgent",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.022,
+ "first_seconds_wall": 0.027
+}

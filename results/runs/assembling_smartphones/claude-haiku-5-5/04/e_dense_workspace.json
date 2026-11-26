@@ -1,0 +1,15 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-haiku-5-5",
+ "generation": 4,
+ "instance": "e_dense_workspace",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 2.03,
+ "output_bytes": 1964067,
+ "output_sha256": "e60dd4571375b9bba787f1621cf169fa0f77c8dcaa62ba5bca8bc986d347010c",
+ "cpu": 8,
+ "score": 858703,
+ "judge_seconds": 0.45,
+ "judge_message": ""
+}

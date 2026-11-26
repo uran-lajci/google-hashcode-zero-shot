@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "f_five_thousand",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.017,
+ "output_bytes": 5609,
+ "output_sha256": "6194d5c2c09d0de76f4a37b0b82496d98f31e5856f4e818fa982e197acc0b32f",
+ "cpu": 4,
+ "score": 118878933,
+ "judge_seconds": 0.079,
+ "judge_message": ""
+}

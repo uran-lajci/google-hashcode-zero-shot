@@ -1,0 +1,15 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "f_big",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.186,
+ "output_bytes": 14638,
+ "output_sha256": "a2e640e12e3c99d6bc16768b087cd4144fdcf52ea3652f1790daed98eada42cb",
+ "cpu": 10,
+ "score": 52893,
+ "judge_seconds": 0.236,
+ "judge_message": ""
+}

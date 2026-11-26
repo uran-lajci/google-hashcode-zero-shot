@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "b_breadth_of_choice",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.015,
+ "output_bytes": 5448,
+ "output_sha256": "a9b6b2f011abfeb889b1ab9a67a5c019c955aada32ee6631176f596f79bd8587",
+ "cpu": 2,
+ "score": 11627730,
+ "judge_seconds": 0.119,
+ "judge_message": ""
+}

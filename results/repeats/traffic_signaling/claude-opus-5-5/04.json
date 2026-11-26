@@ -1,0 +1,10 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "f_forever_jammed",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 5.533,
+ "first_seconds_wall": 5.192
+}

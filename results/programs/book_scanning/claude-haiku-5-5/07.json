@@ -1,0 +1,12 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3048,
+ "source_sha256": "3ccc2754793b0de4d7c90f1a48a91532ceafcf8b3bf0e1e95a1a1f377ea7f6df",
+ "compile_seconds": 1.951
+}

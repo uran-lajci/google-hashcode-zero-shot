@@ -1,0 +1,15 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "instance": "f_decentralized",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 14.996,
+ "output_bytes": 20020,
+ "output_sha256": "d61904a425b7950905feeea35b2a6bb1e5a5a5e82061f842ca2d8aec9884a463",
+ "cpu": 2,
+ "score": 0,
+ "judge_seconds": 0.098,
+ "judge_message": "Invalid output: line 3: the arm does not complete task 0, it visits 0 of its 19 assembly points"
+}

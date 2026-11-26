@@ -1,0 +1,22 @@
+21
+LoadCarrots 16
+LoadGift Michal3299
+AccUp 100
+Float 1
+AccLeft 100
+Float 1
+AccLeft 81
+Float 1
+AccRight 99
+Float 1
+AccDown 100
+Float 1
+AccRight 100
+Float 1
+AccRight 46
+Float 1
+AccLeft 64
+Float 1
+AccDown 11
+Float 1
+DeliverGift Michal3299

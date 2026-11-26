@@ -1,0 +1,15 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 7,
+ "instance": "f_libraries_of_the_world",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.065,
+ "output_bytes": 77139,
+ "output_sha256": "2d20a1e8c899dad7a4df8c64de374f056118a6ac824d501703251a7c92d3e01d",
+ "cpu": 6,
+ "score": 5345656,
+ "judge_seconds": 0.307,
+ "judge_message": ""
+}

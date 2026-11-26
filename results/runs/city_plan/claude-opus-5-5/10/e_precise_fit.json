@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 10,
+ "instance": "e_precise_fit",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 3.359,
+ "output_bytes": 3320628,
+ "output_sha256": "1690fe8cfe6884287ce2cbf97ccb530ed2e8892d21bb0bf5cb5e91c71eef8b2c",
+ "cpu": 0,
+ "score": 4823540,
+ "judge_seconds": 7.856,
+ "judge_message": ""
+}

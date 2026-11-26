@@ -1,0 +1,15 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "instance": "hashcode_2014_final_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 8.012,
+ "output_bytes": 48884,
+ "output_sha256": "9eb96944da6dcd3b1c64c3a996d97a2f572034d360814ca02a827258060a726d",
+ "cpu": 0,
+ "score": 888432,
+ "judge_seconds": 0.281,
+ "judge_message": ""
+}

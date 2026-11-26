@@ -1,0 +1,12 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 479,
+ "source_sha256": "c7a232957da554a68bac9b3e8ad6651d90407b77778da3ea8524a8e5150e66eb",
+ "compile_seconds": 1.294
+}

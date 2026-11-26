@@ -1,0 +1,10 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-haiku-5-5",
+ "generation": 9,
+ "instance": "d_pet_pictures",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 1.331,
+ "first_seconds_wall": 1.307
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "instance": "b_should_be_easy",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.01,
+ "first_seconds_wall": 0.009
+}

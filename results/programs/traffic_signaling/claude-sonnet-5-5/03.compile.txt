@@ -1,0 +1,13 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:53:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   53 |     scanf("%d %d %d %d %d",&D,&I,&S,&V,&F);
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:57:31: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   57 |     for(int i=0;i<S;i++){scanf("%d %d %s %d",&Bv[i],&Ev[i],buf,&Lv[i]);nm[i]=buf;id[nm[i]]=i;}
+      |                          ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:60:37: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   60 |     for(int c=0;c<V;c++){int p;scanf("%d",&p);path[c].resize(p);for(int j=0;j<p;j++){scanf("%s",buf);path[c][j]=id[buf];if(j<p-1)cnt[path[c][j]]++;}}
+      |                                ~~~~~^~~~~~~~~
+/source/program.cpp:60:91: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   60 |     for(int c=0;c<V;c++){int p;scanf("%d",&p);path[c].resize(p);for(int j=0;j<p;j++){scanf("%s",buf);path[c][j]=id[buf];if(j<p-1)cnt[path[c][j]]++;}}
+      |                                                                                      ~~~~~^~~~~~~~~~

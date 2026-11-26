@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "trending_today",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.277,
+ "output_bytes": 49114,
+ "output_sha256": "3979455911b80dd9187f40a6412808e0ebf89c785cf68e51443836d6a3b73e4b",
+ "cpu": 2,
+ "score": 499906,
+ "judge_seconds": 0.495,
+ "judge_message": ""
+}

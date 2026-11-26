@@ -1,0 +1,12 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-opus-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 4542,
+ "source_sha256": "5f9d173e8ba679c35c3ae92b435430b9c6ac2e72594fab7f29f5612f59ecd311",
+ "compile_seconds": 1.983
+}

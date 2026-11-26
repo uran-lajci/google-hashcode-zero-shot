@@ -1,0 +1,10 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "instance": "trending_today",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.228,
+ "first_seconds_wall": 0.305
+}

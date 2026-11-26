@@ -1,0 +1,14 @@
+/source/program.cpp: In function 'long long int evalS(std::vector<Pl>&)':
+/source/program.cpp:41:19: error: invalid types 'int[int]' for array subscript
+   41 |         P&a=ps[v[i[0]==0?0:0].b];(void)a;
+      |                   ^
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:59:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   59 |     scanf("%d %d %d %d",&H,&W,&D,&B);
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:62:24: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   62 |         char t[4];scanf("%s %d %d %d",t,&ps[i].h,&ps[i].w,&ps[i].v);
+      |                   ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:65:29: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   65 |             char s[64];scanf("%s",s);
+      |                        ~~~~~^~~~~~~~

@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "instance": "d_dense_schedule",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.269,
+ "output_bytes": 10453,
+ "output_sha256": "4a0d880fd5c95b8bca363af981e9bd9a0961f8ebe19d4dacfc1210e3b2197ad7",
+ "cpu": 4,
+ "score": 251751,
+ "judge_seconds": 0.081,
+ "judge_message": ""
+}

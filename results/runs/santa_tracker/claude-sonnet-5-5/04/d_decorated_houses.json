@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "instance": "d_decorated_houses",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.017,
+ "output_bytes": 97,
+ "output_sha256": "5922ddad80d6e93775faa7eab5854b69fc4494cedf94d66951f27185487ca2b2",
+ "cpu": 2,
+ "score": 450,
+ "judge_seconds": 0.07,
+ "judge_message": ""
+}

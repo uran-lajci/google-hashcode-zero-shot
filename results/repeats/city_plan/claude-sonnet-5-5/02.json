@@ -1,0 +1,10 @@
+{
+ "problem": "city_plan",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "f_different_footprints",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.011,
+ "first_seconds_wall": 0.011
+}

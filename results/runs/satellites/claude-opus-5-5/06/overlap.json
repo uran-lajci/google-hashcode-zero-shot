@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "overlap",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.511,
+ "output_bytes": 95730,
+ "output_sha256": "46389e9762ab8cb023abca89b1ab9dd0364ff3054702ba1b6df253436dcdc457",
+ "cpu": 4,
+ "score": 241239,
+ "judge_seconds": 0.218,
+ "judge_message": ""
+}

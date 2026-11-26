@@ -1,0 +1,15 @@
+{
+ "problem": "delivery",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "instance": "redundancy",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.022,
+ "output_bytes": 211367,
+ "output_sha256": "1a6cc4beae6aa91a68ab419eb07121ddb51853bf7b87bd2e9cd44cf9191d8445",
+ "cpu": 4,
+ "score": 96096,
+ "judge_seconds": 0.34,
+ "judge_message": ""
+}

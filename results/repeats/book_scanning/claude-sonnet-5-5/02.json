@@ -1,0 +1,10 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "e_so_many_books",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.074,
+ "first_seconds_wall": 0.071
+}

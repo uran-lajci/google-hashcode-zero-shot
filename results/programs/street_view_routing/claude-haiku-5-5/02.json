@@ -1,0 +1,12 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 4145,
+ "source_sha256": "455ebf003b3f0b1d8ed495d1230ebd6f4552242629bbe09ba058e2e165e1be12",
+ "compile_seconds": 1.617
+}

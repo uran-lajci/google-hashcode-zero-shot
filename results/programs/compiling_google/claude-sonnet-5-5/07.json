@@ -1,0 +1,12 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2591,
+ "source_sha256": "ed1418a8286a1ae3f21eeb7c3223fa4c417802b04c4a051e2fbf40c695ccefcb",
+ "compile_seconds": 1.894
+}

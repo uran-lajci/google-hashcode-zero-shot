@@ -1,0 +1,12 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2106,
+ "source_sha256": "614571ccf6615948e40611a5f3fe59567d41cf0c1bbbbac3a5352b7f8fdafd7f",
+ "compile_seconds": 1.762
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "opera",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.291,
+ "output_bytes": 58701,
+ "output_sha256": "8923f651ea5eec8c94650e37c600c46b1bbddb4e2e398f1fcb0b2af99a349252",
+ "cpu": 0,
+ "score": 105955000,
+ "judge_seconds": 0.157,
+ "judge_message": ""
+}

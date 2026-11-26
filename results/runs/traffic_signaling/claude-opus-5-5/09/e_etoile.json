@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "e_etoile",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 9.009,
+ "output_bytes": 12134,
+ "output_sha256": "660a1ee4390d1330a0b4981ba6b186fd70a41a2a0e8fe784e45bf6af848875f2",
+ "cpu": 10,
+ "score": 749512,
+ "judge_seconds": 0.066,
+ "judge_message": ""
+}

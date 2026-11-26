@@ -1,0 +1,15 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "c_no_hurry",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.272,
+ "output_bytes": 43130,
+ "output_sha256": "8f7afe23156ba95c8d06d925da86fad6ae3e9bace459279d686668db9f69a1ce",
+ "cpu": 6,
+ "score": 15790930,
+ "judge_seconds": 0.123,
+ "judge_message": ""
+}

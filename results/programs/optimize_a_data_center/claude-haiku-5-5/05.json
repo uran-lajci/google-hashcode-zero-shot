@@ -1,0 +1,12 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 2,
+ "flagged": true,
+ "source_bytes": 4378,
+ "source_sha256": "09d9ee69ba87ace0df87a058f32771741b7320e4d2a729db5015cd41b661dbed",
+ "compile_seconds": 2.041
+}

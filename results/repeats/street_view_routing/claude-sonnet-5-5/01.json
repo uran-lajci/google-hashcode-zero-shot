@@ -1,0 +1,10 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "hashcode_2014_final_round",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.544,
+ "first_seconds_wall": 0.545
+}

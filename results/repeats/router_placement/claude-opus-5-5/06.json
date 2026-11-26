@@ -1,0 +1,10 @@
+{
+ "problem": "router_placement",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "lets_go_higher",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 4.834,
+ "first_seconds_wall": 4.945
+}

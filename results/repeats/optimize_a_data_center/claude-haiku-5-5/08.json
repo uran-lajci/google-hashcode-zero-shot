@@ -1,0 +1,10 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "hashcode_2015_qualification_round",
+ "same_output": false,
+ "state": "finished",
+ "seconds_wall": 8.009,
+ "first_seconds_wall": 8.01
+}

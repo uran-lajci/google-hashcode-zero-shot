@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-haiku-5-5",
+ "generation": 6,
+ "instance": "f_find_great_mentors",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 7.054,
+ "output_bytes": 16476,
+ "output_sha256": "54e7d8d7594042bff1a8391dfc9aa06fb76d674b3661d4cd41248d718a83a0de",
+ "cpu": 0,
+ "score": 72442,
+ "judge_seconds": 1.189,
+ "judge_message": ""
+}

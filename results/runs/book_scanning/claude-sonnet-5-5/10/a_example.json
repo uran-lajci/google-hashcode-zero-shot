@@ -1,0 +1,15 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "instance": "a_example",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.011,
+ "output_bytes": 22,
+ "output_sha256": "4533c2e9ed0b661fa46d0baa49832d76e153d3074135e2e5fc00010f0f12b875",
+ "cpu": 4,
+ "score": 21,
+ "judge_seconds": 0.047,
+ "judge_message": ""
+}

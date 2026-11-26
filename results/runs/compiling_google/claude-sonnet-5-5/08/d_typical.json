@@ -1,0 +1,15 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "d_typical",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.014,
+ "output_bytes": 14120,
+ "output_sha256": "fd9478e6455a848ed32e047268bd55760136fc82c72fce5e27d9fc42bb70a03c",
+ "cpu": 6,
+ "score": 7060,
+ "judge_seconds": 0.081,
+ "judge_message": ""
+}

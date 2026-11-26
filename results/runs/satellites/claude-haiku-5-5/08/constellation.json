@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "constellation",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 2.065,
+ "output_bytes": 35884,
+ "output_sha256": "3602d4c0a9c1c95b2e6f9debeb23a632da808da2bdf916eb3a08e70f3595a7c9",
+ "cpu": 8,
+ "score": 0,
+ "judge_seconds": 0.107,
+ "judge_message": "Invalid output: line 3: satellite 3 needs the orientation [-6475, -645640] at turn 1540, expected each value from -6577 to 6577"
+}

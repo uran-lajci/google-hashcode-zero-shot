@@ -1,0 +1,10 @@
+{
+ "problem": "city_plan",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "instance": "e_precise_fit",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 2.391,
+ "first_seconds_wall": 2.657
+}

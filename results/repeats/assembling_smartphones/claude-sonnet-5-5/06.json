@@ -1,0 +1,10 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "f_decentralized",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 4.828,
+ "first_seconds_wall": 4.837
+}

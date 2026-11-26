@@ -1,0 +1,15 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "instance": "hashcode_2015_qualification_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.011,
+ "output_bytes": 4317,
+ "output_sha256": "9ae1ed3cda4f778b0f5a9c23f2e8cba11f0e7892ce91b925a3d8c07278181380",
+ "cpu": 10,
+ "score": 355,
+ "judge_seconds": 0.055,
+ "judge_message": ""
+}

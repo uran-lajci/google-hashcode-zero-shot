@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "instance": "overlap",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.483,
+ "output_bytes": 147576,
+ "output_sha256": "6d503cbabb0a0e99d284054421ac1fb6290b3b68332b897c3ea8c97babce1c20",
+ "cpu": 4,
+ "score": 60972,
+ "judge_seconds": 0.238,
+ "judge_message": ""
+}

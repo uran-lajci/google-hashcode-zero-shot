@@ -1,0 +1,12 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-opus-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2614,
+ "source_sha256": "1222e3e391779921f68cf829664473e43bbba30abc69f9a60f65482d19a7d862",
+ "compile_seconds": 1.743
+}

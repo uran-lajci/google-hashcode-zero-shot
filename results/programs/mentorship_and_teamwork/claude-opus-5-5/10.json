@@ -1,0 +1,12 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-opus-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 6694,
+ "source_sha256": "506f3c7c6d19e384ec4123ade55f8eac3ffce4334d9d542560c41788955cd5db",
+ "compile_seconds": 2.721
+}

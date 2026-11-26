@@ -1,0 +1,12 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2470,
+ "source_sha256": "85f75faff800f5d630dbb33fd33f635b875d8767827284f72f59711aa4e429ee",
+ "compile_seconds": 1.871
+}

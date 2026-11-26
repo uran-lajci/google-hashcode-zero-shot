@@ -1,0 +1,10 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "instance": "videos_worth_spreading",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.082,
+ "first_seconds_wall": 0.077
+}

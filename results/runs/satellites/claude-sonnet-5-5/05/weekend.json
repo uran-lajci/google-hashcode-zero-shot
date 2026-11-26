@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "instance": "weekend",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.463,
+ "output_bytes": 78608,
+ "output_sha256": "2e2557da870fc75cba8eaaae1de234016547b21ecccd9dd0855039869fbe0843",
+ "cpu": 4,
+ "score": 60007,
+ "judge_seconds": 0.147,
+ "judge_message": ""
+}

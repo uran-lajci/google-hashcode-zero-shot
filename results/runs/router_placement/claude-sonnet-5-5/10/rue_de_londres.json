@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "instance": "rue_de_londres",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.796,
+ "output_bytes": 51367,
+ "output_sha256": "438527098531f020dd0786c3a0c3a563effadd6a57b515eb64995e886dd38894",
+ "cpu": 2,
+ "score": 46548094,
+ "judge_seconds": 0.095,
+ "judge_message": ""
+}

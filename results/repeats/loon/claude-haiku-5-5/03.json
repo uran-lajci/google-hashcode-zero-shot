@@ -1,0 +1,10 @@
+{
+ "problem": "loon",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "hashcode_2015_final_round",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.108,
+ "first_seconds_wall": 0.108
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 15118,
+ "source_sha256": "80968818e41e126064cfd51f87e680f77dfc1f51e4cfe79fa3ad80dad3c2dd7f",
+ "compile_seconds": 3.544
+}

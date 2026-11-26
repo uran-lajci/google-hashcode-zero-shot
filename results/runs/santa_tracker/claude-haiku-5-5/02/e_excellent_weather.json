@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "e_excellent_weather",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.017,
+ "output_bytes": 38818,
+ "output_sha256": "9fc032eafedc63ddf22c3f3006aa5f84a55572741d4a60a4b4f1e716738e5d50",
+ "cpu": 0,
+ "score": 81797,
+ "judge_seconds": 0.093,
+ "judge_message": ""
+}

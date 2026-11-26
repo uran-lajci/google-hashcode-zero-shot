@@ -1,0 +1,10 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "d_daily_commute",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 8.344,
+ "first_seconds_wall": 8.229
+}

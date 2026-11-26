@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-opus-5-5",
+ "generation": 7,
+ "instance": "charleston_road",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.177,
+ "output_bytes": 6965,
+ "output_sha256": "816cdb940e955d40a3ca53416484c1a9aca0ead09330546ab0f9ef1b4e9affb2",
+ "cpu": 2,
+ "score": 21962399,
+ "judge_seconds": 0.069,
+ "judge_message": ""
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-haiku-5-5",
+ "generation": 6,
+ "instance": "b_short_walk",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 8.037,
+ "output_bytes": 4006412,
+ "output_sha256": "e324210d3dc1e69a416ee18e115d077b232994af7165811b2e56b49f0b7afe0c",
+ "cpu": 6,
+ "score": 1110900,
+ "judge_seconds": 2.219,
+ "judge_message": ""
+}

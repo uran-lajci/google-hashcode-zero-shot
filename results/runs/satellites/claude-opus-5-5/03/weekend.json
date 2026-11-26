@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "instance": "weekend",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.564,
+ "output_bytes": 16725,
+ "output_sha256": "5b18ae532306382ba0930d8054e2ac64772d46b397b3a34f190cea2f91a9fe93",
+ "cpu": 10,
+ "score": 161045,
+ "judge_seconds": 0.129,
+ "judge_message": ""
+}

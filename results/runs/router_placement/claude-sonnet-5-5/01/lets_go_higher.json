@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "lets_go_higher",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 3.52,
+ "output_bytes": 452031,
+ "output_sha256": "9717f09af458c7bd8cd590fa0a14bdf2b66f3c55869058b85449a0e445825c65",
+ "cpu": 4,
+ "score": 288383877,
+ "judge_seconds": 1.238,
+ "judge_message": ""
+}

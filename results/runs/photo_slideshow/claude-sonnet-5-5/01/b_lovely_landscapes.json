@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "b_lovely_landscapes",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.516,
+ "output_bytes": 468896,
+ "output_sha256": "18055f5181bc4eedadfdb89c3d47520de93d9cdb40d901d1bfcbf41c5adef1d9",
+ "cpu": 8,
+ "score": 203709,
+ "judge_seconds": 2.176,
+ "judge_message": ""
+}

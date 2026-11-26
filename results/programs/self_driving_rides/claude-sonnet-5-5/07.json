@@ -1,0 +1,12 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 1482,
+ "source_sha256": "c00217cbc9904b3eb2d17a01a4497610c339219a11cc8476822f56193745b0c9",
+ "compile_seconds": 1.578
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "delivery",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "instance": "redundancy",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.018,
+ "first_seconds_wall": 0.02
+}

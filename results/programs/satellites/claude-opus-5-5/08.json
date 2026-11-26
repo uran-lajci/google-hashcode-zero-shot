@@ -1,0 +1,12 @@
+{
+ "problem": "satellites",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 12519,
+ "source_sha256": "8bf810f5b3fbb7b9c8abd58446e8b93b941746aa685e4e68b5e592d579c6ebd5",
+ "compile_seconds": 2.885
+}

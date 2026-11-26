@@ -1,0 +1,12 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5532,
+ "source_sha256": "905cc5f25315e2d463f742d8e13be527abe7b102de6be80e875b82580624c741",
+ "compile_seconds": 1.833
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "delivery",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 6603,
+ "source_sha256": "3d8bf2011003dfc86ed38858aae26dfa05534465a98de6e3affd3fd9585a086a",
+ "compile_seconds": 2.49
+}

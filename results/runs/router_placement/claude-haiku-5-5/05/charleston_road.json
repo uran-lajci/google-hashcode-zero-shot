@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "instance": "charleston_road",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.06,
+ "output_bytes": 7384,
+ "output_sha256": "e29443388da5758867dfa7a7e80b43381bccd39f2c09a738514af75ef252b4d4",
+ "cpu": 0,
+ "score": 21961159,
+ "judge_seconds": 0.068,
+ "judge_message": ""
+}

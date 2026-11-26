@@ -1,0 +1,12 @@
+{
+ "problem": "city_plan",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 1821,
+ "source_sha256": "c2b3646041cc6e7c72750fea0470219282a3c4c5aaa7fcccc3819182a74e5060",
+ "compile_seconds": 1.537
+}

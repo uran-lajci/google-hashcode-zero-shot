@@ -1,0 +1,12 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2502,
+ "source_sha256": "51637e64883259f42e0c6b850c57d01bee19e55abe907bb544f3f3d8c20f1aa8",
+ "compile_seconds": 2.433
+}

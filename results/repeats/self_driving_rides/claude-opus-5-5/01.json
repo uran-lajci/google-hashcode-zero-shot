@@ -1,0 +1,10 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "b_should_be_easy",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.013,
+ "first_seconds_wall": 0.013
+}

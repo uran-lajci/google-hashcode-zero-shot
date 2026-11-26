@@ -1,0 +1,10 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "trending_today",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 2.039,
+ "first_seconds_wall": 1.902
+}

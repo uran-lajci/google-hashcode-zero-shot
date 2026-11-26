@@ -1,0 +1,10 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "instance": "b_read_on",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.026,
+ "first_seconds_wall": 0.022
+}

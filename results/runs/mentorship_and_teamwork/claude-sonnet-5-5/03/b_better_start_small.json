@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "instance": "b_better_start_small",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.014,
+ "output_bytes": 3705,
+ "output_sha256": "1cfc2ce5f2241d7426635526ab0112de620fde9eea0ced014e8b2bec67a28bb9",
+ "cpu": 4,
+ "score": 800991,
+ "judge_seconds": 0.049,
+ "judge_message": ""
+}

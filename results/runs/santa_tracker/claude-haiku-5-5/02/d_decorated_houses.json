@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "d_decorated_houses",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.051,
+ "output_bytes": 9494,
+ "output_sha256": "f67bb7dbad11efe5a7c7c00109daf4d72ebdaacc7c626ad17e7fa1a2a382e516",
+ "cpu": 8,
+ "score": 450,
+ "judge_seconds": 0.067,
+ "judge_message": ""
+}

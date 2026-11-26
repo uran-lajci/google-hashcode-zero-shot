@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-haiku-5-5",
+ "generation": 9,
+ "instance": "e_expectation_maximisation",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.011,
+ "output_bytes": 3030,
+ "output_sha256": "11c074f71cc868ad902ed153c19a4c759455e7f288a9754ba14fbdb43002d092",
+ "cpu": 2,
+ "score": 35820778,
+ "judge_seconds": 0.049,
+ "judge_message": ""
+}

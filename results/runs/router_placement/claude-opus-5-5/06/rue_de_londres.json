@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "rue_de_londres",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.302,
+ "output_bytes": 22432,
+ "output_sha256": "bbac1b8069351d02908ed5028d932959aaac93f6504aa76dd98aaed94cd77603",
+ "cpu": 6,
+ "score": 57929005,
+ "judge_seconds": 0.105,
+ "judge_message": ""
+}

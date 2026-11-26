@@ -1,0 +1,8 @@
+/source/program.cpp: In lambda function:
+/source/program.cpp:79:17: error: 'stamp_check' was not declared in this scope
+   79 |             if (stamp_check: true) {}
+      |                 ^~~~~~~~~~~
+/source/program.cpp:79:28: error: expected ')' before ':' token
+   79 |             if (stamp_check: true) {}
+      |                ~           ^
+      |                            )

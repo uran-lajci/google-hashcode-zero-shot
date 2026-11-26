@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "b_ocean",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 2.709,
+ "output_bytes": 135887,
+ "output_sha256": "eb1c10616e7b4703049c7848e558acded1117dd81beb571168cd8d433539d495",
+ "cpu": 6,
+ "score": 4567067,
+ "judge_seconds": 0.194,
+ "judge_message": ""
+}

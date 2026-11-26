@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "instance": "f_festive_flyover",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.015,
+ "output_bytes": 44188,
+ "output_sha256": "45d941710be6b9af7d6908907c37cc122a6a9aa0c884e508bd4301846ae20ed5",
+ "cpu": 8,
+ "score": 162172,
+ "judge_seconds": 0.085,
+ "judge_message": ""
+}

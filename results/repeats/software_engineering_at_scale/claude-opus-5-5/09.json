@@ -1,0 +1,10 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "f_five_thousand",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.016,
+ "first_seconds_wall": 0.015
+}

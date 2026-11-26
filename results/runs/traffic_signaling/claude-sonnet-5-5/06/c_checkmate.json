@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "c_checkmate",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 2.817,
+ "output_bytes": 188043,
+ "output_sha256": "e715d177334f60fac75db0e9098eb4a7df84211fe34e22858730ccc7dec6dc72",
+ "cpu": 2,
+ "score": 1299525,
+ "judge_seconds": 0.388,
+ "judge_message": ""
+}

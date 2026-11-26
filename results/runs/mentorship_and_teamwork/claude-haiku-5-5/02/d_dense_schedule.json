@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "d_dense_schedule",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.02,
+ "output_bytes": 1623,
+ "output_sha256": "2c40d01b4beced95753daab06466e25d42a3e872783454760a91bee2f9495b67",
+ "cpu": 6,
+ "score": 47340,
+ "judge_seconds": 0.078,
+ "judge_message": ""
+}

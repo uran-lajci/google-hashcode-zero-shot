@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "b_short_walk",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 9.332,
+ "output_bytes": 2848356,
+ "output_sha256": "021f16a8534c6c640f20a4eab649031d2b2255093e0e229a7b13795f1a063b99",
+ "cpu": 6,
+ "score": 7492704,
+ "judge_seconds": 1.455,
+ "judge_message": ""
+}

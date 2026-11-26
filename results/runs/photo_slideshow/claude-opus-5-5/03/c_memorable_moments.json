@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "instance": "c_memorable_moments",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 2.101,
+ "output_bytes": 3894,
+ "output_sha256": "7bcea7681530fb082e96bd5da4229ec976f5a21474aeb9c282fd72d020be89a0",
+ "cpu": 10,
+ "score": 1542,
+ "judge_seconds": 0.061,
+ "judge_message": ""
+}

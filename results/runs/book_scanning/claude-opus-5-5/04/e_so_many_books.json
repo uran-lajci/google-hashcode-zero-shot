@@ -1,0 +1,15 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "e_so_many_books",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.077,
+ "output_bytes": 174389,
+ "output_sha256": "e97d8d14536db6af39f2fd4250912cfbd70e44ea344459c489955cad7b6090be",
+ "cpu": 0,
+ "score": 5042521,
+ "judge_seconds": 0.306,
+ "judge_message": ""
+}

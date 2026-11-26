@@ -1,0 +1,15 @@
+{
+ "problem": "loon",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "instance": "hashcode_2015_final_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 8.902,
+ "output_bytes": 46166,
+ "output_sha256": "648e541ab56ba7e4556cc50b6986d1774da5a23584473953591fcc2e20e9cf3f",
+ "cpu": 10,
+ "score": 510317,
+ "judge_seconds": 0.363,
+ "judge_message": ""
+}

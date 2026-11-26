@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "c_checkmate",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 7.544,
+ "output_bytes": 188043,
+ "output_sha256": "70e57ce04699d8ac8661a020a5589da44c481461239afa08af71a2f470c2dda2",
+ "cpu": 4,
+ "score": 1307682,
+ "judge_seconds": 0.43,
+ "judge_message": ""
+}

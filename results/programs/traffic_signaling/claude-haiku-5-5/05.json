@@ -1,0 +1,12 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 6751,
+ "source_sha256": "cee1fa9167089f1d7532d6c8b6cefd5e3e19b9ef2102219de37e71c9d4a8234e",
+ "compile_seconds": 2.149
+}

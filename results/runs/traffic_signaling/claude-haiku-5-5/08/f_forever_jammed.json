@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "f_forever_jammed",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.105,
+ "output_bytes": 65804,
+ "output_sha256": "cdc04c3cb86a73e6988d097941aea1cacd23da3fe7f4781d5f67f441b16cb95d",
+ "cpu": 6,
+ "score": 1325918,
+ "judge_seconds": 0.318,
+ "judge_message": ""
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2085,
+ "source_sha256": "e5d85028b24af87ca68290ad188f26876b6b80a5fd01c0bd6e032973e94e36bd",
+ "compile_seconds": 1.527
+}

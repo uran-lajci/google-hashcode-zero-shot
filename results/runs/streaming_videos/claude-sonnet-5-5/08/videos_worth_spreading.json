@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "videos_worth_spreading",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.087,
+ "output_bytes": 25049,
+ "output_sha256": "3722e1152cd0c43b67ad91d278e0161845cc45602b1d198dd078a99c3e464a83",
+ "cpu": 6,
+ "score": 608295,
+ "judge_seconds": 0.794,
+ "judge_message": ""
+}

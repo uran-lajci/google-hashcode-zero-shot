@@ -1,0 +1,10 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "d_tight_schedule",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.019,
+ "first_seconds_wall": 0.013
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "delivery",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3452,
+ "source_sha256": "3509157e188f964c224011f50e362e43bc3084b3886daff497f697c3950f0a22",
+ "compile_seconds": 2.467
+}

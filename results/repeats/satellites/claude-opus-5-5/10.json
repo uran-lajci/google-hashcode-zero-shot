@@ -1,0 +1,10 @@
+{
+ "problem": "satellites",
+ "model": "claude-opus-5-5",
+ "generation": 10,
+ "instance": "forever_alone",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.509,
+ "first_seconds_wall": 0.538
+}

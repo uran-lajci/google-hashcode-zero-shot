@@ -1,0 +1,28 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:15:16: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   15 |     int P;scanf("%d",&P);
+      |           ~~~~~^~~~~~~~~
+/source/program.cpp:17:24: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   17 |     for(auto&x:wt)scanf("%d",&x);
+      |                   ~~~~~^~~~~~~~~
+/source/program.cpp:18:16: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   18 |     int W;scanf("%d",&W);
+      |           ~~~~~^~~~~~~~~
+/source/program.cpp:23:14: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   23 |         scanf("%d %d",&wr[w],&wc[w]);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:25:24: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   25 |             int v;scanf("%d",&v);
+      |                   ~~~~~^~~~~~~~~
+/source/program.cpp:30:16: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   30 |     int N;scanf("%d",&N);
+      |           ~~~~~^~~~~~~~~
+/source/program.cpp:34:14: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   34 |         scanf("%d %d",&orr[i],&occ[i]);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:35:20: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   35 |         int L;scanf("%d",&L);
+      |               ~~~~~^~~~~~~~~
+/source/program.cpp:37:34: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   37 |         for(auto&x:items[i])scanf("%d",&x);
+      |                             ~~~~~^~~~~~~~~

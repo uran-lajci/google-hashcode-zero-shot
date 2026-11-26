@@ -1,0 +1,12 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3903,
+ "source_sha256": "a66cba9e86d3a0f79c5ad100475a749bb7590355a9f4b08cd637261e2bd7616b",
+ "compile_seconds": 1.74
+}

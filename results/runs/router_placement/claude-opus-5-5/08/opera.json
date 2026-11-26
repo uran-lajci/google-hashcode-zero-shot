@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "instance": "opera",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.785,
+ "output_bytes": 56875,
+ "output_sha256": "c4cd629d8d2e0d735d0e43640802eeb80a421a3e946c45945ec06c5c1f1b94d8",
+ "cpu": 0,
+ "score": 106134030,
+ "judge_seconds": 0.161,
+ "judge_message": ""
+}

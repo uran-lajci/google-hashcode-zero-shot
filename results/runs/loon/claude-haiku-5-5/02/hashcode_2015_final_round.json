@@ -1,0 +1,15 @@
+{
+ "problem": "loon",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "hashcode_2015_final_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.026,
+ "output_bytes": 47206,
+ "output_sha256": "67762cfaaa83e266c40cea70cdb10fc313d53dcda1fe0284491ba5c48aa947ef",
+ "cpu": 4,
+ "score": 42947,
+ "judge_seconds": 0.4,
+ "judge_message": ""
+}

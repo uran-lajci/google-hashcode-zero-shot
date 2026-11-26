@@ -1,0 +1,15 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "instance": "d_tough_choices",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.055,
+ "output_bytes": 568218,
+ "output_sha256": "3b2b185d43e3d22b00bab48a884dc6623f8b4b778805a2c22a742a0990acf1e4",
+ "cpu": 10,
+ "score": 5028530,
+ "judge_seconds": 0.475,
+ "judge_message": ""
+}

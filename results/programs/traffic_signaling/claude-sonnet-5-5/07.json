@@ -1,0 +1,12 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 4023,
+ "source_sha256": "2bda384b4ef47b5ca2bf9ae5d0f330a98763f82ccf66fadec35160b74502074e",
+ "compile_seconds": 1.93
+}

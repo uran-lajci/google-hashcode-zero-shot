@@ -1,0 +1,15 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-haiku-5-5",
+ "generation": 10,
+ "instance": "b_should_be_easy",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.01,
+ "output_bytes": 1266,
+ "output_sha256": "e5f3f911e8c2d534e07745a53c0601d0126eef893fd8a5edbef8229bb7cc15e5",
+ "cpu": 4,
+ "score": 176820,
+ "judge_seconds": 0.046,
+ "judge_message": ""
+}

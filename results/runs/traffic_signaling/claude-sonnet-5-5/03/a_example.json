@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "instance": "a_example",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 18.327,
+ "output_bytes": 90,
+ "output_sha256": "cab61fc7e1dcb16e06e029833107d5d479fa98d797cca418481a4bb0f4a3173b",
+ "cpu": 2,
+ "score": 0,
+ "judge_seconds": 0.051,
+ "judge_message": "Invalid output: line 4: found T = 8194, expected 1 to D = 6"
+}

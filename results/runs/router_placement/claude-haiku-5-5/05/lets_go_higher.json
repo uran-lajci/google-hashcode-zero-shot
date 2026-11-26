@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "instance": "lets_go_higher",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 3.461,
+ "output_bytes": 451975,
+ "output_sha256": "91525a5fb34c8e5526d68a71c739917be66ba8aee00a6382b3114785f4a74f93",
+ "cpu": 2,
+ "score": 288384292,
+ "judge_seconds": 1.175,
+ "judge_message": ""
+}

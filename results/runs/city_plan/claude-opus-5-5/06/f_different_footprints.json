@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "f_different_footprints",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 7.606,
+ "output_bytes": 4426007,
+ "output_sha256": "b24e270124a0633c499985da885c2ca6e4c5caee0672e29f5112405174f60c10",
+ "cpu": 6,
+ "score": 6536095,
+ "judge_seconds": 5.857,
+ "judge_message": ""
+}

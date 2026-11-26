@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "instance": "c_carousel",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 15.526,
+ "output_bytes": 200757,
+ "output_sha256": "5a28c4e2da4fe9a67047500da65a68be415c694e68a3e5c89e5d86e01281da71",
+ "cpu": 6,
+ "score": 719537,
+ "judge_seconds": 0.101,
+ "judge_message": ""
+}

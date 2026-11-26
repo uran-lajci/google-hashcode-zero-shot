@@ -1,0 +1,10 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 2,
+ "instance": "c_going_green",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 6.248,
+ "first_seconds_wall": 6.763
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "opera",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.526,
+ "first_seconds_wall": 0.48
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "kittens",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 5.961,
+ "output_bytes": 53910,
+ "output_sha256": "66bb3f1f6e5c2fe1e7efdbce8cb96b27d2020c999bf6f5f933340089afbfac91",
+ "cpu": 4,
+ "score": 1021979,
+ "judge_seconds": 1.83,
+ "judge_message": ""
+}

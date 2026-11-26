@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "f_festive_flyover",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.159,
+ "output_bytes": 91694,
+ "output_sha256": "1454bcc076ea0ae075d92e7f89d009125b1f39007387512464ac70490cc5ea83",
+ "cpu": 10,
+ "score": 340691,
+ "judge_seconds": 0.088,
+ "judge_message": ""
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "instance": "hashcode_2015_qualification_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.371,
+ "output_bytes": 4239,
+ "output_sha256": "4b9e2ea4d06623d116566b2d811c33ac3fec6a7a10001e9b2897e8cb3794b4e5",
+ "cpu": 4,
+ "score": 402,
+ "judge_seconds": 0.05,
+ "judge_message": ""
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 7,
+ "instance": "e_excellent_weather",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 1.304,
+ "first_seconds_wall": 1.185
+}

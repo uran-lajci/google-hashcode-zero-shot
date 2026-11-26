@@ -1,0 +1,12 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5388,
+ "source_sha256": "ab086fd12f0fa89b03c414a741d07ccde5dda1dac6b2310333e7dc30babb8045",
+ "compile_seconds": 1.866
+}

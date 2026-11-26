@@ -1,0 +1,10 @@
+{
+ "problem": "router_placement",
+ "model": "claude-haiku-5-5",
+ "generation": 10,
+ "instance": "rue_de_londres",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.38,
+ "first_seconds_wall": 0.206
+}

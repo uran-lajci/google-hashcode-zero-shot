@@ -1,0 +1,16 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:6:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+    6 |     scanf("%d %d %d",&C,&T,&S);
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:15:14: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   15 |         scanf("%s %lld %lld",buf,&a,&b);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:17:20: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   17 |         int n;scanf("%d",&n);
+      |               ~~~~~^~~~~~~~~
+/source/program.cpp:19:18: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   19 |             scanf("%s",buf);
+      |             ~~~~~^~~~~~~~~~
+/source/program.cpp:27:14: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   27 |         scanf("%s %lld %lld",buf,&d,&g);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-haiku-5-5",
+ "generation": 9,
+ "instance": "b_lovely_landscapes",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.203,
+ "output_bytes": 468896,
+ "output_sha256": "18055f5181bc4eedadfdb89c3d47520de93d9cdb40d901d1bfcbf41c5adef1d9",
+ "cpu": 4,
+ "score": 203709,
+ "judge_seconds": 2.268,
+ "judge_message": ""
+}

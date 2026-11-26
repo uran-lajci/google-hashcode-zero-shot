@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "instance": "b_breadth_of_choice",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.018,
+ "output_bytes": 4955,
+ "output_sha256": "c346ee871828e4655b60358d4c56c87408b333228366a53bdbb3d9053db39575",
+ "cpu": 2,
+ "score": 11444350,
+ "judge_seconds": 0.083,
+ "judge_message": ""
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "instance": "d_daily_commute",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 9.051,
+ "first_seconds_wall": 9.084
+}

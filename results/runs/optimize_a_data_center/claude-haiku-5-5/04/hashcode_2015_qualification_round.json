@@ -1,0 +1,15 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-haiku-5-5",
+ "generation": 4,
+ "instance": "hashcode_2015_qualification_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.01,
+ "output_bytes": 3864,
+ "output_sha256": "6c7ef9ea860512fa5c6191fd8da240934400bad981f0e4675f072a3ec37316da",
+ "cpu": 0,
+ "score": 364,
+ "judge_seconds": 0.054,
+ "judge_message": ""
+}

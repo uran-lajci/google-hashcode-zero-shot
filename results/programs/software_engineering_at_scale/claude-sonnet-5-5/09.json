@@ -1,0 +1,12 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 1974,
+ "source_sha256": "46cc53af240627ffb0b7f45401c8a831edbdd012341a9528f51e750efc7bed66",
+ "compile_seconds": 2.032
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "instance": "e_dense_workspace",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.242,
+ "output_bytes": 140020,
+ "output_sha256": "aa02c411153a8b69e419faa17ba3a2d5c9d0ade0b83bdab7d199c796fcd04503",
+ "cpu": 4,
+ "score": 0,
+ "judge_seconds": 0.065,
+ "judge_message": "Invalid output: line 28: in step 7, the arm expands to [88, 90], which the arm mounted at [93, 89] occupies"
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3314,
+ "source_sha256": "37cd3a8e5bcf881f5e14ec446983554362cbfa6bdf20c6b66037ffcd9f90d1c0",
+ "compile_seconds": 2.306
+}

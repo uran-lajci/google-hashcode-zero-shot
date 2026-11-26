@@ -1,0 +1,39 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:94:30: error: call of overloaded 'fdiv(int, const int&)' is ambiguous
+   94 |             long long c0=fdiv(lo-d+648000,G),c1=fdiv(lo+d+648000,G);
+      |                          ~~~~^~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/cmath:47,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:114,
+                 from /source/program.cpp:1:
+/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:27:20: note: candidate: 'float fdiv(double, double)'
+   27 | __MATHCALL_NARROW (__MATHCALL_NAME (div), __MATHCALL_REDIR_NAME (div), 2);
+      |                    ^~~~~~~~~~~~~~~
+/source/program.cpp:20:25: note: candidate: 'long long int fdiv(long long int, long long int)'
+   20 | static inline long long fdiv(long long a,long long b){ long long q=a/b; if((a%b!=0)&&((a<0)!=(b<0)))q--; return q;}
+      |                         ^~~~
+/source/program.cpp:95:16: error: 'c1' was not declared in this scope; did you mean 'c0'?
+   95 |             if(c1-c0+1>NC)c1=c0+NC-1;
+      |                ^~
+      |                c0
+/source/program.cpp:98:41: error: 'c1' was not declared in this scope; did you mean 'cc'?
+   98 |                 for(long long cc=c0;cc<=c1;cc++){
+      |                                         ^~
+      |                                         cc
+/source/program.cpp:27:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   27 |     scanf("%d",&S);
+      |     ~~~~~^~~~~~~~~
+/source/program.cpp:29:26: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   29 |     for(auto&s:sats)scanf("%d %d %d %d %d",&s.la,&s.lo,&s.v,&s.w,&s.d);
+      |                     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:30:17: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   30 |     int C; scanf("%d",&C);
+      |            ~~~~~^~~~~~~~~
+/source/program.cpp:35:25: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   35 |         int V,L,R; scanf("%d %d %d",&V,&L,&R);
+      |                    ~~~~~^~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:38:27: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   38 |             int a,b; scanf("%d %d",&a,&b);
+      |                      ~~~~~^~~~~~~~~~~~~~~
+/source/program.cpp:46:43: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   46 |         for(int j=0;j<R;j++){int a,b;scanf("%d %d",&a,&b);colls[i].ranges.push_back({a,b});}
+      |                                      ~~~~~^~~~~~~~~~~~~~~

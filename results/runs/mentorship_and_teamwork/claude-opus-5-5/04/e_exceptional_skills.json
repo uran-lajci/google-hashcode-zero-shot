@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "e_exceptional_skills",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 8.611,
+ "output_bytes": 37220,
+ "output_sha256": "87074c14a7f0491a16db62669cf8a382dfe9be8a0008ee625c6a0acee9b57c2a",
+ "cpu": 2,
+ "score": 295235,
+ "judge_seconds": 0.265,
+ "judge_message": ""
+}

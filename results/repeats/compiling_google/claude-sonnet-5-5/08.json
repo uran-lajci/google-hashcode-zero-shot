@@ -1,0 +1,10 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "c_urgent",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.016,
+ "first_seconds_wall": 0.016
+}

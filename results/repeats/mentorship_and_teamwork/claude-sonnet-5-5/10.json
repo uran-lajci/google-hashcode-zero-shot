@@ -1,0 +1,10 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "instance": "e_exceptional_skills",
+ "same_output": false,
+ "state": "finished",
+ "seconds_wall": 7.531,
+ "first_seconds_wall": 7.532
+}

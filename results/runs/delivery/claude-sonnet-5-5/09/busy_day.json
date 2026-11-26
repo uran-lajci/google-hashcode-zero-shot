@@ -1,0 +1,15 @@
+{
+ "problem": "delivery",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "instance": "busy_day",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.019,
+ "output_bytes": 250697,
+ "output_sha256": "1d7801447b105b6018a950b54faa90b9fd5d578c467355e71854287b2f293683",
+ "cpu": 0,
+ "score": 99294,
+ "judge_seconds": 0.26,
+ "judge_message": ""
+}

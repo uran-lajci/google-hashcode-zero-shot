@@ -1,0 +1,15 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "videos_worth_spreading",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 2.365,
+ "output_bytes": 24579,
+ "output_sha256": "2d85832e3f7598655c6344c4dc7b2a58260f5782eaf29ee28c7169c5d09dc57b",
+ "cpu": 10,
+ "score": 610374,
+ "judge_seconds": 0.77,
+ "judge_message": ""
+}

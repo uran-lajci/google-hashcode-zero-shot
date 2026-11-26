@@ -1,0 +1,12 @@
+{
+ "problem": "city_plan",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "state": "compile_error",
+ "reason": "g++ fails",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3018,
+ "source_sha256": "fa5e9431cf86877b32149d31415004c4efb24044351bb07417c16d168b6496f4",
+ "compile_seconds": 1.267
+}

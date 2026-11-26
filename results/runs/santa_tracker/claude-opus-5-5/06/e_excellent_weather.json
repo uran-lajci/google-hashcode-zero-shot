@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "e_excellent_weather",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.037,
+ "output_bytes": 72523,
+ "output_sha256": "beea72590e8041175da35a182b7a29df08d9c09a45a2ee931a154d9ebe54fafb",
+ "cpu": 0,
+ "score": 240583,
+ "judge_seconds": 0.09,
+ "judge_message": ""
+}

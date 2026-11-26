@@ -1,0 +1,12 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 7836,
+ "source_sha256": "5f7fb22baae226d242d28bb3c539d773fcc3f0586e32628ad8e18bf121585ffc",
+ "compile_seconds": 2.337
+}

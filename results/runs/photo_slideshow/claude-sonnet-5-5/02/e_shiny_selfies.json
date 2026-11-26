@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "e_shiny_selfies",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 2.242,
+ "output_bytes": 468896,
+ "output_sha256": "d646839fd9793185f9a0a4eeef6a65d86192e8c60d57eb857b9ab13bea89a331",
+ "cpu": 8,
+ "score": 316241,
+ "judge_seconds": 2.156,
+ "judge_message": ""
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 4216,
+ "source_sha256": "7ddcce16317a41b7362a17ba343cd62e43660f11887527f29643d5bab34e83e5",
+ "compile_seconds": 1.897
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "opera",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.563,
+ "output_bytes": 123519,
+ "output_sha256": "0114fcd41ce3328478ae59861227ad8e6fb8e9fe75eec12f7d0cb0600c085eaf",
+ "cpu": 0,
+ "score": 106447010,
+ "judge_seconds": 0.177,
+ "judge_message": ""
+}

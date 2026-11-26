@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-opus-5-5",
+ "generation": 2,
+ "instance": "d_dense_schedule",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.027,
+ "output_bytes": 10440,
+ "output_sha256": "143b164cfdb3a141f24ebb83b4124a73464d2f06a22e746c1232da7507f42f32",
+ "cpu": 6,
+ "score": 251751,
+ "judge_seconds": 0.083,
+ "judge_message": ""
+}

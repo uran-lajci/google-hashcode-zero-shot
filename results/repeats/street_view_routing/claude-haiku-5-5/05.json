@@ -1,0 +1,10 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-haiku-5-5",
+ "generation": 5,
+ "instance": "hashcode_2014_final_round",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 17.794,
+ "first_seconds_wall": 17.083
+}

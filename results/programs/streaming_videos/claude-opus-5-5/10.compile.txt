@@ -1,0 +1,332 @@
+In file included from /usr/include/c++/13/queue:66,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:157,
+                 from /source/program.cpp:1:
+/usr/include/c++/13/bits/stl_queue.h: In instantiation of 'void std::priority_queue<_Tp, _Sequence, _Compare>::swap(std::priority_queue<_Tp, _Sequence, _Compare>&) [with _Tp = main()::Ent; _Sequence = std::vector<main()::Ent>; _Compare = main()::<lambda(const main()::Ent&, const main()::Ent&)>]':
+/source/program.cpp:68:37:   required from here
+/usr/include/c++/13/bits/stl_queue.h:794:13: error: no matching function for call to 'swap(main()::<lambda(const main()::Ent&, const main()::Ent&)>&, main()::<lambda(const main()::Ent&, const main()::Ent&)>&)'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:77:
+/usr/include/c++/13/any:429:15: note: candidate: 'void std::swap(any&, any&)' (near match)
+  429 |   inline void swap(any& __x, any& __y) noexcept { __x.swap(__y); }
+      |               ^~~~
+/usr/include/c++/13/any:429:15: note:   conversion of argument 2 would be ill-formed:
+/usr/include/c++/13/bits/stl_queue.h:794:25: error: cannot bind non-const lvalue reference of type 'std::any&' to an rvalue of type 'std::any'
+  794 |         swap(comp, __pq.comp);
+      |                    ~~~~~^~~~
+/usr/include/c++/13/any:190:7: note:   after user-defined conversion: 'std::any::any(_Tp&&) [with _Tp = main()::<lambda(const main()::Ent&, const main()::Ent&)>&; _VTp = main()::<lambda(const main()::Ent&, const main()::Ent&)>; _Mgr = _Manager_internal<main()::<lambda(const main()::Ent&, const main()::Ent&)> >; typename std::enable_if<(is_copy_constructible_v<_VTp> && (! __is_in_place_type_v<_VTp>)), bool>::type <anonymous> = true]'
+  190 |       any(_Tp&& __value)
+      |       ^~~
+In file included from /usr/include/c++/13/exception:164,
+                 from /usr/include/c++/13/stdexcept:38,
+                 from /usr/include/c++/13/system_error:43,
+                 from /usr/include/c++/13/bits/ios_base.h:46,
+                 from /usr/include/c++/13/streambuf:43,
+                 from /usr/include/c++/13/bits/streambuf_iterator.h:35,
+                 from /usr/include/c++/13/iterator:66,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:54:
+/usr/include/c++/13/bits/exception_ptr.h:230:5: note: candidate: 'void std::__exception_ptr::swap(exception_ptr&, exception_ptr&)'
+  230 |     swap(exception_ptr& __lhs, exception_ptr& __rhs)
+      |     ^~~~
+/usr/include/c++/13/bits/exception_ptr.h:230:25: note:   no known conversion for argument 1 from 'main()::<lambda(const main()::Ent&, const main()::Ent&)>' to 'std::__exception_ptr::exception_ptr&'
+  230 |     swap(exception_ptr& __lhs, exception_ptr& __rhs)
+      |          ~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/13/complex:45,
+                 from /usr/include/c++/13/ccomplex:39,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:127:
+/usr/include/c++/13/sstream:1226:5: note: candidate: 'template<class _CharT, class _Traits, class _Allocator> void std::__cxx11::swap(basic_stringstream<_CharT, _Traits, _Allocator>&, basic_stringstream<_CharT, _Traits, _Allocator>&)'
+ 1226 |     swap(basic_stringstream<_CharT, _Traits, _Allocator>& __x,
+      |     ^~~~
+/usr/include/c++/13/sstream:1226:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__cxx11::basic_stringstream<_CharT, _Traits, _Allocator>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/sstream:1219:5: note: candidate: 'template<class _CharT, class _Traits, class _Allocator> void std::__cxx11::swap(basic_ostringstream<_CharT, _Traits, _Allocator>&, basic_ostringstream<_CharT, _Traits, _Allocator>&)'
+ 1219 |     swap(basic_ostringstream<_CharT, _Traits, _Allocator>& __x,
+      |     ^~~~
+/usr/include/c++/13/sstream:1219:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__cxx11::basic_ostringstream<_CharT, _Traits, _Allocator>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/sstream:1212:5: note: candidate: 'template<class _CharT, class _Traits, class _Allocator> void std::__cxx11::swap(basic_istringstream<_CharT, _Traits, _Allocator>&, basic_istringstream<_CharT, _Traits, _Allocator>&)'
+ 1212 |     swap(basic_istringstream<_CharT, _Traits, _Allocator>& __x,
+      |     ^~~~
+/usr/include/c++/13/sstream:1212:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__cxx11::basic_istringstream<_CharT, _Traits, _Allocator>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/sstream:1204:5: note: candidate: 'template<class _CharT, class _Traits, class _Allocator> void std::__cxx11::swap(basic_stringbuf<_CharT, _Traits, _Alloc>&, basic_stringbuf<_CharT, _Traits, _Alloc>&)'
+ 1204 |     swap(basic_stringbuf<_CharT, _Traits, _Allocator>& __x,
+      |     ^~~~
+/usr/include/c++/13/sstream:1204:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__cxx11::basic_stringbuf<_CharT, _Traits, _Alloc>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_queue.h:447:5: note: candidate: 'template<class _Tp, class _Seq> typename std::enable_if<std::__is_swappable<_T2>::value>::type std::swap(queue<_Tp, _Seq>&, queue<_Tp, _Seq>&)'
+  447 |     swap(queue<_Tp, _Seq>& __x, queue<_Tp, _Seq>& __y)
+      |     ^~~~
+/usr/include/c++/13/bits/stl_queue.h:447:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::queue<_Tp, _Seq>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/map:64,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:152:
+/usr/include/c++/13/bits/stl_multimap.h:1208:5: note: candidate: 'template<class _Key, class _Tp, class _Compare, class _Alloc> void std::swap(multimap<_Key, _Tp, _Compare, _Allocator>&, multimap<_Key, _Tp, _Compare, _Allocator>&)'
+ 1208 |     swap(multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~
+/usr/include/c++/13/bits/stl_multimap.h:1208:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::multimap<_Key, _Tp, _Compare, _Allocator>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/map:63:
+/usr/include/c++/13/bits/stl_map.h:1587:5: note: candidate: 'template<class _Key, class _Tp, class _Compare, class _Alloc> void std::swap(map<_Key, _Tp, _Compare, _Allocator>&, map<_Key, _Tp, _Compare, _Allocator>&)'
+ 1587 |     swap(map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~
+/usr/include/c++/13/bits/stl_map.h:1587:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::map<_Key, _Tp, _Compare, _Allocator>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/map:62:
+/usr/include/c++/13/bits/stl_tree.h:1679:5: note: candidate: 'template<class _Key, class _Val, class _KeyOfValue, class _Compare, class _Alloc> void std::swap(_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&, _Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&)'
+ 1679 |     swap(_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>& __x,
+      |     ^~~~
+/usr/include/c++/13/bits/stl_tree.h:1679:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/list:65,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:150:
+/usr/include/c++/13/bits/stl_list.h:2216:5: note: candidate: 'template<class _Tp, class _Alloc> void std::swap(__cxx11::list<_Tp, _Alloc>&, __cxx11::list<_Tp, _Alloc>&)'
+ 2216 |     swap(list<_Tp, _Alloc>& __x, list<_Tp, _Alloc>& __y)
+      |     ^~~~
+/usr/include/c++/13/bits/stl_list.h:2216:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__cxx11::list<_Tp, _Alloc>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:141:
+/usr/include/c++/13/fstream:1292:5: note: candidate: 'template<class _CharT, class _Traits> void std::swap(basic_fstream<_CharT, _Traits>&, basic_fstream<_CharT, _Traits>&)'
+ 1292 |     swap(basic_fstream<_CharT, _Traits>& __x,
+      |     ^~~~
+/usr/include/c++/13/fstream:1292:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::basic_fstream<_CharT, _Traits>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/fstream:1285:5: note: candidate: 'template<class _CharT, class _Traits> void std::swap(basic_ofstream<_CharT, _Traits>&, basic_ofstream<_CharT, _Traits>&)'
+ 1285 |     swap(basic_ofstream<_CharT, _Traits>& __x,
+      |     ^~~~
+/usr/include/c++/13/fstream:1285:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::basic_ofstream<_CharT, _Traits>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/fstream:1278:5: note: candidate: 'template<class _CharT, class _Traits> void std::swap(basic_ifstream<_CharT, _Traits>&, basic_ifstream<_CharT, _Traits>&)'
+ 1278 |     swap(basic_ifstream<_CharT, _Traits>& __x,
+      |     ^~~~
+/usr/include/c++/13/fstream:1278:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::basic_ifstream<_CharT, _Traits>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/fstream:1271:5: note: candidate: 'template<class _CharT, class _Traits> void std::swap(basic_filebuf<_CharT, _Traits>&, basic_filebuf<_CharT, _Traits>&)'
+ 1271 |     swap(basic_filebuf<_CharT, _Traits>& __x,
+      |     ^~~~
+/usr/include/c++/13/fstream:1271:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::basic_filebuf<_CharT, _Traits>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/deque:66,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:139:
+/usr/include/c++/13/bits/stl_deque.h:2366:5: note: candidate: 'template<class _Tp, class _Alloc> void std::swap(deque<_Tp, _Alloc>&, deque<_Tp, _Alloc>&)'
+ 2366 |     swap(deque<_Tp,_Alloc>& __x, deque<_Tp,_Alloc>& __y)
+      |     ^~~~
+/usr/include/c++/13/bits/stl_deque.h:2366:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::deque<_Tp, _Alloc>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:80:
+/usr/include/c++/13/variant:1327:5: note: candidate: 'template<class ... _Types> std::enable_if_t<(!((is_move_constructible_v<_Types> && ...) && (is_swappable_v<_Types> && ...)))> std::swap(variant<_Types ...>&, variant<_Types ...>&)' (deleted)
+ 1327 |     swap(variant<_Types...>&, variant<_Types...>&) = delete;
+      |     ^~~~
+/usr/include/c++/13/variant:1327:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::variant<_Types ...>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1320:5: note: candidate: 'template<class ... _Types> std::enable_if_t<((is_move_constructible_v<_Types> && ...) && (is_swappable_v<_Types> && ...))> std::swap(variant<_Types ...>&, variant<_Types ...>&)'
+ 1320 |     swap(variant<_Types...>& __lhs, variant<_Types...>& __rhs)
+      |     ^~~~
+/usr/include/c++/13/variant:1320:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::variant<_Types ...>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:79:
+/usr/include/c++/13/optional:1456:5: note: candidate: 'template<class _Tp> std::enable_if_t<(!(is_move_constructible_v<_Tp> && is_swappable_v<_Tp>))> std::swap(optional<_Tp>&, optional<_Tp>&)' (deleted)
+ 1456 |     swap(optional<_Tp>&, optional<_Tp>&) = delete;
+      |     ^~~~
+/usr/include/c++/13/optional:1456:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::optional<_Tp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/optional:1450:5: note: candidate: 'template<class _Tp> std::enable_if_t<(is_move_constructible_v<_Tp> && is_swappable_v<_Tp>)> std::swap(optional<_Tp>&, optional<_Tp>&)'
+ 1450 |     swap(optional<_Tp>& __lhs, optional<_Tp>& __rhs)
+      |     ^~~~
+/usr/include/c++/13/optional:1450:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::optional<_Tp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:80,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:56:
+/usr/include/c++/13/bits/shared_ptr.h:888:5: note: candidate: 'template<class _Tp> void std::swap(weak_ptr<_Tp>&, weak_ptr<_Tp>&)'
+  888 |     swap(weak_ptr<_Tp>& __a, weak_ptr<_Tp>& __b) noexcept
+      |     ^~~~
+/usr/include/c++/13/bits/shared_ptr.h:888:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::weak_ptr<_Tp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:692:5: note: candidate: 'template<class _Tp> void std::swap(shared_ptr<_Tp>&, shared_ptr<_Tp>&)'
+  692 |     swap(shared_ptr<_Tp>& __a, shared_ptr<_Tp>& __b) noexcept
+      |     ^~~~
+/usr/include/c++/13/bits/shared_ptr.h:692:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::shared_ptr<_Tp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/shared_ptr.h:53:
+/usr/include/c++/13/bits/shared_ptr_base.h:2126:5: note: candidate: 'template<class _Tp, __gnu_cxx::_Lock_policy _Lp> void std::swap(__weak_ptr<_Tp, _Lp>&, __weak_ptr<_Tp, _Lp>&)'
+ 2126 |     swap(__weak_ptr<_Tp, _Lp>& __a, __weak_ptr<_Tp, _Lp>& __b) noexcept
+      |     ^~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:2126:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__weak_ptr<_Tp, _Lp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1917:5: note: candidate: 'template<class _Tp, __gnu_cxx::_Lock_policy _Lp> void std::swap(__shared_ptr<_Tp, _Lp>&, __shared_ptr<_Tp, _Lp>&)'
+ 1917 |     swap(__shared_ptr<_Tp, _Lp>& __a, __shared_ptr<_Tp, _Lp>& __b) noexcept
+      |     ^~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1917:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__shared_ptr<_Tp, _Lp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/memory:78:
+/usr/include/c++/13/bits/unique_ptr.h:820:5: note: candidate: 'template<class _Tp, class _Dp> typename std::enable_if<(! std::__is_swappable<_T2>::value)>::type std::swap(unique_ptr<_Tp, _Dp>&, unique_ptr<_Tp, _Dp>&)' (deleted)
+  820 |     swap(unique_ptr<_Tp, _Dp>&,
+      |     ^~~~
+/usr/include/c++/13/bits/unique_ptr.h:820:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::unique_ptr<_Tp, _Dp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:813:5: note: candidate: 'template<class _Tp, class _Dp> typename std::enable_if<std::__is_swappable<_T2>::value>::type std::swap(unique_ptr<_Tp, _Dp>&, unique_ptr<_Tp, _Dp>&)'
+  813 |     swap(unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~
+/usr/include/c++/13/bits/unique_ptr.h:813:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::unique_ptr<_Tp, _Dp>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/functional:65,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:53:
+/usr/include/c++/13/array:378:5: note: candidate: 'template<class _Tp, long unsigned int _Nm> std::__enable_if_t<(! typename std::__array_traits<_Tp, _Nm>::_Is_swappable::value)> std::swap(array<_Tp, _Nm>&, array<_Tp, _Nm>&)' (deleted)
+  378 |     swap(array<_Tp, _Nm>&, array<_Tp, _Nm>&) = delete;
+      |     ^~~~
+/usr/include/c++/13/array:378:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::array<_Tp, _Nm>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/array:371:5: note: candidate: 'template<class _Tp, long unsigned int _Nm> std::__enable_if_t<typename std::__array_traits<_Tp, _Nm>::_Is_swappable::value> std::swap(array<_Tp, _Nm>&, array<_Tp, _Nm>&)'
+  371 |     swap(array<_Tp, _Nm>& __one, array<_Tp, _Nm>& __two)
+      |     ^~~~
+/usr/include/c++/13/array:371:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::array<_Tp, _Nm>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /usr/include/c++/13/functional:64:
+/usr/include/c++/13/bits/stl_vector.h:2112:5: note: candidate: 'template<class _Tp, class _Alloc> void std::swap(vector<_Tp, _Alloc>&, vector<_Tp, _Alloc>&)'
+ 2112 |     swap(vector<_Tp, _Alloc>& __x, vector<_Tp, _Alloc>& __y)
+      |     ^~~~
+/usr/include/c++/13/bits/stl_vector.h:2112:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::vector<_Tp, _Alloc>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/unordered_map:41,
+                 from /usr/include/c++/13/functional:63:
+/usr/include/c++/13/bits/unordered_map.h:2136:5: note: candidate: 'template<class _Key, class _Tp, class _Hash, class _Pred, class _Alloc> void std::swap(unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)'
+ 2136 |     swap(unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~
+/usr/include/c++/13/bits/unordered_map.h:2136:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2129:5: note: candidate: 'template<class _Key, class _Tp, class _Hash, class _Pred, class _Alloc> void std::swap(unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)'
+ 2129 |     swap(unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~
+/usr/include/c++/13/bits/unordered_map.h:2129:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/functional:59:
+/usr/include/c++/13/bits/std_function.h:776:5: note: candidate: 'template<class _Res, class ... _Args> void std::swap(function<_Res(_ArgTypes ...)>&, function<_Res(_ArgTypes ...)>&)'
+  776 |     swap(function<_Res(_Args...)>& __x, function<_Res(_Args...)>& __y) noexcept
+      |     ^~~~
+/usr/include/c++/13/bits/std_function.h:776:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::function<_Res(_ArgTypes ...)>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/memory_resource.h:47,
+                 from /usr/include/c++/13/string:58,
+                 from /usr/include/c++/13/bitset:52,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:52:
+/usr/include/c++/13/tuple:2201:5: note: candidate: 'template<class ... _Elements> typename std::enable_if<(! std::__and_<std::__is_swappable<_Elements>...>::value)>::type std::swap(tuple<_UTypes ...>&, tuple<_UTypes ...>&)' (deleted)
+ 2201 |     swap(tuple<_Elements...>&, tuple<_Elements...>&) = delete;
+      |     ^~~~
+/usr/include/c++/13/tuple:2201:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::tuple<_UTypes ...>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/tuple:2183:5: note: candidate: 'template<class ... _Elements> typename std::enable_if<std::__and_<std::__is_swappable<_Elements>...>::value>::type std::swap(tuple<_UTypes ...>&, tuple<_UTypes ...>&)'
+ 2183 |     swap(tuple<_Elements...>& __x, tuple<_Elements...>& __y)
+      |     ^~~~
+/usr/include/c++/13/tuple:2183:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::tuple<_UTypes ...>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/string:54:
+/usr/include/c++/13/bits/basic_string.h:3994:5: note: candidate: 'template<class _CharT, class _Traits, class _Alloc> void std::swap(__cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&)'
+ 3994 |     swap(basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~
+/usr/include/c++/13/bits/basic_string.h:3994:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::__cxx11::basic_string<_CharT, _Traits, _Allocator>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/algorithm:60,
+                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:51:
+/usr/include/c++/13/bits/stl_pair.h:896:5: note: candidate: 'template<class _T1, class _T2> typename std::enable_if<(! std::__and_<std::__is_swappable<_T1>, std::__is_swappable<_T2> >::value)>::type std::swap(pair<_T1, _T2>&, pair<_T1, _T2>&)' (deleted)
+  896 |     swap(pair<_T1, _T2>&, pair<_T1, _T2>&) = delete;
+      |     ^~~~
+/usr/include/c++/13/bits/stl_pair.h:896:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::pair<_T1, _T2>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:879:5: note: candidate: 'template<class _T1, class _T2> typename std::enable_if<std::__and_<std::__is_swappable<_T1>, std::__is_swappable<_T2> >::value>::type std::swap(pair<_T1, _T2>&, pair<_T1, _T2>&)'
+  879 |     swap(pair<_T1, _T2>& __x, pair<_T1, _T2>& __y)
+      |     ^~~~
+/usr/include/c++/13/bits/stl_pair.h:879:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   'main()::<lambda(const main()::Ent&, const main()::Ent&)>' is not derived from 'std::pair<_T1, _T2>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_pair.h:61:
+/usr/include/c++/13/bits/move.h:213:5: note: candidate: 'template<class _Tp, long unsigned int _Nm> std::__enable_if_t<std::__is_swappable<_Tp>::value> std::swap(_Tp (&)[_Nm], _Tp (&)[_Nm])'
+  213 |     swap(_Tp (&__a)[_Nm], _Tp (&__b)[_Nm])
+      |     ^~~~
+/usr/include/c++/13/bits/move.h:213:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_queue.h:794:13: note:   mismatched types '_Tp [_Nm]' and 'main()::<lambda(const main()::Ent&, const main()::Ent&)>'
+  794 |         swap(comp, __pq.comp);
+      |         ~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/move.h:189:5: note: candidate: 'template<class _Tp> std::_Require<std::__not_<std::__is_tuple_like<_Tp> >, std::is_move_constructible<_Tp>, std::is_move_assignable<_Tp> > std::swap(_Tp&, _Tp&)'
+  189 |     swap(_Tp& __a, _Tp& __b)
+      |     ^~~~
+/usr/include/c++/13/bits/move.h:189:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/13/bits/stl_pair.h:60:
+/usr/include/c++/13/type_traits: In substitution of 'template<bool _Cond, class _Tp> using std::__enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]':
+/usr/include/c++/13/type_traits:2224:11:   required by substitution of 'template<class ... _Cond> using std::_Require = std::__enable_if_t<std::__and_<_Bn>::value> [with _Cond = {std::__not_<std::__is_tuple_like<main()::<lambda(const main()::Ent&, const main()::Ent&)> > >, std::is_move_constructible<main()::<lambda(const main()::Ent&, const main()::Ent&)> >, std::is_move_assignable<main()::<lambda(const main()::Ent&, const main()::Ent&)> >}]'
+/usr/include/c++/13/bits/move.h:189:5:   required by substitution of 'template<class _Tp> std::_Require<std::__not_<std::__is_tuple_like<_Tp> >, std::is_move_constructible<_Tp>, std::is_move_assignable<_Tp> > std::swap(_Tp&, _Tp&) [with _Tp = main()::<lambda(const main()::Ent&, const main()::Ent&)>]'
+/usr/include/c++/13/bits/stl_queue.h:794:6:   required from 'void std::priority_queue<_Tp, _Sequence, _Compare>::swap(std::priority_queue<_Tp, _Sequence, _Compare>&) [with _Tp = main()::Ent; _Sequence = std::vector<main()::Ent>; _Compare = main()::<lambda(const main()::Ent&, const main()::Ent&)>]'
+/source/program.cpp:68:37:   required from here
+/usr/include/c++/13/type_traits:116:11: error: no type named 'type' in 'struct std::enable_if<false, void>'
+  116 |     using __enable_if_t = typename enable_if<_Cond, _Tp>::type;
+      |           ^~~~~~~~~~~~~

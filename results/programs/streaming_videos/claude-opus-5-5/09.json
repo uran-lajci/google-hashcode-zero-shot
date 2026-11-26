@@ -1,0 +1,12 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5292,
+ "source_sha256": "ef26426487989542f811b49debef985666d346f3335b992bfc1465132285e955",
+ "compile_seconds": 2.113
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "forever_alone",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.026,
+ "output_bytes": 8192,
+ "output_sha256": "9c195088d72ebc30a4e359251788f430122aa07245a34862bd111f419ec06a8f",
+ "cpu": 10,
+ "score": 0,
+ "judge_seconds": 0.058,
+ "judge_message": "Invalid output: line 6: satellite 0 needs the orientation [-4091, 645579] at turn 2713, expected each value from -4197 to 4197"
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "f_libraries_of_the_world",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.061,
+ "first_seconds_wall": 0.059
+}

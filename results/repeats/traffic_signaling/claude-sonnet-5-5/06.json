@@ -1,0 +1,10 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "f_forever_jammed",
+ "same_output": false,
+ "state": "finished",
+ "seconds_wall": 4.33,
+ "first_seconds_wall": 4.583
+}

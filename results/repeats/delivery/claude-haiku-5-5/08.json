@@ -1,0 +1,10 @@
+{
+ "problem": "delivery",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "mother_of_all_warehouses",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.016,
+ "first_seconds_wall": 0.015
+}

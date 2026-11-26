@@ -1,0 +1,12 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-haiku-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 2295,
+ "source_sha256": "fc6014cb88ae90518fa2ccecfad2430d963cb1ffea955d442f431177ca5922ee",
+ "compile_seconds": 1.521
+}

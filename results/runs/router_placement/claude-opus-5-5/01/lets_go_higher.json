@@ -1,0 +1,15 @@
+{
+ "problem": "router_placement",
+ "model": "claude-opus-5-5",
+ "generation": 1,
+ "instance": "lets_go_higher",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 15.946,
+ "output_bytes": 220923,
+ "output_sha256": "524b89ca9bfc7308ed2b1e4d6ba2e1e7879800b28ad5a9315b7635456feea1c2",
+ "cpu": 0,
+ "score": 290169047,
+ "judge_seconds": 0.541,
+ "judge_message": ""
+}

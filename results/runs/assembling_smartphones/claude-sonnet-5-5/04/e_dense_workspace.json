@@ -1,0 +1,15 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "instance": "e_dense_workspace",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.511,
+ "output_bytes": 20425,
+ "output_sha256": "42860153ebf3d33ea6cf9a77e3fe2dbc4f4065b96698b3204fce8403ffe668fb",
+ "cpu": 6,
+ "score": 125933,
+ "judge_seconds": 0.073,
+ "judge_message": ""
+}

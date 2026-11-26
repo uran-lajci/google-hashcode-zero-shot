@@ -1,0 +1,10 @@
+{
+ "problem": "city_plan",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "instance": "f_different_footprints",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.357,
+ "first_seconds_wall": 0.348
+}

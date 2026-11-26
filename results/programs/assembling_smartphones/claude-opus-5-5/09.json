@@ -1,0 +1,12 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 9777,
+ "source_sha256": "b78dcbcf20d382c012fd19ec2fcee7bdcd6d0b994b0dfa7267da67aa17b62a13",
+ "compile_seconds": 2.328
+}

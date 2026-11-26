@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "e_shiny_selfies",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.826,
+ "output_bytes": 468896,
+ "output_sha256": "966a5bc4313bc2f263af661fe46a819d45e7ac1cfa6d5d5c87e8e6a698adee61",
+ "cpu": 4,
+ "score": 326199,
+ "judge_seconds": 2.055,
+ "judge_message": ""
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "c_few_arms",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 3.297,
+ "first_seconds_wall": 3.458
+}

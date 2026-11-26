@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "e_excellent_weather",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.029,
+ "output_bytes": 23029,
+ "output_sha256": "eedbb5e6d330db3b675320b3ea573cca1e90b528e46c368b48111ae1352f446b",
+ "cpu": 0,
+ "score": 87157,
+ "judge_seconds": 0.084,
+ "judge_message": ""
+}

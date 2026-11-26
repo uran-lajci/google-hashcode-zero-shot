@@ -1,0 +1,10 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-haiku-5-5",
+ "generation": 6,
+ "instance": "f_decentralized",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 3.417,
+ "first_seconds_wall": 3.526
+}

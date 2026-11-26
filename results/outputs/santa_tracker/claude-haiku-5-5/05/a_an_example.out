@@ -1,0 +1,20 @@
+19
+LoadCarrots 22
+LoadGift Bob
+AccDown 4
+Float 1
+AccDown 4
+Float 1
+AccDown 4
+Float 1
+AccDown 4
+Float 1
+AccDown 4
+Float 1
+AccUp 3
+Float 1
+AccUp 4
+Float 1
+AccUp 3
+Float 1
+DeliverGift Bob

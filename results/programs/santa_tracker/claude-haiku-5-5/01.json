@@ -1,0 +1,12 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5820,
+ "source_sha256": "a63d0d2cc92d037cc91cbbe9df766aeb59077a84d9724695533890dbd52c2ecf",
+ "compile_seconds": 1.819
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "instance": "c_collaboration",
+ "same_output": false,
+ "state": "finished",
+ "seconds_wall": 8.51,
+ "first_seconds_wall": 8.513
+}

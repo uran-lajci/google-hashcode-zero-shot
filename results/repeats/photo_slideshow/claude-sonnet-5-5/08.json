@@ -1,0 +1,10 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "d_pet_pictures",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 1.244,
+ "first_seconds_wall": 1.607
+}

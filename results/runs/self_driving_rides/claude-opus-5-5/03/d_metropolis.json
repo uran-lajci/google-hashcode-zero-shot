@@ -1,0 +1,15 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-opus-5-5",
+ "generation": 3,
+ "instance": "d_metropolis",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 7.74,
+ "output_bytes": 29154,
+ "output_sha256": "7e84608af9ee73feef1ab384feaa47cb6ac690b1ac6051d566112ac19c82e635",
+ "cpu": 10,
+ "score": 10640844,
+ "judge_seconds": 0.122,
+ "judge_message": ""
+}

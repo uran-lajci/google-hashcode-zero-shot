@@ -1,0 +1,10 @@
+{
+ "problem": "loon",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "instance": "hashcode_2015_final_round",
+ "same_output": false,
+ "state": "finished",
+ "seconds_wall": 9.409,
+ "first_seconds_wall": 9.358
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "software_engineering_at_scale",
+ "model": "claude-opus-5-5",
+ "generation": 7,
+ "instance": "c_constrained_optimisation",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.016,
+ "output_bytes": 18806,
+ "output_sha256": "3a8f3df62c5991453cb98558b8b3b6016fa86ec4b73e5e374130275276d5a025",
+ "cpu": 4,
+ "score": 25595004,
+ "judge_seconds": 0.086,
+ "judge_message": ""
+}

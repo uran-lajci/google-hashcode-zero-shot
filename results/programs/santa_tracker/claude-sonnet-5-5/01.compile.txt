@@ -1,0 +1,10 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:11:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   11 |     scanf("%d %d %d %d",&T,&D,&W,&G);
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:13:31: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   13 |     for(int i=0;i<W;i++) scanf("%lld %lld",&L[i],&A[i]);
+      |                          ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:18:14: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   18 |         scanf("%s %lld %lld %lld %lld",buf,&s[i],&w[i],&c[i],&r[i]);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,12 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5746,
+ "source_sha256": "ef90caeb11a6b61ceba39952d3ee305d62f2da9d187c0d0d9faff434869833ad",
+ "compile_seconds": 2.809
+}

@@ -1,0 +1,12 @@
+{
+ "problem": "loon",
+ "model": "claude-haiku-5-5",
+ "generation": 9,
+ "state": "compile_error",
+ "reason": "g++ fails",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5098,
+ "source_sha256": "85d7ffcda54553b44a9e95437107ed8fbbb522fd16e48c451b26a9472b05e787",
+ "compile_seconds": 1.271
+}

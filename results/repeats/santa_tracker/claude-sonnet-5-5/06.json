@@ -1,0 +1,10 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "b_better_hurry",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.011,
+ "first_seconds_wall": 0.01
+}

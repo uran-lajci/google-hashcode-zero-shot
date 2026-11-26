@@ -1,0 +1,15 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "instance": "f_decentralized",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.025,
+ "output_bytes": 28284,
+ "output_sha256": "7cfaf5cfbe4f2a72e21d7c4e1aa222c4b7d6a06dc860b594498e7741fe4c32cb",
+ "cpu": 8,
+ "score": 0,
+ "judge_seconds": 0.086,
+ "judge_message": "Invalid output: line 7: in step 472, the arm expands to [101, 0], which the arm mounted at [102, 2] occupies"
+}

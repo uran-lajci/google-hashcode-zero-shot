@@ -1,0 +1,12 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 10,
+ "state": "compile_error",
+ "reason": "g++ fails",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 6665,
+ "source_sha256": "4f360d7318f18a072a1f202e6cbd2804142e77f34fe56e5effbfbac7da661ec2",
+ "compile_seconds": 1.314
+}

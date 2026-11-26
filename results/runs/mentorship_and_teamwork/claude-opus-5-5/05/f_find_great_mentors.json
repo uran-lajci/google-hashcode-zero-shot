@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "instance": "f_find_great_mentors",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 9.017,
+ "output_bytes": 70662,
+ "output_sha256": "c042aa91076402f8e0c9d03f80627f742b130918ad1b93894e0f0ec730b0006e",
+ "cpu": 4,
+ "score": 212985,
+ "judge_seconds": 1.173,
+ "judge_message": ""
+}

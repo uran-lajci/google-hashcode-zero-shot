@@ -1,0 +1,10 @@
+{
+ "problem": "satellites",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "overlap",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 1.721,
+ "first_seconds_wall": 1.712
+}

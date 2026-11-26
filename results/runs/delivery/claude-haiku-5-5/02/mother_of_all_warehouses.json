@@ -1,0 +1,15 @@
+{
+ "problem": "delivery",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "instance": "mother_of_all_warehouses",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.013,
+ "output_bytes": 163980,
+ "output_sha256": "b126bc249619c106efa4890c989e40d90a1730327b949ef7903889c255c4a5fc",
+ "cpu": 8,
+ "score": 59735,
+ "judge_seconds": 0.218,
+ "judge_message": ""
+}

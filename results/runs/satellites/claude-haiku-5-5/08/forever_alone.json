@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "forever_alone",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.052,
+ "output_bytes": 7987,
+ "output_sha256": "a9e5bfd45b4c60812f247df30d87055b288691b8a5bb5433fd394a8298a659e5",
+ "cpu": 6,
+ "score": 0,
+ "judge_seconds": 0.056,
+ "judge_message": "Invalid output: line 5: satellite 0 needs the orientation [2695, 646449] at turn 2771, expected each value from -4197 to 4197"
+}

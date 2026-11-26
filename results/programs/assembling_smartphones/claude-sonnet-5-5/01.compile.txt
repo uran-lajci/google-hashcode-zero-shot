@@ -1,0 +1,13 @@
+/source/program.cpp: In function 'int main()':
+/source/program.cpp:8:10: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+    8 |     scanf("%d %d %d %d %d %d",&W,&H,&R,&M,&T,&L);
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:11:25: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   11 |     for(auto&m:mp){scanf("%d %d",&m.first,&m.second);isM[(size_t)m.second*W+m.first]=1;}
+      |                    ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/source/program.cpp:13:37: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   13 |     for(int i=0;i<T;i++){int p;scanf("%d %d",&sc[i],&p);pts[i].resize(p);for(auto&q:pts[i])scanf("%d %d",&q.first,&q.second);}
+      |                                ~~~~~^~~~~~~~~~~~~~~~~~~
+/source/program.cpp:13:97: warning: ignoring return value of 'int scanf(const char*, ...)' declared with attribute 'warn_unused_result' [-Wunused-result]
+   13 |     for(int i=0;i<T;i++){int p;scanf("%d %d",&sc[i],&p);pts[i].resize(p);for(auto&q:pts[i])scanf("%d %d",&q.first,&q.second);}
+      |                                                                                            ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~

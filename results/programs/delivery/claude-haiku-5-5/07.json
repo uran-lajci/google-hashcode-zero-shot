@@ -1,0 +1,12 @@
+{
+ "problem": "delivery",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5874,
+ "source_sha256": "19e482f9b9354d28cee16e023dc16cf90277b688a8814781a3f55d1c8cafefe5",
+ "compile_seconds": 2.277
+}

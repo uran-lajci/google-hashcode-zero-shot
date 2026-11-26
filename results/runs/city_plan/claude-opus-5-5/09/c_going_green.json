@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "c_going_green",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 4.925,
+ "output_bytes": 499156,
+ "output_sha256": "f29b4ca7dcb1f44487c2f4634692c0e1bd5e9b5608d2c4b644aae4f89a9c4112",
+ "cpu": 8,
+ "score": 10876895,
+ "judge_seconds": 1.101,
+ "judge_message": ""
+}

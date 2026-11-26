@@ -1,0 +1,15 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "instance": "f_find_great_mentors",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 8.082,
+ "output_bytes": 26544,
+ "output_sha256": "edae1d530a96a2eed999ef3f951665d707337c6a2629e5f5ea5ce17d3dfa5b44",
+ "cpu": 4,
+ "score": 43580,
+ "judge_seconds": 1.163,
+ "judge_message": ""
+}

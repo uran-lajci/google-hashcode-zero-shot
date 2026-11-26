@@ -1,0 +1,15 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "instance": "d_decorated_houses",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.52,
+ "output_bytes": 199958,
+ "output_sha256": "e7fb7636c32fdb326b43a2a3bdd29fea5a10287eb3793f3778bf5ae41d662ae7",
+ "cpu": 4,
+ "score": 536336,
+ "judge_seconds": 0.088,
+ "judge_message": ""
+}

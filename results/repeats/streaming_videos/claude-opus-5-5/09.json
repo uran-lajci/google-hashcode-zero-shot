@@ -1,0 +1,10 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "kittens",
+ "same_output": false,
+ "state": "finished",
+ "seconds_wall": 8.331,
+ "first_seconds_wall": 8.328
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "overlap",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 0.855,
+ "output_bytes": 43388,
+ "output_sha256": "53d6e363a0262f939ba752b641e716545078e5f01792d2de78c5748f2f891ec0",
+ "cpu": 10,
+ "score": 0,
+ "judge_seconds": 0.194,
+ "judge_message": "Invalid output: line 58: satellite 2 turns its camera from [0, 0] at turn 0 (the start) to [976, 2220] at turn 0, a change of 2220 in 0 turns, expected at most w * 0 = 0"
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "instance": "kittens",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 4.589,
+ "first_seconds_wall": 4.681
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "e_etoile",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.062,
+ "output_bytes": 12134,
+ "output_sha256": "074dd3a1662bdc0fa1852577b3fef1a69a8f022d0825c13448d86f9a259b74d5",
+ "cpu": 2,
+ "score": 725519,
+ "judge_seconds": 0.064,
+ "judge_message": ""
+}

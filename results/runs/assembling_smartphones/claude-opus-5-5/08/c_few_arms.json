@@ -1,0 +1,15 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-opus-5-5",
+ "generation": 8,
+ "instance": "c_few_arms",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 1.063,
+ "output_bytes": 118820,
+ "output_sha256": "507bdd049f2c12e85671367bde4f4377cedb3091888b7572ba5e808d507d09da",
+ "cpu": 4,
+ "score": 843634,
+ "judge_seconds": 0.108,
+ "judge_message": ""
+}

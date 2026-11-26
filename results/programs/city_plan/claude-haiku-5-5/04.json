@@ -1,0 +1,12 @@
+{
+ "problem": "city_plan",
+ "model": "claude-haiku-5-5",
+ "generation": 4,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3344,
+ "source_sha256": "0f4697bd17d28f6edff4962810f117235bbd8501cc22ec1619a4673ffc8d0d2f",
+ "compile_seconds": 1.675
+}

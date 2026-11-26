@@ -1,0 +1,15 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-opus-5-5",
+ "generation": 9,
+ "instance": "c_urgent",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 9.01,
+ "output_bytes": 9965,
+ "output_sha256": "704845c7f7b506e371c0c5ce618a047bcc7b1f460456239178b95125c22b40fe",
+ "cpu": 0,
+ "score": 1457388,
+ "judge_seconds": 0.095,
+ "judge_message": ""
+}

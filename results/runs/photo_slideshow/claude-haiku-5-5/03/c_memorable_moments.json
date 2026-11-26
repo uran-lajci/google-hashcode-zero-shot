@@ -1,0 +1,15 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "c_memorable_moments",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.012,
+ "output_bytes": 3894,
+ "output_sha256": "878516951aae1fe393a05bf3d0d953ffb6fa8f81ec4ae8236c9ed54bfee5316c",
+ "cpu": 8,
+ "score": 1478,
+ "judge_seconds": 0.054,
+ "judge_message": ""
+}

@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "a_example",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.014,
+ "output_bytes": 14,
+ "output_sha256": "25ebb1fe73eb54035893ecfd87bbc8fc8b4131daac00be1fac594bcf930897ab",
+ "cpu": 8,
+ "score": 25,
+ "judge_seconds": 0.048,
+ "judge_message": ""
+}

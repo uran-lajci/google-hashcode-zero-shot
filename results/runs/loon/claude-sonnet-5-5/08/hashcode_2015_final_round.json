@@ -1,0 +1,15 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "instance": "hashcode_2015_final_round",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.182,
+ "output_bytes": 43607,
+ "output_sha256": "68131f4278d8b5c979a1f6e3f0dffdc73850e862c094a0baec1751c239c028dd",
+ "cpu": 10,
+ "score": 122690,
+ "judge_seconds": 0.304,
+ "judge_message": ""
+}

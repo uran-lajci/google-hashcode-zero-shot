@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 10,
+ "instance": "weekend",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.47,
+ "output_bytes": 78659,
+ "output_sha256": "15fe1e20f1d7f0cd4c2bc17b8bcda172ac784a4a894e4b252f4efa9add73d33c",
+ "cpu": 0,
+ "score": 59714,
+ "judge_seconds": 0.148,
+ "judge_message": ""
+}

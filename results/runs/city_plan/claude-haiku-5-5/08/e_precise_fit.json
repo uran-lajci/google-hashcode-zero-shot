@@ -1,0 +1,15 @@
+{
+ "problem": "city_plan",
+ "model": "claude-haiku-5-5",
+ "generation": 8,
+ "instance": "e_precise_fit",
+ "state": "valid",
+ "exit_code": 0,
+ "seconds_wall": 0.249,
+ "output_bytes": 3217866,
+ "output_sha256": "a3c529ab4b02f2efb92a21a571b4302d93121d9611dd70e4cff054903bc9aece",
+ "cpu": 8,
+ "score": 1287080,
+ "judge_seconds": 7.186,
+ "judge_message": ""
+}

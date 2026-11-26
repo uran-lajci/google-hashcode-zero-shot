@@ -1,0 +1,10 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "instance": "weekend",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.692,
+ "first_seconds_wall": 0.717
+}

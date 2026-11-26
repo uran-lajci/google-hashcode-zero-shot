@@ -1,0 +1,12 @@
+{
+ "problem": "satellites",
+ "model": "claude-haiku-5-5",
+ "generation": 6,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 6852,
+ "source_sha256": "ccfbc7260dfe9e366bc11ad6dd2ad24850ee11a32c52491284164c9acdc884a2",
+ "compile_seconds": 1.851
+}

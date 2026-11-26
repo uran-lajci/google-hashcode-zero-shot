@@ -1,0 +1,10 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "instance": "d_tough_choices",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.225,
+ "first_seconds_wall": 0.193
+}

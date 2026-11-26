@@ -1,0 +1,15 @@
+{
+ "problem": "satellites",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "instance": "overlap",
+ "state": "invalid_output",
+ "exit_code": 0,
+ "seconds_wall": 1.654,
+ "output_bytes": 148139,
+ "output_sha256": "8a7379f00b61e8a839f5111376a88405fe7cff52d75018614cabfabb0f567097",
+ "cpu": 8,
+ "score": 0,
+ "judge_seconds": 0.272,
+ "judge_message": "Invalid output: line 13: satellite 9 needs the orientation [-6830, -646485] at turn 710, expected each value from -6937 to 6937"
+}

@@ -1,0 +1,10 @@
+{
+ "problem": "city_plan",
+ "model": "claude-opus-5-5",
+ "generation": 6,
+ "instance": "b_short_walk",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 7.591,
+ "first_seconds_wall": 7.587
+}

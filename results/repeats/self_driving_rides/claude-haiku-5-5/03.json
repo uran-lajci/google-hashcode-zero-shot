@@ -1,0 +1,10 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-haiku-5-5",
+ "generation": 3,
+ "instance": "c_no_hurry",
+ "same_output": true,
+ "state": "finished",
+ "seconds_wall": 0.243,
+ "first_seconds_wall": 0.254
+}

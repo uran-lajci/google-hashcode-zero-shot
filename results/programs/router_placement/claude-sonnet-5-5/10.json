@@ -1,0 +1,12 @@
+{
+ "problem": "router_placement",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 3085,
+ "source_sha256": "03ceedad4d2972f3244a94fcfc1e0e0df8587f981d6e0e735991ad3ee4f5e80a",
+ "compile_seconds": 1.758
+}

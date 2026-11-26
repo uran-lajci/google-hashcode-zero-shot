@@ -1,0 +1,12 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 7822,
+ "source_sha256": "76979046dacdf5a279108ff171a71ade4b3327bd6e806a432bd244f4f8611c4b",
+ "compile_seconds": 2.381
+}

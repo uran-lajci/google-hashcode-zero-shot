@@ -1,0 +1,12 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 5164,
+ "source_sha256": "3cb1f6d5c8a5038ca40267e128cc7051f1113020818132f87c8dc7a8343bc0b2",
+ "compile_seconds": 2.026
+}

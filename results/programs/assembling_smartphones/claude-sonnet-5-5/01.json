@@ -1,0 +1,12 @@
+{
+ "problem": "assembling_smartphones",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "state": "program",
+ "reason": "",
+ "code_blocks": 1,
+ "flagged": false,
+ "source_bytes": 4688,
+ "source_sha256": "a1afca9db7b3be6f143589802d64581eaf34952762bf0efa40d7785515fbd61d",
+ "compile_seconds": 1.851
+}

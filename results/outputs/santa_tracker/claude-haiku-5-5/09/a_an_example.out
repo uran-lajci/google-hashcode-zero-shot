@@ -1,0 +1,10 @@
+9
+LoadCarrots 4
+LoadGift Liam
+AccRight 8
+Float 1
+AccLeft 8
+Float 1
+AccUp 4
+Float 1
+DeliverGift Liam
