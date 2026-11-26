@@ -1,0 +1,62 @@
+{
+ "problem": "delivery",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "cdf39077bb66a512116cd380e6a1ced5bedc5cdb8ec3dd395a27c7da41d0f1a7",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQM66RoaQ6Df75RjEZmm",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:21:25+00:00",
+ "finished_utc": "2026-11-25T21:21:50+00:00",
+ "seconds": 24.495,
+ "seconds_to_first_text": 13.304,
+ "message": {
+  "id": "msg_011ChQM6C8qkh2TAz7uuiX7r",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy solution that I have not compiled or run against any data set. It handles orders from the smallest item count upward. Each order is split into trips that respect the drone's maximum load. Each trip goes to the drone that becomes free earliest.\n\nFor every item in a trip, the program loads from the nearest warehouse that still has stock, measured from the drone's current position, and then delivers by product type. Stock is only decremented, never restored by unloads, so planning stock use in advance stays valid.\n\nIf a trip would finish after the deadline, its stock changes are reverted and its commands are not emitted. That drone is dropped from the pool, so it gets no further trips. The program uses only Load and Deliver commands.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\ntypedef long long ll;\nstatic int cd(ll r1,ll c1,ll r2,ll c2){\n    ll d2=(r1-r2)*(r1-r2)+(c1-c2)*(c1-c2);\n    ll s=(ll)sqrtl((long double)d2);\n    while(s*s<d2)s++;\n    while(s>0&&(s-1)*(s-1)>=d2)s--;\n    return (int)s;\n}\nint main(){\n    int R,Cc,D,T,ML;\n    scanf(\"%d %d %d %d %d\",&R,&Cc,&D,&T,&ML);\n    int P;scanf(\"%d\",&P);\n    vector<int> wt(P);\n    for(auto&x:wt)scanf(\"%d\",&x);\n    int W;scanf(\"%d\",&W);\n    vector<int> wr(W),wc(W);\n    vector<vector<int>> stock(W,vector<int>(P));\n    vector<vector<int>> has(P);\n    for(int i=0;i<W;i++){\n        scanf(\"%d %d\",&wr[i],&wc[i]);\n        for(int p=0;p<P;p++){\n            scanf(\"%d\",&stock[i][p]);\n            if(stock[i][p]>0)has[p].push_back(i);\n        }\n    }\n    int C;scanf(\"%d\",&C);\n    vector<int> orr(C),oc(C);\n    vector<vector<int>> items(C);\n    for(int i=0;i<C;i++){\n        scanf(\"%d %d\",&orr[i],&oc[i]);\n        int L;scanf(\"%d\",&L);\n        items[i].resize(L);\n        for(auto&x:items[i])scanf(\"%d\",&x);\n    }\n    vector<int> ord(C);\n    iota(ord.begin(),ord.end(),0);\n    stable_sort(ord.begin(),ord.end(),[&](int a,int b){\n        return items[a].size()<items[b].size();\n    });\n    vector<int> dr(D,wr[0]),dc(D,wc[0]);\n    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<>> pq;\n    for(int d=0;d<D;d++)pq.push({0,d});\n    vector<string> out;\n    bool stop=false;\n    for(int oi=0;oi<C&&!stop;oi++){\n        int o=ord[oi];\n        vector<int> rem=items[o];\n        sort(rem.begin(),rem.end(),[&](int a,int b){return wt[a]>wt[b];});\n        while(!rem.empty()){\n            if(pq.empty()){stop=true;break;}\n            auto [tm,d]=pq.top();pq.pop();\n            vector<int> trip,rest;\n            int w=0;\n            for(int p:rem){\n                if(w+wt[p]<=ML){w+=wt[p];trip.push_back(p);}\n                else rest.push_back(p);\n            }\n            int cr=dr[d],cc=dc[d];\n            int t=tm;\n            vector<array<int,3>> loads; // wh,prod,count\n            vector<pair<int,int>> undo;\n            bool ok=true;\n            for(int p:trip){\n                int best=-1,bd=INT_MAX;\n                for(int wi:has[p]){\n                    if(stock[wi][p]<=0)continue;\n                    ll dd=(ll)(wr[wi]-cr)*(wr[wi]-cr)+(ll)(wc[wi]-cc)*(wc[wi]-cc);\n                    int v=dd>INT_MAX?INT_MAX:(int)dd;\n                    if(v<bd){bd=v;best=wi;}\n                }\n                if(best<0){ok=false;break;}\n                stock[best][p]--;\n                undo.push_back({best,p});\n                if(!loads.empty()&&loads.back()[0]==best&&loads.back()[1]==p){\n                    loads.back()[2]++;\n                } else {\n                    // try merging with earlier same wh/prod not needed\n                    t+=cd(cr,cc,wr[best],wc[best])+1;\n                    cr=wr[best];cc=wc[best];\n                    loads.push_back({best,p,1});\n                }\n            }\n            if(ok){\n                map<int,int> cnt;\n                for(int p:trip)cnt[p]++;\n                for(auto&kv:cnt){\n                    t+=cd(cr,cc,orr[o],oc[o])+1;\n                    cr=orr[o];cc=oc[o];\n                }\n                if(t>T)ok=false;\n                if(ok){\n                    for(auto&l:loads)\n                        out.push_back(to_string(d)+\" L \"+to_string(l[0])+\" \"+to_string(l[1])+\" \"+to_string(l[2]));\n                    for(auto&kv:cnt)\n                        out.push_back(to_string(d)+\" D \"+to_string(o)+\" \"+to_string(kv.first)+\" \"+to_string(kv.second));\n                    dr[d]=cr;dc[d]=cc;\n                    pq.push({t,d});\n                    rem=rest;\n                    continue;\n                }\n            }\n            for(auto&u:undo)stock[u.first][u.second]++;\n            // drone dropped\n            // loop continues with another drone\n        }\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&s:out)printf(\"%s\\n\",s.c_str());\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 20429,
+   "output_tokens": 3256,
+   "output_tokens_details": {
+    "thinking_tokens": 1190
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

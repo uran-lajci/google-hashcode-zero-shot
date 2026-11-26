@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQNiy1hrnKkMV1zJ6kqR",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:42:53+00:00",
+ "finished_utc": "2026-11-25T21:43:15+00:00",
+ "seconds": 22.286,
+ "seconds_to_first_text": 4.409,
+ "message": {
+  "id": "msg_011ChQNjE64c7d9c4RCRX7Se",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution that plans the balloons one at a time against a shared coverage count.\n\n**Approach**\n\n1. Read the input and store the wind vectors as a flat array. At most 1000 \u00d7 1000 \u00d7 1000 cells (about 1e9) are possible in principle, and I assume the actual data sets are smaller.\n2. Store the target cells in a grid, so coverage can be checked quickly.\n3. Plan balloons one at a time. For each balloon, run a dynamic program over (turn, altitude, position), then commit its path and update a coverage count per (turn, target).\n4. A balloon's position is not always the same, so the DP state would normally be too big. I restrict the DP to a beam search instead.\n\n**Beam search per balloon**\n\n- A state is (r, c, alt, launched), with a stored parent pointer for path reconstruction.\n- Keep up to W states per turn, deduplicated on (r, c, alt).\n- The value of a state is the marginal gain at that turn: the number of targets within radius V whose count at that turn is 0.\n- The gain is computed by iterating over all L targets (L \u2264 1000). With a beam of 200 states, T = 1000 and 3 transitions, one balloon costs about 200 \u00d7 3 \u00d7 1000 \u00d7 1000 = 6e8. With B = 1000 balloons that is far too slow.\n\n**Making it fit in time**\n\n- Precompute, per turn, the list of still-uncovered targets (count 0).\n- Score a state by a loop over that list, which shrinks as targets get covered.\n- Limit the work with a global budget: beam width W = max(1, budget / (B\u00b7T\u00b73\u00b7avgUncovered)), clamped between 1 and 30.\n- Pick a time budget of roughly 8 seconds. To stay safe, measure the clock and reduce W for later balloons if running behind.\n\n**Details**\n\n- Balloons not yet launched sit at the start cell. A \"waiting\" state is represented with alt = 0 and the position at the start. Each turn it can stay (gain 0, no coverage) or launch to alt 1.\n- Launching earlier is generally better, so a launch state is not penalized.\n- Beam states are stored per turn in vectors of (r, c, alt, parent index, cumulative score, move).\n- Each balloon's path is the best final state traced back. Output is the adjustments per turn per balloon, stored in a T \u00d7 B array of chars.\n- A lost balloon (row out of range) is dropped from the beam. If no states survive, output 0 for the rest; the validity rule for altitude holds since the balloon simply stays.\n- To handle a balloon that was never launched, output 0s.\n- Dedup uses a hash map keyed on (r\u00b7C + c)\u00b7(A+1) + alt, stored in an unordered_map or a sort-based dedup. I sort the candidates by score descending and take the first W, with a visited-key set via sort of keys.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct S{int r,c,a,par;int sc;signed char mv;};\nint main(){\n    int R,C,A,L,V,B,T,rs,cs;\n    scanf(\"%d %d %d\",&R,&C,&A);\n    scanf(\"%d %d %d %d\",&L,&V,&B,&T);\n    scanf(\"%d %d\",&rs,&cs);\n    vector<int> tr(L),tc(L);\n    for(int i=0;i<L;i++)scanf(\"%d %d\",&tr[i],&tc[i]);\n    vector<signed char> wr((size_t)A*R*C),wc((size_t)A*R*C);\n    for(size_t i=0;i<(size_t)A*R*C;i++){int a,b;scanf(\"%d %d\",&a,&b);wr[i]=a;wc[i]=b;}\n    vector<vector<unsigned char>> cov(T+1,vector<unsigned char>(L,0));\n    vector<vector<signed char>> out(T,vector<signed char>(B,0));\n    auto t0=chrono::steady_clock::now();\n    int V2=V*V;\n    for(int b=0;b<B;b++){\n        double el=chrono::duration<double>(chrono::steady_clock::now()-t0).count();\n        double remain=8.0-el;\n        int W;\n        if(remain<=0)W=1;\n        else{\n            double per=remain/(B-b);\n            W=(int)(per/ (0.4e-6*T*3*max(1,L/4)));\n            if(W<1)W=1;\n            if(W>40)W=40;\n        }\n        if(remain<=0)W=1;\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({rs,cs,0,-1,0,0});\n        for(int t=1;t<=T;t++){\n            vector<S>&cur=lay[t];\n            vector<int> unc;\n            for(int i=0;i<L;i++)if(!cov[t][i])unc.push_back(i);\n            vector<S> cand;\n            vector<S>&pr=lay[t-1];\n            for(int pi=0;pi<(int)pr.size();pi++){\n                S&s=pr[pi];\n                for(int d=-1;d<=1;d++){\n                    int na=s.a+d;\n                    if(na<0||na>A)continue;\n                    if(s.a==0){\n                        if(d<0)continue;\n                        if(d==0){cand.push_back({s.r,s.c,0,pi,s.sc,0});continue;}\n                    }else if(na<1)continue;\n                    size_t idx=((size_t)(na-1)*R+s.r)*C+s.c;\n                    int nr=s.r+wr[idx];\n                    if(nr<0||nr>=R)continue;\n                    int nc=((s.c+wc[idx])%C+C)%C;\n                    int g=0;\n                    for(int i:unc){\n                        int dr=nr-tr[i];\n                        int dc=abs(nc-tc[i]);dc=min(dc,C-dc);\n                        if(dr*dr+dc*dc<=V2)g++;\n                    }\n                    cand.push_back({nr,nc,na,pi,s.sc+g,(signed char)d});\n                }\n            }\n            sort(cand.begin(),cand.end(),[](const S&x,const S&y){\n                if(x.sc!=y.sc)return x.sc>y.sc;\n                if(x.a!=y.a)return x.a<y.a;\n                if(x.r!=y.r)return x.r<y.r;\n                return x.c<y.c;});\n            set<tuple<int,int,int>> seen;\n            for(auto&s:cand){\n                if((int)cur.size()>=W)break;\n                if(seen.insert({s.r,s.c,s.a}).second)cur.push_back(s);\n            }\n            if(cur.empty()){\n                // dead: balloon lost\n                for(int k=t+1;k<=T;k++){}\n                lay.resize(t);\n                break;\n            }\n        }\n        int last=(int)lay.size()-1;\n        if(last<1)continue;\n        // best at last layer (first, sorted by score)\n        int idx=0;\n        vector<array<int,3>> path(last+1);\n        for(int t=last;t>=1;t--){\n            S&s=lay[t][idx];\n            out[t-1][b]=s.mv;\n            path[t]={s.r,s.c,s.a};\n            idx=s.par;\n        }\n        for(int t=1;t<=last;t++){\n            if(path[t][2]==0)continue;\n            for(int i=0;i<L;i++){\n                if(cov[t][i])continue;\n                int dr=path[t][0]-tr[i];\n                int dc=abs(path[t][1]-tc[i]);dc=min(dc,C-dc);\n                if(dr*dr+dc*dc<=V2)cov[t][i]=1;\n            }\n        }\n    }\n    string o;\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++){\n            if(b)o+=' ';\n            o+=to_string((int)out[t][b]);\n        }\n        o+='\\n';\n    }\n    fputs(o.c_str(),stdout);\n}\n```\n\nOne caveat: a balloon that is lost mid-path keeps its recorded moves for the turns before the loss and 0 afterwards. The altitude stays within range, so the output is valid.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 2770,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

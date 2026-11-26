@@ -1,0 +1,57 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQKHDn92h8Fm6W29SLc6",
+ "attempts": 1,
+ "started_utc": "2026-11-25T20:57:43+00:00",
+ "finished_utc": "2026-11-25T20:57:57+00:00",
+ "seconds": 14.561,
+ "seconds_to_first_text": 2.142,
+ "message": {
+  "id": "msg_011ChQKHJhJpHkqgFVsLFmYf",
+  "container": null,
+  "content": [
+   {
+    "text": "I'll use a greedy approach with a local-improvement flavour.\n\n**Approach**\n- Greedy library selection: at each step, pick the remaining library with the best estimated gain per signup day. The gain is the sum of the best unscanned book scores that the library can ship in its remaining time, and it is recomputed lazily.\n- Lazy priority queue: store a (value, library) pair, pop the top, and recompute its value given the current time and the books already used. If the recomputed value is still at least the next top's stale value, accept the library. Otherwise push it back with the new value. Values only decrease as time advances and books get used, so this is valid.\n- Value calculation: for library j starting at time t, signup ends at t+T. The remaining days are R = D - t - T, so at most R*M books can be shipped. Take the unscanned books sorted by descending score (each library's book list is pre-sorted by score), and sum the top min(R*M, count) scores. Score divided by T is the ratio. The cost per evaluation is up to N, and each pop leads to a re-evaluation. The lazy approach keeps the number of evaluations manageable, since the total is at most 10^6 books per pass.\n- To bound work, each evaluation scans the sorted list and skips used books until it has collected the required count. Scanning cost is at most N per evaluation, and the lazy scheme gives a few evaluations per library.\n- Output: for each chosen library, list the top unscanned books (up to R*M) in descending score order. Mark them used. Skip a library if R <= 0 or it has no unused books.\n- Use long long for the value and compare ratios as doubles.\n\n**Details**\n- Fast input via fread-style reading with scanf-free parsing.\n- Sort each library's books by score descending (ties broken by ID, for determinism).\n- Initial values are computed at t=0.\n- The priority queue holds (ratio, id), with ties broken by lower id.\n- When a library is accepted at time t, it takes its books, t += T, and the loop continues until t >= D or the queue is empty.\n- Libraries with value 0 are dropped.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nstatic char buf[1<<25];\nint main(){\n    size_t len=fread(buf,1,sizeof(buf),stdin);\n    (void)len;\n    // handle larger input by reading all\n    string data;\n    {\n        data.assign(buf,len);\n        while(len==sizeof(buf)){\n            len=fread(buf,1,sizeof(buf),stdin);\n            data.append(buf,len);\n        }\n    }\n    size_t p=0;\n    auto rd=[&]()->long long{\n        while(p<data.size()&&(data[p]<'0'||data[p]>'9'))p++;\n        long long x=0;\n        while(p<data.size()&&data[p]>='0'&&data[p]<='9'){x=x*10+data[p]-'0';p++;}\n        return x;\n    };\n    int B=rd(),L=rd(),D=rd();\n    vector<int> S(B);\n    for(auto&x:S)x=rd();\n    vector<vector<int>> bk(L);\n    vector<int> T(L),M(L);\n    for(int j=0;j<L;j++){\n        int n=rd();T[j]=rd();M[j]=rd();\n        bk[j].resize(n);\n        for(auto&x:bk[j])x=rd();\n        sort(bk[j].begin(),bk[j].end(),[&](int a,int b){\n            if(S[a]!=S[b])return S[a]>S[b];\n            return a<b;});\n    }\n    vector<char> used(B,0);\n    auto eval=[&](int j,long long t)->double{\n        long long R=D-t-T[j];\n        if(R<=0)return 0;\n        long long cap=R*(long long)M[j];\n        long long cnt=0,sum=0;\n        for(int b:bk[j]){\n            if(cnt>=cap)break;\n            if(used[b])continue;\n            sum+=S[b];cnt++;\n        }\n        return (double)sum/T[j];\n    };\n    priority_queue<pair<double,int>> pq;\n    // tie-break: lower id preferred -> store negative id via custom compare\n    auto cmpPush=[&](double v,int j){pq.push({v,-j});};\n    for(int j=0;j<L;j++){\n        double v=eval(j,0);\n        if(v>0)cmpPush(v,j);\n    }\n    long long t=0;\n    vector<pair<int,vector<int>>> res;\n    while(!pq.empty()&&t<D){\n        auto top=pq.top();pq.pop();\n        int j=-top.second;\n        double v=eval(j,t);\n        if(v<=0)continue;\n        if(!pq.empty()&&v<pq.top().first){\n            cmpPush(v,j);\n            continue;\n        }\n        long long R=D-t-T[j];\n        long long cap=R*(long long)M[j];\n        vector<int> chosen;\n        for(int b:bk[j]){\n            if((long long)chosen.size()>=cap)break;\n            if(used[b])continue;\n            used[b]=1;\n            chosen.push_back(b);\n        }\n        if(chosen.empty())continue;\n        res.push_back({j,chosen});\n        t+=T[j];\n    }\n    string out;\n    out+=to_string(res.size())+\"\\n\";\n    for(auto&r:res){\n        out+=to_string(r.first)+\" \"+to_string(r.second.size())+\"\\n\";\n        for(size_t i=0;i<r.second.size();i++){\n            if(i)out+=' ';\n            out+=to_string(r.second[i]);\n        }\n        out+=\"\\n\";\n    }\n    fwrite(out.data(),1,out.size(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 1913,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

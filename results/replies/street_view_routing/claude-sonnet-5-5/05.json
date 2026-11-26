@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQSXmeG5EjKWzzc3mkPq",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:32:48+00:00",
+ "finished_utc": "2026-11-25T22:34:11+00:00",
+ "seconds": 82.864,
+ "seconds_to_first_text": 67.704,
+ "message": {
+  "id": "msg_011ChQSchDVKQRvmz2QapdnD",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem. The real input has N=11348 junctions, M=17958 streets, T=54000, C=8 cars, and S=4516. I wrote a general greedy solver that keeps the output valid for any input.\n\n**Approach:** Cars move one at a time, each choosing a next move from its current junction using a heuristic.\n\n1. Precompute, for each junction, a Dijkstra search restricted by time. Running Dijkstra from every node is too expensive, so I use a local search from the car's current position instead.\n2. For each car step, run a bounded Dijkstra from the current junction, with a node-count limit of about 300 and a time limit. For each reached junction v, take the unvisited streets incident to v that can be traversed from v, and score the target as gain / (dist + edge cost). Pick the best target, walk the shortest path to it, and mark the edges on that path as covered.\n3. Choose the car with the smallest elapsed time next, which keeps the cars balanced.\n4. Make sure each car can still finish within T. The itinerary is valid at any point since it ends wherever the car is, so no return trip is needed.\n5. If no uncovered street is reachable within the local search, run a larger BFS/Dijkstra without a node limit to find the nearest uncovered edge. If that also finds nothing, the car stops.\n\n**Details:**\n- Gain for a target: the sum of the lengths of the uncovered edges on the path, plus the uncovered edge crossed at the end. The path edges are included in the gain.\n- Candidates are the nodes popped by Dijkstra. For each popped node u (with dist d), consider each outgoing uncovered edge (u\u2192w, cost c, length L). Its gain is the path's uncovered length (tracked in the Dijkstra as a second accumulator along the parent chain) plus L. Its ratio is gain / (d + c). Require d + c \u2264 remaining time.\n- Path uncovered length: compute it along the Dijkstra tree as pathGain[v] = pathGain[parent] + (edge uncovered ? L : 0). The tree is a shortest-time tree, which is fine for this heuristic.\n- Dijkstra uses stamp arrays for fast resets. The limit is 400 popped nodes. Fallback: if the best ratio is 0 (nothing within the limit), rerun with a limit of the whole graph.\n\nEdges are stored as directed arcs with an edge id. Output each car's node list.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Arc{int to,id,c,l;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<Arc>> g(N);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;\n        scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        g[a].push_back({b,j,c,l});\n        if(d==2)g[b].push_back({a,j,c,l});\n    }\n    vector<char> cov(M,0);\n    vector<vector<int>> route(C,vector<int>(1,S));\n    vector<int> pos(C,S),tm(C,0);\n    vector<char> done(C,0);\n    vector<int> stamp(N,0),par(N,-1),parArc(N,-1);\n    vector<long long> dist(N),pg(N);\n    int cur=0;\n    auto search=[&](int car,int limit)->bool{\n        int src=pos[car];\n        int rem=T-tm[car];\n        cur++;\n        typedef pair<long long,int> P;\n        priority_queue<P,vector<P>,greater<P>> pq;\n        stamp[src]=cur;dist[src]=0;pg[src]=0;par[src]=-1;\n        pq.push({0,src});\n        vector<char> fin;\n        vector<int> popped;\n        double best=0;int bu=-1;int bArc=-1;\n        int cnt=0;\n        unordered_set<int> seen;\n        while(!pq.empty()){\n            auto [d,u]=pq.top();pq.pop();\n            if(d!=dist[u])continue;\n            if(seen.count(u))continue;\n            seen.insert(u);\n            cnt++;\n            for(int k=0;k<(int)g[u].size();k++){\n                Arc&a=g[u][k];\n                long long nd=d+a.c;\n                if(nd>rem)continue;\n                if(!cov[a.id]){\n                    double gain=pg[u]+a.l;\n                    double r=gain/(double)nd;\n                    if(r>best){best=r;bu=u;bArc=k;}\n                }\n                if(stamp[a.to]!=cur||nd<dist[a.to]){\n                    stamp[a.to]=cur;dist[a.to]=nd;\n                    pg[a.to]=pg[u]+(cov[a.id]?0:a.l);\n                    par[a.to]=u;parArc[a.to]=a.id;\n                    pq.push({nd,a.to});\n                }\n            }\n            if(cnt>=limit&&bu>=0)break;\n        }\n        if(bu<0)return false;\n        vector<int> path;\n        int v=bu;\n        while(v!=src){path.push_back(v);v=par[v];}\n        path.push_back(src);\n        reverse(path.begin(),path.end());\n        path.push_back(g[bu][bArc].to);\n        for(size_t i=1;i<path.size();i++){\n            int a=path[i-1],b=path[i];\n            const Arc*best2=nullptr;\n            for(auto&x:g[a])if(x.to==b){\n                if(!best2||x.c<best2->c)best2=&x;\n            }\n            cov[best2->id]=1;\n            tm[car]+=best2->c;\n            route[car].push_back(b);\n        }\n        pos[car]=path.back();\n        return true;\n    };\n    while(true){\n        int c=-1;\n        for(int i=0;i<C;i++)if(!done[i]&&(c<0||tm[i]<tm[c]))c=i;\n        if(c<0)break;\n        if(!search(c,300)){\n            if(!search(c,INT_MAX))done[c]=1;\n        }\n    }\n    printf(\"%d\\n\",C);\n    for(int i=0;i<C;i++){\n        printf(\"%d\\n\",(int)route[i].size());\n        for(int v:route[i])printf(\"%d\\n\",v);\n    }\n}\n```\n\nThe code has not been compiled or run. One gap I know about: because the path to a target follows the shortest-time tree and the code picks the cheapest parallel arc, a path edge could in principle be a different arc than the one the Dijkstra recorded. With at most one street per junction pair this does not matter.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2297,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

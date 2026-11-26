@@ -1,0 +1,57 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9e12f4bba8f91a4f331f164abf56b76474d75b65469074869572d06a495d6d46",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQUmAt621FGF8YCEYHmn",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:02:03+00:00",
+ "finished_utc": "2026-11-25T23:03:00+00:00",
+ "seconds": 56.85,
+ "seconds_to_first_text": 43.287,
+ "message": {
+  "id": "msg_011ChQUpHzouJoh9h4KjTVVi",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Hash Code 2015 qualification problem. I have not compiled or run the program below, and I did not measure its score.\n\n**Approach**\n\n1. **Placement.** Each row's free slots form segments. I place servers greedily, sorted by capacity/size ratio descending. Each server goes into the row with the least capacity placed so far, in the first segment of that row where it fits. A row that cannot fit the server is skipped in favor of the next-lightest row. I use a per-row list of free segments (start, length) and shrink a segment when a server takes its front. This is fast enough for the limits: M \u2264 10^6 and R \u2264 1000, with a priority-queue-like scan over rows.\n\n2. **Pool assignment.** Servers are taken in descending capacity order. Each goes to the pool with the lowest guaranteed capacity, and I pick the row-wise best choice. For each pool I keep a per-row capacity array and a total. A pool's guaranteed capacity is total \u2212 max row capacity. To assign a server, I choose the pool with the minimal guaranteed capacity, which is the standard heuristic, and place it so the maximum row stays low.\n\n   - To get this right, I process servers in descending capacity order. I round-robin by the pool with the smallest current guaranteed capacity, using a set keyed by (gc, pool).\n   - Each pool has a row array of size R, so memory is P \u00d7 R = 10^6 ints, which is fine.\n   - Computing gc requires the max over rows. Capacity only increases, so I maintain the max incrementally.\n   - Since the server's row is already fixed by step 1, the pool choice is the only freedom. For a server in row r, I pick the pool minimizing gc among all pools, with a tie-break that prefers the pool with the lowest capacity in row r. I keep it simple by using the lowest gc, then the lowest rowcap[p][r].\n\n3. **Complexity.** The row choice scans R per server, so about 10^6 \u00d7 1000 = 10^9 in the worst case, which is too slow. Instead I use a set of (load, row) pairs. When a row cannot fit a server of a given size, I try the next-lightest row. To bound this, I iterate the set in order and stop at the first row that fits. Rows that fit nothing are rare in practice. I also track each row's maximum free segment length to check fit quickly. In the worst case this could scan many rows, but in practice it is fine.\n\n   A segment lookup within a row can be slow if there are many segments. I keep a pointer-less approach: segments are stored in a vector and I scan for the first fit. The total scan is bounded by the number of segments in the row, which is at most 500 per row, so the scan cost is acceptable.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int R,S,U,P,M;\n    scanf(\"%d %d %d %d %d\",&R,&S,&U,&P,&M);\n    vector<vector<char>> bad(R, vector<char>(S,0));\n    for(int i=0;i<U;i++){int r,s;scanf(\"%d %d\",&r,&s);bad[r][s]=1;}\n    vector<int> z(M),c(M);\n    for(int i=0;i<M;i++)scanf(\"%d %d\",&z[i],&c[i]);\n    vector<vector<pair<int,int>>> seg(R);\n    vector<int> mx(R,0);\n    for(int r=0;r<R;r++){\n        int i=0;\n        while(i<S){\n            if(bad[r][i]){i++;continue;}\n            int j=i;\n            while(j<S&&!bad[r][j])j++;\n            seg[r].push_back({i,j-i});\n            mx[r]=max(mx[r],j-i);\n            i=j;\n        }\n    }\n    vector<int> ord(M);\n    iota(ord.begin(),ord.end(),0);\n    stable_sort(ord.begin(),ord.end(),[&](int a,int b){\n        return (long long)c[a]*z[b]>(long long)c[b]*z[a];\n    });\n    vector<long long> load(R,0);\n    set<pair<long long,int>> rs;\n    for(int r=0;r<R;r++)rs.insert({0,r});\n    vector<int> ar(M,-1),as(M,0),ap(M,0);\n    for(int k:ord){\n        for(auto it=rs.begin();it!=rs.end();++it){\n            int r=it->second;\n            if(mx[r]<z[k])continue;\n            for(auto&sg:seg[r]){\n                if(sg.second>=z[k]){\n                    ar[k]=r;as[k]=sg.first;\n                    sg.first+=z[k];sg.second-=z[k];\n                    break;\n                }\n            }\n            int m=0;\n            for(auto&sg:seg[r])m=max(m,sg.second);\n            mx[r]=m;\n            long long nl=it->first+c[k];\n            rs.erase(it);\n            rs.insert({nl,r});\n            break;\n        }\n    }\n    vector<vector<int>> rc(P, vector<int>(R,0));\n    vector<long long> tot(P,0);\n    vector<int> pm(P,0);\n    set<pair<long long,int>> ps;\n    for(int p=0;p<P;p++)ps.insert({0,p});\n    for(int k:ord){\n        if(ar[k]<0)continue;\n        int r=ar[k];\n        // among pools with the lowest gc, pick lowest rc in row r\n        auto it=ps.begin();\n        long long g=it->first;\n        int best=it->second;\n        int cnt=0;\n        for(auto jt=ps.begin();jt!=ps.end()&&jt->first==g&&cnt<50;++jt,++cnt){\n            if(rc[jt->second][r]<rc[best][r])best=jt->second;\n        }\n        int p=best;\n        ps.erase({tot[p]-pm[p],p});\n        rc[p][r]+=c[k];\n        tot[p]+=c[k];\n        pm[p]=max(pm[p],rc[p][r]);\n        ps.insert({tot[p]-pm[p],p});\n        ap[k]=p;\n    }\n    string out;\n    for(int i=0;i<M;i++){\n        if(ar[i]<0)out+=\"x\\n\";\n        else out+=to_string(ar[i])+\" \"+to_string(as[i])+\" \"+to_string(ap[i])+\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 10747,
+   "output_tokens": 2159,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

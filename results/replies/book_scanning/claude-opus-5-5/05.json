@@ -1,0 +1,62 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 5,
+ "request": {
+  "model": "claude-opus-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQRMe5hCfidAtkmpcep1",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:17:24+00:00",
+ "finished_utc": "2026-11-25T22:17:57+00:00",
+ "seconds": 33.136,
+ "seconds_to_first_text": 17.038,
+ "message": {
+  "id": "msg_011ChQRMmAaYnFRjYn43Jfxx",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSnB4KEAgUGAI4AUIIdGhpbmtpbmcSDGWYPLHQc464DnlptBoMaKq+l6FsIsGSGYpxIjAb2fuiv59E3gJGvqH+ygKu4DTiEsIxM0/T66Jzbc9iDRCpMtxiaqCmVE+0TpUOJXEquR385Ld2ZO9Q1pmWkGVEIvUFtDe0c+RUCsIcsPN9rygLTxvrdsD5MaOWxDYYgj5TYeXrPecSDSRQdrKQqT9Y6xF4pNHoRgAZ55ifRvM/2V03aNcdLDcMC4Vv8EK9NeosakUjxNfGflfiVAR6qu3JzlsrCM8dE8XLxZ5wukVnRky/kDr3lV63mvBemgk2tf2bkU/4DFuLLc38C9Nq0umOSZ7a/DnhdkNG9a0aTPBZaotoSmyCVoeR3zUiKNGUCvzjo2x6xTP6bL93ni5XLmZHhNDN22/wFSvlT/1fv5LMOwAOjOu5ROdQlwrapgNlaw9ojRy2bPjoSSd5Pxu6jvpwcCJUgS9tRrlUD48e8m6x8yvL67UZoVe910210h7A1NCCIV6+R406NuHyGCbvsI943jBRYjdg8yXE+a86Ob7CnzRBu89mU8ei2WvMyI6I8iGpzmFwKDGF4nzb0RS+l4LQ+u41rRsrVka04h8wFFxROqH4DWi7eJdXMR5QFtEAh309o/RdqJOyU/qYvu3hR6Z1+O80llhDxCe8xZMawQB5UQqA6TiiFUbd7IVIYuCH/mLQjAR+jTmqI/Lr5Hqmcjwtiv0f+jD0rYtWEusee721/kuvsi5cXRmps32Zu+/sXQMQacsDzsbnC2GFVo9jsuRmIzhXAXn4EfTclNRQApjTVUXTKJ6DAkctR0Idg49sJboR1qUYDaNhtX0MgxFwsomrop2oVAv7R1DzJezfVBG8fAYU40I1DMv37gBk6jJpTBRv1+qhHxmeaphf0QxWPn3W35a83dZh2MOJtqkqvcmuByMkUqkF6LR8DxylH17FD+bwwDfWh1PqTJEimWFaVQDQW+Ezf5IIbkpc6sXvUhelgaTKe4dT2kH/mUIjaDpXFI7REm//omym4qWKvOBbR6aRI+LI3dhOhV+eY38mRcpasPt098W8t1MCSMnjcDOFJYExt6PBMpv1KB7pOyO2wWZaJobpnFsKxNUaQIBfkuofWklR0JhHjSBRzpdzZPYcHZgCNIATk+wFbcXJkPw5S1h8Has/doOCwHS46zvt/ahZCrj+R7rnKOyxxbDKmkG3Y//6CFcRhjB8R0TnOsauGF0t1eGTk9A1JmhBJX16VPgFrtD/m3B+gTC3tTuG4vb9h/rQ/hafbtlJIAtxZXCYWanQJxQ9D667799hrynnGAYIPfuDgv8mLMQX7dRNMtIiVH19MSkifXaQqPrR+i4hZHt/kY/udTtK18/vMtjR1Tcj6emFvVXFJIhd2aFHePbpq7E3Ykr7pFInwDJ/F0ahjQJeWKnxiBGLKVmVUn65P0SyE8mIa8AoIKVhBikqZJrrBeRMPAmmYTkCNlSeBgvyqXaAVU0orLiSuVSy6lTPXg6ZwJeLXXIGXeJudx512KG3GBa4B9+igAPNiGXcNxMFlMQYVE7SSgtTCOkCXuQqoZn1tLbqD5xjWhTvGbPGERUEkxyHXO+VLY6u9IM9HDFbAi2ROkk8kbU3px0qv9U+4ZbhIqn+PC7mG6rEBjgGgR7NyXM6vb4ChYGAUxhJxZitF1xyBuJkhFz9y7lKuufwnoTQ0WNYfMZ4depIBL+7c7iE4+fvBSIveJaSiG+4DL2c6Nu9VSC4M+lXxCXESsvXd6febK6v1i3zSeNffuoTX0M5sKz9t8gYXzDFBM2Apm9HKEsWPZ9ebD8EZuwu3DZIQoYxMMdrVtPAtXycb6LZ7eDU5rbAklsP55nv9tpaOfXNk1WJDhrzZZxDxIe5U8TsmuG1Iapsva8KPkkmPrOGYkfoHV0yjAEA3pogvVTdFdixat1f9z9dDYCXGtjpJWIgUixtzCFcIY7d2thE+1u182owpxJnJQZCzKazIRfw5DaMFb09JYZEt3+IrFmYzlO+h52eVW88o9dVBWmr4Q7jinrGpBrkvfC07OmfX+l7wOjfFm6M+Y7u2vrycRO5uUwbndHKLEMTSChmYAZ6mSGxmpFjLwq5YQwmynZi3i9QmZpIFuPMrmdHF8L+EUx+b2IN0RHHgoY4uEQVWiLlfAS3KY0SEmgrNz+rAtXo+ZGFwCWYMyLiaH/CSnLvwz7EjWZgw77+UDawiqSXZFXdlJd7an5fn0JfUIT9OsHpct1pM2DYjfdmoSwcwWKlA6r9ped2RUZx6bLuwZDVeOfgnaQ2CHCRHyQfYg/b+WX9wT1s1jZcOigulmd1rUaxbN8D18nCdZgJob4YYAK89jXurIT+SfAeo2ct4YuThyAEaHViPXZngsrLUecx/A1NACtwCx2+QxjgMA7TH0ogawDA4k02vjenDb2rBdF9YGTCxd9407XkXuh2NkGvbwQPO6y8t1Co0xjlNOV8Oi5/GlLtk1lx11srX78oN3bEcI+KBcNR4Kp19zzyPmXM42b3nUC3l2+72xTcqX78PmkJX+hwcwRtUK687I0+ePadbveQKd22aPqWc/e75jKbKoovAfu+0Me0F+9d5niad/QQY35A2p2LT98BKskUk/+l4asEVvVhokwhFnOTklo/qG/6Toq/DEP6mY9U9SgTyV7vZ/MS3IC6TnyRC6hPstA97aFduZrHNMZlPKsGaATyk6tu1AVxopK4hniNZi2iZI+gQRGZOY1s+mwOHPSVVebI3KN+MCTcaDAjX8/LPuYNUKhdGqBobyaxYC410PzLrCgq4ky9nraLpbfKMpIWR9zLZyikTNQYgeoICj1gs1iveq1FyyDFWfXV15SZpXVgFSX1foWdPgxfN9sCqyzzaYCgOHdMHZ/zbLs4jFb51jO/gjgRPRIeBUEUaz+i8QVWFBf5O4xX+PUydaH1eyQfKmqtSF4FR6xdML8EEU+j53N/XMaEF0D9fRBHwmMFaGuGNik3v71W1I/TIiJfLW7ZI31iHu1lk7bQweQ+A6C0WhyK6IgyLdcfpDvBNdbaX3GpTVhAFEZYbk+rc/Sq9OyFo7eG9R/STCozkcEkJ++QufsksFFDyee4gzVSxNocV+E7udCx14EjH1AgFAyrUcum9JbomWPk9x8rkdCQEwuljdfO6U7KUQ9leaxr5sVJCIiJMR571zcR3pvhg2ij325hMsNxNRZqxaJB2h58g2naxOzqxt9IBsgVSRWZAuP8dACpUivJL8oD/pV4L4iMBGnK60A8/3Z9XUHul1dO+LBhFk4iO+HqqJs6rwpZJ0eC2/QfukteuDN4pk++MxyDcKwBikaq12+8BA8zKDtZWv8iBo0N9Gq/C2vQB0hZU2x3s3wN27mh6nx+qllXjcteNPjH+iTiot3Br1pgMHfxfF50o7guK4fe/L2CppspyuRITYX+vnow8eDQDgXsk/twgJ9ZmcSCOtrXyNUYTVLvyV69lVyaad7AxKjFUvH8Qkb4U/qGgVFTnAipOqYJckY27vnlwqw+8WbZb05f7/QosTbIVIFVfDtpdqD4jestebxopvgxEo9RNdX139hogLlJ2ObQpfG0oUYnRHeX0P+Kf40+bhvDnMY5vqq7eHe65FQzFBDQjNqiWCsWzSZRXRpJhiG0vE3wrvMaqAbU6jzbcFcY3gSUaBUO+UnAuRSmuW6xisxTxLskNQYMtNWfEG0y313J/iMuZWU7AAciwcqqg+waeMyTajwTmP/5VhDNaVoJjZkXLDfH7hTELy9epouvTeLOb4d2DBGq3w3lKrcvpaWoyTR9ZuwS1IIK1y2vx1pIWSMjTgLx/QsVDcLKMEJMrqFEPNqsS7Q+abqVmaZAX2A9Vb0fYhH5MDFcU104Ib6ByrbvOYKUZSn3/FNzEs1KpZp7KbCDopM6Eywl0V2KL8sinJi7AhR3/Y3Z8sQstbVwqcKtEd7CzbIg2BAZkAm9PmckCVw+GTkDa9bkQ4XZ4rRDHlmVRr0ja1wS6XOaZqxuiuWij+xLbE8mQFIwX3SiR3T4AN2k7P28XrSL5lL1/aPXptoDYVhvkPP5kEGM+CfJxqNbVkU/NsPH9EA3YO45v1e84Ug4Z4IMfuwYLplL8He6/vfzvXqX2wS1nCk1wwH01Zz+QhhigjA7GKzfJY3bYje1kLALkZ2M3NKjtxbfbJKZPEUYINijvxFu8RXZqMm0SB+61Kz3im3yRDZXtFqEGHAVB27uk4Cc5Uf4n+46niSajEvjhJIn4PLvhtRjpBI8nEBofBaWZhsrkaqexBMPZTFQY9lmUtkNRIhkIz6ZV51buSJ2wmojE9uOrUuLwWYYp7wOy/pOfzGILx08ZCpbw/QP8orzr4oOvfphpk/wxbT0i7gByUxaKhr0sgNcYUHc0DB+yhgHDNRlVMDb6pm+Gs7eGlxuCX1WLreDPZr5LLLQ3J8iLjHYPqZniZy3FXMYVNoUi04EbzppfDsiHC8WPIHHhjaQ5ITVJu9vRKkvDrwBw36Mq8MU4kYf73ZFrhg4DbvvaTLoWByRIIEV9G+688vbcihXPZyQS5sPxn+LLGkiAmcPCrxqOutimftHKkAAMOmTbnbMXwwtFcUJfvpO+gNF80VgOmFCYyAFpQQUlj3/MldBeFEuES9zvlIsqDYNKwgdHneDK2epP2isG8zfCmeQiOyBd9bwDiauAu/00X3rgicpF2AeCXd/g4JFa6co/V8Q7CluvM0v3YpxZDjWjHBr/1zcQwJwOOEmjKunF0arfLmpgdZRX/hc5JdZJ1W70RDoI1PFOJQcR9MfDSITmnt4NtZ6ufma39nu9+d2soO08DV15namhKw20wvTuOcKIupYjuflSFgqJC5B8IZplzv3NLCh0FvvYtKxT/llCjloQtIALRbZ9gom9IQuzqZtvRY9PhQTImD468fd7tv3ampy6ftuS70adUG36w9KOOb7AajtpQda5LBmvEucWzOENT2olPbyMdaxAhNPvKyE9A5lGFFss+Hso+OTdlwz61DUFfDtaWVeKQPEtlp4t4HtxUyxDsLTEzPIXGlVC2jaKHjMhnDmlCp3ao3o9zoFaYXUwshImBDtGR/6NciA0g9plCevH3W6TQPtGnNGS+3PooaMWKVaI9JmXc+I+KzEKm4mGzJ2sAYdEVcbbKP9GAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy heuristic. It does not guarantee an optimal answer.\n\n**Approach**\n\n1. **Library value.** At the current signup start time `t`, a library is valued by its best still-unscanned books that it can ship before the deadline. It can ship at most `(D \u2212 t \u2212 T) \u00b7 M` books. That book-score sum is divided by `T^\u03b1`, where `T` is the signup time and `\u03b1` is a tuning exponent.\n2. **Lazy greedy selection.** All libraries go into a priority queue keyed by their value. A library's value can only fall as time passes and other libraries take its books. So when the top library is popped, its value is recomputed:\n   - If the new value is still at least the next library's value, the library is accepted.\n   - Otherwise it is pushed back with the updated value.\n   - Libraries that can no longer finish signup before day `D` are dropped.\n   - A library that would add no new books is skipped and does not use signup time.\n3. **Book assignment.** When a library is accepted, it is given its highest-scoring unscanned books, up to its shipping capacity. Each library's book list is pre-sorted by score, highest first.\n4. **Several runs.** The greedy runs with several values of `\u03b1`, and the best total score is kept. The first run always finishes. Later runs stop if they would pass about 8.5 seconds, so the program stays under the 10-second limit.\n5. **Valid output.** Only libraries that are given at least one book are printed. No book appears twice within a library, and every printed library finishes signup before day `D`.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nstatic char buf[1<<25];\nint bufLen=0,bufPos=0;\ninline int gc(){\n    if(bufPos==bufLen){bufLen=fread(buf,1,sizeof(buf),stdin);bufPos=0;if(bufLen<=0)return -1;}\n    return buf[bufPos++];\n}\ninline long long readInt(){\n    int c=gc();while(c!='-'&&(c<'0'||c>'9')){if(c==-1)return 0;c=gc();}\n    bool neg=false;if(c=='-'){neg=true;c=gc();}\n    long long x=0;while(c>='0'&&c<='9'){x=x*10+(c-'0');c=gc();}\n    return neg?-x:x;\n}\n\nint B,L,D;\nvector<int> S;\nvector<vector<int>> books;\nvector<int> T,M;\nvector<char> scanned;\nchrono::steady_clock::time_point st;\ndouble elapsed(){return chrono::duration<double>(chrono::steady_clock::now()-st).count();}\n\nlong long evalLib(int j,long long t){\n    long long cap=(long long)(D-t-T[j])*M[j];\n    if(cap<=0)return -1;\n    long long s=0,c=0;\n    for(int b:books[j]){\n        if(c>=cap)break;\n        if(!scanned[b]){s+=S[b];c++;}\n    }\n    return s;\n}\n\nstruct Result{long long score;vector<pair<int,vector<int>>> plan;};\n\nbool run(double alpha,Result&res,bool limited,double tl){\n    scanned.assign(B,0);\n    res.score=0;res.plan.clear();\n    vector<double> denom(L);\n    for(int j=0;j<L;j++)denom[j]=pow((double)T[j],alpha);\n    priority_queue<pair<double,int>> pq;\n    for(int j=0;j<L;j++){\n        long long v=evalLib(j,0);\n        if(v>0)pq.push({v/denom[j],-j});\n    }\n    long long t=0;int iter=0;\n    while(!pq.empty()){\n        if(limited&&((++iter)&255)==0&&elapsed()>tl)return false;\n        auto [k,nj]=pq.top();pq.pop();\n        int j=-nj;\n        if(t+T[j]>=D)continue;\n        long long v=evalLib(j,t);\n        if(v<=0)continue;\n        double nk=v/denom[j];\n        if(!pq.empty()&&nk<pq.top().first-1e-12){pq.push({nk,-j});continue;}\n        long long cap=(long long)(D-t-T[j])*M[j];\n        vector<int> chosen;long long c=0;\n        for(int b:books[j]){\n            if(c>=cap)break;\n            if(!scanned[b]){scanned[b]=1;chosen.push_back(b);res.score+=S[b];c++;}\n        }\n        if(chosen.empty())continue;\n        res.plan.push_back({j,move(chosen)});\n        t+=T[j];\n    }\n    return true;\n}\n\nint main(){\n    st=chrono::steady_clock::now();\n    B=readInt();L=readInt();D=readInt();\n    S.resize(B);for(int i=0;i<B;i++)S[i]=readInt();\n    books.resize(L);T.resize(L);M.resize(L);\n    for(int j=0;j<L;j++){\n        int n=readInt();T[j]=readInt();M[j]=readInt();\n        books[j].resize(n);\n        for(int i=0;i<n;i++)books[j][i]=readInt();\n        sort(books[j].begin(),books[j].end(),[&](int a,int b){if(S[a]!=S[b])return S[a]>S[b];return a<b;});\n    }\n    vector<double> alphas={1.0,0.8,1.2,0.9,1.1,0.6,1.5,0.7,1.3,0.5,2.0};\n    Result best;best.score=-1;\n    bool first=true;\n    for(double a:alphas){\n        if(!first&&elapsed()>8.0)break;\n        Result r;\n        bool ok=run(a,r,!first,8.5);\n        first=false;\n        if(ok&&r.score>best.score)best=move(r);\n    }\n    string out;\n    out.reserve(1<<20);\n    out+=to_string(best.plan.size());out+='\\n';\n    for(auto&p:best.plan){\n        out+=to_string(p.first);out+=' ';out+=to_string(p.second.size());out+='\\n';\n        for(size_t i=0;i<p.second.size();i++){\n            if(i)out+=' ';\n            out+=to_string(p.second[i]);\n        }\n        out+='\\n';\n    }\n    fwrite(out.data(),1,out.size(),stdout);\n    return 0;\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-opus-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 3341,
+   "output_tokens_details": {
+    "thinking_tokens": 1199
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4d9f2be9cb22d8b77cb5a5747293f8ca43259d2efb095566e77ae06d934ce202",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQMvDtcHEVzZtpUpu6xy",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:32:18+00:00",
+ "finished_utc": "2026-11-25T21:32:30+00:00",
+ "seconds": 11.547,
+ "seconds_to_first_text": 3.462,
+ "message": {
+  "id": "msg_011ChQMvR8Y37MdLnyAN1FrC",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy assignment with a local-search style refinement kept simple, so it stays well inside the time limit.\n\n**Approach.** Process vehicles by their earliest-free time using a priority queue. For the vehicle that becomes free first, scan all unassigned rides and pick the one with the best value. For a ride, compute `arrive = t + dist(pos, start)` and `startTime = max(arrive, s)`. The ride is feasible only if `startTime + d <= f`. Its value is `d + (B if arrive <= s)`, divided by the time consumed, `(startTime + d - t)`. Choosing the best ratio performs better than the raw score alone. A vehicle with no feasible ride is retired.\n\n**Cost.** Each assignment scans up to N rides. There are at most N assignments, plus F retirements, so the total is about (N+F)\u00b7N \u2248 1.1e8 simple operations, which is fine.\n\n**Tie-breaking and scoring.** Waiting time is already included in the time consumed. A ride whose bonus can be earned scores higher because the bonus is added to the numerator. I use the ratio `(d + bonus) / (startTime + d - t)`, compared as doubles. The time used is always at least d, which is at least 1, so there is no division by zero.\n\n**Use of the priority queue.** Pop the vehicle with the smallest time `t`. If it finds a ride, update its position and time, then push it back. If it finds none, drop it. Vehicles whose time reaches T are also dropped, since a ride must finish by f <= T anyway.\n\n**Output.** One line per vehicle, in the form `M` followed by the ride indices. Times use `long long`.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int R,C,F,N,B;\n    long long T;\n    scanf(\"%d %d %d %d %d %lld\",&R,&C,&F,&N,&B,&T);\n    vector<int> a(N),b(N),x(N),y(N);\n    vector<long long> s(N),f(N);\n    for(int i=0;i<N;i++){\n        scanf(\"%d %d %d %d %lld %lld\",&a[i],&b[i],&x[i],&y[i],&s[i],&f[i]);\n    }\n    vector<char> used(N,0);\n    vector<vector<int>> res(F);\n    vector<int> pr(F,0),pc(F,0);\n    typedef pair<long long,int> P;\n    priority_queue<P,vector<P>,greater<P>> pq;\n    for(int i=0;i<F;i++) pq.push({0,i});\n    while(!pq.empty()){\n        P p=pq.top();pq.pop();\n        long long t=p.first;\n        int v=p.second;\n        int best=-1;\n        double bv=-1;\n        long long bend=0;\n        for(int i=0;i<N;i++){\n            if(used[i]) continue;\n            long long arrive=t+abs(pr[v]-a[i])+abs(pc[v]-b[i]);\n            long long st=max(arrive,s[i]);\n            long long d=abs(x[i]-a[i])+abs(y[i]-b[i]);\n            long long en=st+d;\n            if(en>f[i]) continue;\n            double val=(double)(d+(arrive<=s[i]?B:0))/(double)(en-t);\n            if(val>bv){\n                bv=val;\n                best=i;\n                bend=en;\n            }\n        }\n        if(best<0) continue;\n        used[best]=1;\n        res[v].push_back(best);\n        pr[v]=x[best];\n        pc[v]=y[best];\n        if(bend<T) pq.push({bend,v});\n    }\n    for(int i=0;i<F;i++){\n        printf(\"%d\",(int)res[i].size());\n        for(int r:res[i]) printf(\" %d\",r);\n        printf(\"\\n\");\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 12994,
+   "output_tokens": 1289,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

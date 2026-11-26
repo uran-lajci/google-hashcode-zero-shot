@@ -1,0 +1,57 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQYeYvRj3hLmbV4DU3no",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:53:01+00:00",
+ "finished_utc": "2026-11-25T23:53:13+00:00",
+ "seconds": 12.588,
+ "seconds_to_first_text": 2.417,
+ "message": {
+  "id": "msg_011ChQYeeUYYrnep7UBS4kos",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with a time check, not an optimal one. I have not compiled or run it.\n\n**Approach**\n1. Pick libraries one at a time. Let `cur` be the day the next signup would start.\n2. For each remaining library, the signup finishes at `cur + T`, so its scanning capacity is `(D - cur - T) * M` books. Its value is the sum of the top-capacity scores among the books not yet taken.\n3. A library's priority is value divided by `T`. Whichever library has the highest priority goes next.\n4. To avoid recomputing every library each round, I use lazy re-evaluation with a priority queue. Scores only decrease as books get taken, but `cur` also grows, which lowers capacity. Stored priorities are therefore upper bounds, so a library popped from the queue is recomputed and accepted only if it is still at least as good as the next entry in the queue.\n\n**Cost of one evaluation**\n- Computing a library's value means going through its books, skipping those already taken, and summing the top `cap` scores.\n- Sorting each library's book list by score once up front makes this a linear scan. The scan stops after `cap` untaken books.\n- The scan can still be long when many books are taken, but total work is bounded by the lazy scheme. I add a time guard that falls back to accepting the popped library once about 8 seconds have elapsed.\n\n**Output**\n- For each chosen library, I list the first `cap` untaken books and mark them taken.\n- A chosen library must have at least one book, or its value is zero and it is skipped.\n- The signup must finish before day D, meaning `cur + T < D`. Otherwise the library is dropped.\n- When a library is accepted, `cur += T`.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int B,L,D;\n    scanf(\"%d %d %d\",&B,&L,&D);\n    vector<int> S(B);\n    for(auto&x:S)scanf(\"%d\",&x);\n    vector<int> T(L),M(L);\n    vector<vector<int>> bk(L);\n    for(int j=0;j<L;j++){\n        int n;\n        scanf(\"%d %d %d\",&n,&T[j],&M[j]);\n        bk[j].resize(n);\n        for(auto&x:bk[j])scanf(\"%d\",&x);\n        sort(bk[j].begin(),bk[j].end(),[&](int a,int b){\n            if(S[a]!=S[b])return S[a]>S[b];\n            return a<b;});\n    }\n    vector<char> taken(B,0);\n    auto t0=chrono::steady_clock::now();\n    long long cur=0;\n    auto eval=[&](int j)->double{\n        long long days=D-cur-T[j];\n        if(days<=0)return 0;\n        long long cap=days*M[j];\n        long long sum=0,cnt=0;\n        for(int b:bk[j]){\n            if(taken[b])continue;\n            sum+=S[b];\n            if(++cnt>=cap)break;\n        }\n        return (double)sum/T[j];\n    };\n    priority_queue<pair<double,int>> pq;\n    for(int j=0;j<L;j++){\n        double v=eval(j);\n        if(v>0)pq.push({v,j});\n    }\n    vector<pair<int,vector<int>>> res;\n    while(!pq.empty()){\n        auto [p,j]=pq.top();pq.pop();\n        double elapsed=chrono::duration<double>(chrono::steady_clock::now()-t0).count();\n        double v=p;\n        if(elapsed<8.0){\n            v=eval(j);\n            if(v<=0)continue;\n            if(!pq.empty()&&v<pq.top().first){\n                pq.push({v,j});\n                continue;\n            }\n        }\n        long long days=D-cur-T[j];\n        if(days<=0)continue;\n        long long cap=days*M[j];\n        vector<int> lst;\n        for(int b:bk[j]){\n            if(taken[b])continue;\n            lst.push_back(b);\n            taken[b]=1;\n            if((long long)lst.size()>=cap)break;\n        }\n        if(lst.empty())continue;\n        res.push_back({j,lst});\n        cur+=T[j];\n    }\n    string out=to_string(res.size())+\"\\n\";\n    for(auto&r:res){\n        out+=to_string(r.first)+\" \"+to_string(r.second.size())+\"\\n\";\n        for(size_t i=0;i<r.second.size();i++){\n            if(i)out+=' ';\n            out+=to_string(r.second[i]);\n        }\n        out+=\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```\n\n**Determinism.** The 8-second guard uses wall-clock time, so it could in principle change output between runs, but only on inputs that actually take that long.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 1601,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

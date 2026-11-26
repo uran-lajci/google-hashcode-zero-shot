@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQLZ5pDrdR88KgaFoNPs",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:14:25+00:00",
+ "finished_utc": "2026-11-25T21:15:22+00:00",
+ "seconds": 57.095,
+ "seconds_to_first_text": 44.026,
+ "message": {
+  "id": "msg_011ChQLcFw2RLumPZnTUGnQL",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem. The real instance has N=11348 junctions, M=17958 streets, T=54000, C=8, S=4516. The program must still handle any input.\n\n**Approach:** greedy routing, one car at a time, with a time limit.\n\n1. Precompute the adjacency lists.\n2. For each car, keep a current node and remaining time. At each step, run a bounded Dijkstra from the current node, limited to the remaining time. This finds the best target by score density: for each reachable node, consider its incoming and outgoing uncovered edges.\n3. A simpler and cheaper rule is to use Dijkstra with a depth limit. Every edge (u\u2192v) that is uncovered and traversable from a reached node u is a candidate. Its value is `L / (dist(u) + cost)`, and it must also fit the remaining time. Dijkstra is cut off at a radius so that it stays fast.\n4. Pick the best candidate edge, walk the path to u, then traverse the edge. Repeat until there are no candidates.\n5. To make the cars diverge, process them in a round-robin schedule, each advancing one move at a time, with the shared covered set.\n\n**Cost control:** each move runs a Dijkstra that stops once it has settled nodes with dist > the best found ratio's bound, or once the settled count exceeds about 300 nodes. The step count is about 8 cars \u00d7 ~1000 moves, so the total work is small. I also stop at a wall-clock budget of about 8 seconds, using `clock()`.\n\n**Fallback:** if no uncovered edge is found within the limited search, extend the search to unlimited (full Dijkstra on the remaining time). If still nothing, the car stops.\n\n**Path reconstruction:** store the parent for each settled node in per-run arrays, using a visited-stamp to avoid reinitialising. Output the nodes of each car's route.\n\n**Time check:** when a candidate edge is chosen, require dist(u) + cost \u2264 remaining. The score per time is L/(d+c), with a small bonus for zero-length edges avoided. Only uncovered edges are candidates. An edge is marked covered when traversed, and also along the path when walking, since the walked edges are marked as they are traversed.\n\nFor path edges, I need the edge id between consecutive nodes, so I store the parent edge id in Dijkstra.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct E{int to,id,c;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<E>> g(N);\n    vector<int> L(M),cost(M);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        L[j]=l;cost[j]=c;\n        g[a].push_back({b,j,c});\n        if(d==2)g[b].push_back({a,j,c});\n    }\n    vector<char> cov(M,0);\n    vector<vector<int>> route(C,vector<int>{S});\n    vector<int> cur(C,S),rem(C,T);\n    vector<char> done(C,0);\n    vector<int> dist(N,INT_MAX),par(N,-1),pe(N,-1),stamp(N,0);\n    int st=0;\n    int active=C;\n    clock_t t0=clock();\n    while(active>0){\n        if((double)(clock()-t0)/CLOCKS_PER_SEC>8.0)break;\n        for(int k=0;k<C;k++){\n            if(done[k])continue;\n            for(int pass=0;pass<2;pass++){\n                int limitNodes=pass==0?400:INT_MAX;\n                st++;\n                int s=cur[k],R=rem[k];\n                priority_queue<pair<int,int>,vector<pair<int,int>>,greater<>> pq;\n                stamp[s]=st;dist[s]=0;par[s]=-1;pe[s]=-1;\n                pq.push({0,s});\n                double best=-1;int bu=-1,be=-1,bv=-1;\n                int settled=0;\n                while(!pq.empty()){\n                    auto [d,u]=pq.top();pq.pop();\n                    if(d>dist[u])continue;\n                    if(d>R)break;\n                    if(++settled>limitNodes&&bu>=0)break;\n                    for(auto&e:g[u]){\n                        if(d+e.c>R)continue;\n                        if(!cov[e.id]){\n                            double r=(double)L[e.id]/(d+e.c);\n                            if(r>best){best=r;bu=u;be=e.id;bv=e.to;}\n                        }\n                        int nd=d+e.c;\n                        if(stamp[e.to]!=st||nd<dist[e.to]){\n                            stamp[e.to]=st;dist[e.to]=nd;par[e.to]=u;pe[e.to]=e.id;\n                            pq.push({nd,e.to});\n                        }\n                    }\n                }\n                if(bu>=0){\n                    vector<int> path;\n                    int x=bu;\n                    while(x!=s){path.push_back(x);x=par[x];}\n                    // mark edges along path\n                    int x2=bu;\n                    while(x2!=s){cov[pe[x2]]=1;x2=par[x2];}\n                    reverse(path.begin(),path.end());\n                    for(int v:path)route[k].push_back(v);\n                    route[k].push_back(bv);\n                    cov[be]=1;\n                    rem[k]-=dist[bu]+cost[be];\n                    cur[k]=bv;\n                    break;\n                }\n                if(pass==1){done[k]=1;active--;}\n            }\n        }\n    }\n    printf(\"%d\\n\",C);\n    for(int k=0;k<C;k++){\n        printf(\"%d\\n\",(int)route[k].size());\n        for(int v:route[k])printf(\"%d\\n\",v);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2048,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

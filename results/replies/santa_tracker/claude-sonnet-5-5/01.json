@@ -1,0 +1,62 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "79f0b9fd2dce77a12feb8a441c62cc5f373d23877c26faf3c77ce4d35168e38f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQL3mf2FSbX7dyaqbuqq",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:07:47+00:00",
+ "finished_utc": "2026-11-25T21:08:16+00:00",
+ "seconds": 28.51,
+ "seconds_to_first_text": 19.225,
+ "message": {
+  "id": "msg_011ChQL3wvQ6PLy5DUU9xMZ1",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This program is a simple baseline and has not been compiled or run against any data set. It is built to always produce a valid output, but it does not try to maximise the score beyond two steps.\n\n1. **Nearby gifts.** Every gift within distance D of (0,0) is loaded and delivered at time 0 without moving. This is always valid because the sleigh is at the origin for both the load and the delivery.\n2. **One extra far gift.** The program then looks for the single highest-scoring remaining gift it can reach with a two-acceleration, one-way trip.\n   - It loads 2 carrots and that gift.\n   - It accelerates along x by `ax`, floats 1 second, accelerates along y by `ay`, then floats `k` seconds.\n   - After `k+1` seconds the sleigh is at `(ax\u00b7(k+1), ay\u00b7k)`.\n   - For each gift and each `k` it tries the floor and floor+1 of the ideal `ax` and `ay`.\n   - It keeps the combination only if the sleigh ends within D of the gift, `ax` and `ay` are within the maximum acceleration at the sleigh weights (gift weight + 2 kg, then + 1 kg), and the total time is at most T.\n3. **Cost.** The search is about G\u00b7T candidate pairs, at most 10\u2078 cheap checks, which fits the 10-second limit. The output is deterministic.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\ntypedef long long ll;\nint T,D,W,G;\nvector<ll> L,A;\nll acc(ll w){\n    for(int i=0;i<W;i++) if(w<=L[i]) return A[i];\n    return 0;\n}\nint main(){\n    scanf(\"%d %d %d %d\",&T,&D,&W,&G);\n    L.resize(W);A.resize(W);\n    for(int i=0;i<W;i++) scanf(\"%lld %lld\",&L[i],&A[i]);\n    vector<string> nm(G);\n    vector<ll> s(G),w(G),c(G),r(G);\n    char buf[64];\n    for(int i=0;i<G;i++){\n        scanf(\"%s %lld %lld %lld %lld\",buf,&s[i],&w[i],&c[i],&r[i]);\n        nm[i]=buf;\n    }\n    vector<string> out;\n    ll D2=(ll)D*D;\n    vector<char> near(G,0);\n    for(int i=0;i<G;i++){\n        if(c[i]*c[i]+r[i]*r[i]<=D2){\n            near[i]=1;\n            out.push_back(\"LoadGift \"+nm[i]);\n            out.push_back(\"DeliverGift \"+nm[i]);\n        }\n    }\n    // far gift\n    ll bestS=0;int bg=-1;ll bax=0,bay=0,bk=0;\n    for(int g=0;g<G;g++){\n        if(near[g]||s[g]<=bestS) continue;\n        ll A1=acc(w[g]+2),A2=acc(w[g]+1);\n        bool found=false;\n        for(ll k=1;k+1<=T&&!found;k++){\n            ll m=k+1;\n            ll q=c[g]/m; if(c[g]%m<0) q--;\n            ll p=r[g]/k; if(r[g]%k<0) p--;\n            for(ll ax=q;ax<=q+1&&!found;ax++){\n                if(ax<-A1||ax>A1) continue;\n                ll dx=ax*m-c[g];\n                if(dx*dx>D2) continue;\n                for(ll ay=p;ay<=p+1;ay++){\n                    if(ay<-A2||ay>A2) continue;\n                    ll dy=ay*k-r[g];\n                    if(dx*dx+dy*dy<=D2){\n                        found=true;bax=ax;bay=ay;bk=k;break;\n                    }\n                }\n            }\n        }\n        if(found){bestS=s[g];bg=g;}\n        // note: bax etc. may be overwritten only when found for better gift\n    }\n    if(bg>=0){\n        out.push_back(\"LoadCarrots 2\");\n        out.push_back(\"LoadGift \"+nm[bg]);\n        out.push_back(string(bax>=0?\"AccRight \":\"AccLeft \")+to_string(llabs(bax)));\n        out.push_back(\"Float 1\");\n        out.push_back(string(bay>=0?\"AccUp \":\"AccDown \")+to_string(llabs(bay)));\n        out.push_back(\"Float \"+to_string(bk));\n        out.push_back(\"DeliverGift \"+nm[bg]);\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&x:out) printf(\"%s\\n\",x.c_str());\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 24495,
+   "output_tokens": 3219,
+   "output_tokens_details": {
+    "thinking_tokens": 1629
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

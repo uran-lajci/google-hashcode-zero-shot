@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQQJEdrAHHWiSUDBM8bg",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:03:31+00:00",
+ "finished_utc": "2026-11-25T22:03:53+00:00",
+ "seconds": 22.653,
+ "seconds_to_first_text": 4.283,
+ "message": {
+  "id": "msg_011ChQQJUz4BgWkNVDgdoruC",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Loon problem. The approach is greedy per balloon, with a beam-style search over the altitude/position state for each balloon in turn.\n\n**Planning each balloon**\n- The state of a balloon is (altitude, row, column), or \"not launched\". The search runs over the T turns.\n- For each balloon, I run a DP over turns with a beam of limited width. Each state holds a score, a parent pointer and the action taken.\n- The reward for a state at turn t is the number of target cells it covers that no earlier balloon already covers at turn t. A `covered[t][target]` counter tracks this.\n- Positions are tracked as (altitude, cell index). Within one turn the number of distinct states is at most A\u00b7R\u00b7C, which is too many in the worst case. The beam keeps only the best K states per turn, and the DP deduplicates states with a hash map.\n\n**Cost**\n- Per balloon: T turns \u00d7 K states \u00d7 3 transitions, plus a coverage evaluation per new state.\n- The coverage evaluation loops over the L targets, which is 1000 operations. With 1000 balloons, 1000 turns and K = 10, that is 1000\u00b71000\u00b710\u00b73\u00b71000 = 3e10, which is too slow.\n- To speed it up, I precompute a per-cell coverage count only when needed, using a grid-based lookup. For each turn I keep a bitmap `cov[t]` over cells of the R\u00d7C grid marking \"target cell covered\".\n- The marginal gain for a position is the count of uncovered targets within radius V. I precompute a 2D prefix sum of the targets-not-yet-covered per turn, but the circular shape makes that awkward.\n- Instead I use a per-target loop with early rejection through a target list bucketed by row. Only rows within \u00b1V are scanned, and the cost per evaluation is about the number of targets in those rows.\n- An alternative is to precompute a per-cell gain grid for each turn. That takes R\u00b7C\u00b7T memory, which is too much.\n- So I go with a time-budgeted approach. The beam width is K = 4, and the total work is capped by a deadline check. Once time runs out, the remaining balloons are launched with simple rules, or all-zero output with no launch.\n\n**Balloons that are never launched**\nThese output 0 for every turn. Altitude stays 0, which is valid.\n\n**Output**\nI record each balloon's action sequence in a T\u00d7B array of chars and print it at the end.\n\n**Implementation details**\n- Targets are bucketed by row. For each evaluation of position (r, c), I loop over rows r\u2212V..r+V, and for each target in those rows I check the distance and whether `covered[t][idx]` is already set.\n- A state key is alt\u00b7R\u00b7C + r\u00b7C + c. At step t, the dedup uses an unordered_map from key to index.\n- Before launch, a state is \"unlaunched\" with key \u22121, and its score is 0. The beam always keeps the unlaunched state.\n- Backtracking uses stored arrays of (parent index, action) per turn.\n- A balloon that leaves the grid is dropped from the beam.\n- If the best final score is 0, the balloon is not launched, and for the unlaunched path all actions are 0.\n- The time check is done with `clock()`, and on a deadline the remaining balloons are skipped.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nvector<int> W; // [alt][r][c] packed dr,dc\nint main(){\n    scanf(\"%d %d %d %d %d %d %d %d %d\",&R,&C,&A,&L,&V,&B,&T,&rs,&cs);\n    vector<int> tr(L),tc(L);\n    vector<vector<int>> byRow(R);\n    for(int i=0;i<L;i++){scanf(\"%d %d\",&tr[i],&tc[i]);byRow[tr[i]].push_back(i);}\n    vector<signed char> da((size_t)A*R*C),db((size_t)A*R*C);\n    for(int a=0;a<A;a++)for(int r=0;r<R;r++)for(int c=0;c<C;c++){\n        int x,y;scanf(\"%d %d\",&x,&y);\n        size_t id=((size_t)a*R+r)*C+c;da[id]=x;db[id]=y;\n    }\n    vector<vector<char>> cov(T+1,vector<char>(L,0));\n    vector<vector<signed char>> out(T,vector<signed char>(B,0));\n    auto gain=[&](int t,int r,int c){\n        int g=0;\n        for(int rr=max(0,r-V);rr<=min(R-1,r+V);rr++){\n            for(int i:byRow[rr]){\n                if(cov[t][i])continue;\n                int d=abs(c-tc[i]);d=min(d,C-d);\n                int dr=rr-r;\n                if(dr*dr+d*d<=V*V)g++;\n            }\n        }\n        return g;\n    };\n    struct S{int key;long long sc;int par;signed char act;};\n    const int K=4;\n    clock_t t0=clock();\n    for(int b=0;b<B;b++){\n        if((double)(clock()-t0)/CLOCKS_PER_SEC>8.0)break;\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({-1,0,-1,0});\n        for(int t=1;t<=T;t++){\n            unordered_map<int,int> mp;\n            vector<S> cand;\n            auto add=[&](int key,long long sc,int par,int act){\n                auto it=mp.find(key);\n                if(it==mp.end()){mp[key]=cand.size();cand.push_back({key,sc,par,(signed char)act});}\n                else if(cand[it->second].sc<sc){cand[it->second]={key,sc,par,(signed char)act};}\n            };\n            for(int i=0;i<(int)lay[t-1].size();i++){\n                S&s=lay[t-1][i];\n                if(s.key==-1){\n                    add(-1,s.sc,i,0);\n                    int a=0;\n                    size_t id=((size_t)a*R+rs)*C+cs;\n                    int nr=rs+da[id];\n                    if(nr>=0&&nr<R){\n                        int nc=((cs+db[id])%C+C)%C;\n                        add((a*R+nr)*C+nc,s.sc+gain(t,nr,nc),i,1);\n                    }\n                } else {\n                    int a=s.key/(R*C),rem=s.key%(R*C),r=rem/C,c=rem%C;\n                    for(int d=-1;d<=1;d++){\n                        int na=a+d;\n                        if(na<0||na>=A)continue;\n                        size_t id=((size_t)na*R+r)*C+c;\n                        int nr=r+da[id];\n                        if(nr<0||nr>=R)continue;\n                        int nc=((c+db[id])%C+C)%C;\n                        add((na*R+nr)*C+nc,s.sc+gain(t,nr,nc),i,d);\n                    }\n                }\n            }\n            sort(cand.begin(),cand.end(),[](const S&x,const S&y){return x.sc>y.sc;});\n            bool hasU=false;\n            vector<S> nl;\n            for(auto&s:cand){\n                if((int)nl.size()<K){nl.push_back(s);if(s.key==-1)hasU=true;}\n            }\n            if(!hasU){\n                for(auto&s:cand)if(s.key==-1){nl.push_back(s);break;}\n            }\n            lay[t]=nl;\n        }\n        int best=0;\n        for(int i=0;i<(int)lay[T].size();i++)if(lay[T][i].sc>lay[T][best].sc)best=i;\n        if(lay[T].empty()||lay[T][best].sc<=0)break;\n        // backtrack\n        vector<int> keys(T+1);\n        int cur=best;\n        for(int t=T;t>=1;t--){\n            out[t-1][b]=lay[t][cur].act;\n            keys[t]=lay[t][cur].key;\n            cur=lay[t][cur].par;\n        }\n        for(int t=1;t<=T;t++){\n            int k=keys[t];\n            if(k<0)continue;\n            int rem=k%(R*C),r=rem/C,c=rem%C;\n            for(int rr=max(0,r-V);rr<=min(R-1,r+V);rr++)\n                for(int i:byRow[rr]){\n                    int d=abs(c-tc[i]);d=min(d,C-d);\n                    int dr=rr-r;\n                    if(dr*dr+d*d<=V*V)cov[t][i]=1;\n                }\n        }\n    }\n    string s;\n    for(int t=0;t<T;t++){\n        s.clear();\n        for(int b=0;b<B;b++){\n            if(b)s+=' ';\n            s+=to_string((int)out[t][b]);\n        }\n        s+='\\n';\n        fputs(s.c_str(),stdout);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 3018,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

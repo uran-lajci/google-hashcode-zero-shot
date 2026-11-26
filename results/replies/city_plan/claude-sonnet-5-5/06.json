@@ -1,0 +1,57 @@
+{
+ "problem": "city_plan",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "3b16d4c10f9c4d05c0ec7f7225b833c5cbd024412eaf70b8d332b869eb2ef64c",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQSuJLJ4HwPQ2PtYULWo",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:37:40+00:00",
+ "finished_utc": "2026-11-25T22:37:59+00:00",
+ "seconds": 19.489,
+ "seconds_to_first_text": 2.826,
+ "message": {
+  "id": "msg_011ChQSuSeraUHFi859JTxYc",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy placement with a time-bounded search. I have not compiled or run it, and I did not tune it against any data set.\n\n**Approach**\n\n1. Keep an occupancy grid for the city. For each utility type, keep a coverage grid. A cell is marked covered when it lies within distance D of a placed utility of that type.\n2. Candidate placements are every position where a building fits and its occupied cells don't overlap anything already placed.\n3. For a residential building, the score is its capacity times the number of utility types that cover it. A utility only helps through the residential buildings near it.\n4. Greedy phases:\n   - Pick the residential project with the best capacity per occupied cell (ratio) and tile the city densely with it, row by row, in scan order.\n   - Then try to put utilities into the leftover free space. Utility types are placed to maximise the number of residential buildings that gain a new type.\n5. Interleaved pattern, which is simpler and robust: process the placed residential buildings first, then fill free cells with utility buildings. To keep this cheap, test each placement quickly by bounding-box overlap checks.\n\n**Simplified implementation**\n\n- Pick the best residential project R by capacity divided by occupied cell count.\n- Pick the utility project U with the fewest occupied cells, and for tiling choose the one with the best area and shape.\n- Build a periodic pattern: place rows of R and U alternately in scan order. For each position in row-major order, try R first and place it if it fits. Every k-th placement uses a utility of rotating type instead, so each residential building has many types within D.\n- Try several values of k (and of how many utility types to use) and evaluate each full layout by exact scoring. Keep the best.\n- Exact scoring is a brute-force check. For each residential building, loop over utility buildings and compute the bounding-box-aware minimum distance with early exit. With at most about 1e6 cells and up to a few thousand buildings, this is affordable for a handful of trials.\n- Scoring uses the exact minimum Manhattan distance between occupied cells. To keep that cheap, I compute the distance on bounding boxes as a lower bound, and skip the pair if the lower bound is greater than D. Otherwise I do a cell-by-cell check.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct P{bool res;int h,w,v;vector<string> g;vector<pair<int,int>> cells;};\nint H,W,D,B;\nvector<P> ps;\nstruct Pl{int b,r,c;};\nbool fits(vector<vector<char>>&occ,const P&p,int r,int c){\n    if(r+p.h>H||c+p.w>W)return false;\n    for(auto&q:p.cells)if(occ[r+q.first][c+q.second])return false;\n    return true;\n}\nvoid put(vector<vector<char>>&occ,const P&p,int r,int c){\n    for(auto&q:p.cells)occ[r+q.first][c+q.second]=1;\n}\nlong long score(const vector<Pl>&v){\n    vector<int> R,U;\n    for(int i=0;i<(int)v.size();i++){if(ps[v[i].b].res)R.push_back(i);else U.push_back(i);}\n    long long s=0;\n    for(int i:R){\n        const P&a=ps[v[i].b];\n        set<int> t;\n        for(int j:U){\n            const P&b=ps[v[j].b];\n            if(t.count(b.v))continue;\n            int ar=v[i].r,ac=v[i].c,br=v[j].r,bc=v[j].c;\n            int dr=max(0,max(ar-(br+b.h-1),br-(ar+a.h-1)));\n            int dc=max(0,max(ac-(bc+b.w-1),bc-(ac+a.w-1)));\n            if(dr+dc>D)continue;\n            bool ok=false;\n            for(auto&x:a.cells){\n                for(auto&y:b.cells){\n                    if(abs(ar+x.first-br-y.first)+abs(ac+x.second-bc-y.second)<=D){ok=true;break;}\n                }\n                if(ok)break;\n            }\n            if(ok)t.insert(b.v);\n        }\n        s+=(long long)a.v*t.size();\n    }\n    return s;\n}\nint main(){\n    scanf(\"%d %d %d %d\",&H,&W,&D,&B);\n    ps.resize(B);\n    for(auto&p:ps){\n        char t;scanf(\" %c %d %d %d\",&t,&p.h,&p.w,&p.v);\n        p.res=(t=='R');\n        p.g.resize(p.h);\n        for(int i=0;i<p.h;i++){\n            char buf[64];scanf(\"%s\",buf);p.g[i]=buf;\n            for(int j=0;j<p.w;j++)if(buf[j]=='#')p.cells.push_back({i,j});\n        }\n    }\n    int bestR=-1;double br=-1;\n    for(int i=0;i<B;i++)if(ps[i].res){\n        double r=(double)ps[i].v/ps[i].cells.size();\n        if(r>br){br=r;bestR=i;}\n    }\n    // utility per type: smallest cell count\n    map<int,int> ut;\n    for(int i=0;i<B;i++)if(!ps[i].res){\n        auto it=ut.find(ps[i].v);\n        if(it==ut.end()||ps[i].cells.size()<ps[it->second].cells.size())ut[ps[i].v]=i;\n    }\n    vector<int> U;\n    vector<pair<size_t,int>> tmp;\n    for(auto&k:ut)tmp.push_back({ps[k.second].cells.size(),k.second});\n    sort(tmp.begin(),tmp.end());\n    for(auto&k:tmp)U.push_back(k.second);\n    vector<Pl> best;long long bs=-1;\n    int maxU=min<int>(U.size(),4);\n    auto start=chrono::steady_clock::now();\n    for(int nu=1;nu<=maxU;nu++){\n        for(int k=2;k<=6;k++){\n            if(chrono::duration<double>(chrono::steady_clock::now()-start).count()>6.0)break;\n            vector<vector<char>> occ(H,vector<char>(W,0));\n            vector<Pl> v;int cnt=0,ui=0;\n            for(int r=0;r<H;r++)for(int c=0;c<W;c++){\n                bool useU=(cnt%k==k-1);\n                int b=useU?U[ui%nu]:bestR;\n                if(fits(occ,ps[b],r,c)){\n                    put(occ,ps[b],r,c);v.push_back({b,r,c});\n                    cnt++;if(useU)ui++;\n                }\n            }\n            if(v.size()>6000)continue;\n            long long s=score(v);\n            if(s>bs){bs=s;best=v;}\n        }\n    }\n    if(bs<0){\n        // fallback: one residential and one utility\n        vector<vector<char>> occ(H,vector<char>(W,0));\n        int u=U[0];\n        for(int r=0;r<H&&best.size()<2;r++)for(int c=0;c<W&&best.size()<2;c++){\n            int b=best.empty()?bestR:u;\n            if(fits(occ,ps[b],r,c)){put(occ,ps[b],r,c);best.push_back({b,r,c});}\n        }\n    }\n    printf(\"%d\\n\",(int)best.size());\n    for(auto&p:best)printf(\"%d %d %d\\n\",p.b,p.r,p.c);\n}\n```\n\n**Caveats**\n\n- If a layout has more than 6000 buildings, I skip it so the scoring step stays fast. That means large cities with small buildings may only get the fallback layout, which is a weak result.\n- The fallback places one residential and one utility, so it is valid but low-scoring.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16741,
+   "output_tokens": 2641,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9e12f4bba8f91a4f331f164abf56b76474d75b65469074869572d06a495d6d46",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQTK4J7tJ93xJYYQwrYV",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:43:02+00:00",
+ "finished_utc": "2026-11-25T22:44:22+00:00",
+ "seconds": 79.534,
+ "seconds_to_first_text": 65.737,
+ "message": {
+  "id": "msg_011ChQTPqR7aKVEhcfk24PLf",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a heuristic solution; it is not guaranteed optimal and I have not compiled or run it.\n\n**Placement.** Sort servers by capacity/size ratio, descending. For each server in that order, put it in the row with the least capacity so far, in the first free segment of that row that fits it. If that row has no fitting segment, try the other rows. This balances capacity across rows. A server that fits nowhere is left unallocated.\n\nTo find a segment quickly, I precompute each row's free segments (maximal runs of available slots) as (start, length) pairs. For each row I keep a pointer into its segment list, and placing a server consumes slots from the start of the current segment. This is first-fit in the order the segments appear, which can waste small gaps. To reduce waste, a server that does not fit the current segment of the chosen row checks later segments in the same row, using a per-row vector of segments with remaining lengths. Total work is about M \u00d7 segments, which is at most 10^6 \u00d7 1000 in the worst case, but this is rarely reached. I limit the search per server to the rows ordered by load, which is cheap enough.\n\n**Pool assignment.** Process the placed servers in descending capacity order. Assign each to the pool whose guaranteed capacity would be lowest. The pool's guaranteed capacity is total minus its max row sum. For efficiency, use the pool with the smallest total capacity, and among the pools choose the one where the server's row has the least capacity for that pool. A simple version: pick the pool with minimum guaranteed capacity, with ties broken by the lowest current capacity in the server's row. With P up to 1000 and M up to 10^6, a linear scan over pools costs 10^9 operations, which is too slow. Instead I use a priority queue keyed by (gc, pool) and the greedy choice \"pool with minimum gc\". The server's row only matters for updating that pool's gc, which I recompute in O(R) when it changes (R \u2264 1000). That is still up to 10^9 for M = 10^6 servers. To avoid it, I maintain each pool's per-row sums and its max row sum incrementally: the sums only increase, so max is updated in O(1) and gc = total \u2212 max. This makes each assignment O(log P). The memory for the P \u00d7 R sums is 10^6 integers, which is fine.\n\nGreedy by minimum gc ignores the row. To improve this, I pop the minimum-gc pool and place the server there. Because servers are processed in descending capacity, this gives a reasonable balance.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int R,S,U,P,M;\n    scanf(\"%d %d %d %d %d\",&R,&S,&U,&P,&M);\n    vector<vector<char>> bad(R,vector<char>(S,0));\n    for(int i=0;i<U;i++){int r,s;scanf(\"%d %d\",&r,&s);bad[r][s]=1;}\n    vector<int> z(M),c(M);\n    for(int i=0;i<M;i++)scanf(\"%d %d\",&z[i],&c[i]);\n    // segments\n    vector<vector<array<int,2>>> seg(R); // start, remaining\n    for(int r=0;r<R;r++){\n        int s=0;\n        while(s<S){\n            if(bad[r][s]){s++;continue;}\n            int e=s;\n            while(e<S&&!bad[r][e])e++;\n            seg[r].push_back({s,e-s});\n            s=e;\n        }\n    }\n    vector<int> ord(M);\n    iota(ord.begin(),ord.end(),0);\n    stable_sort(ord.begin(),ord.end(),[&](int a,int b){\n        return (long long)c[a]*z[b]>(long long)c[b]*z[a];\n    });\n    vector<long long> rowCap(R,0);\n    vector<int> ar(M,-1),as(M,-1),ap(M,-1);\n    for(int k:ord){\n        // rows by load\n        vector<int> rs(R);\n        iota(rs.begin(),rs.end(),0);\n        int best=-1;\n        // find least-loaded row that fits\n        long long bl=LLONG_MAX;int bseg=-1;\n        for(int r=0;r<R;r++){\n            if(rowCap[r]>=bl)continue;\n            int f=-1;\n            for(int j=0;j<(int)seg[r].size();j++)\n                if(seg[r][j][1]>=z[k]){f=j;break;}\n            if(f>=0){bl=rowCap[r];best=r;bseg=f;}\n        }\n        if(best<0)continue;\n        auto&sg=seg[best][bseg];\n        ar[k]=best;as[k]=sg[0];\n        sg[0]+=z[k];sg[1]-=z[k];\n        rowCap[best]+=c[k];\n    }\n    // pools\n    vector<vector<long long>> ps(P,vector<long long>(R,0));\n    vector<long long> tot(P,0),mx(P,0);\n    priority_queue<pair<long long,int>,vector<pair<long long,int>>,greater<>> pq;\n    for(int p=0;p<P;p++)pq.push({0,p});\n    for(int k:ord){\n        if(ar[k]<0)continue;\n        auto t=pq.top();pq.pop();\n        int p=t.second;\n        ap[k]=p;\n        tot[p]+=c[k];\n        ps[p][ar[k]]+=c[k];\n        mx[p]=max(mx[p],ps[p][ar[k]]);\n        pq.push({tot[p]-mx[p],p});\n    }\n    string out;\n    for(int i=0;i<M;i++){\n        if(ar[i]<0)out+=\"x\\n\";\n        else out+=to_string(ar[i])+\" \"+to_string(as[i])+\" \"+to_string(ap[i])+\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```\n\nThe row search scans every segment of every row that is less loaded than the current best, so it can be slow when rows have many segments. With many unavailable slots the segments per row are bounded by S/2, which gives a worst case of roughly M \u00d7 R \u00d7 segments. That is a risk for the 10-second limit on the largest inputs, though typical inputs should be much faster because most servers fit the first segment checked.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 10747,
+   "output_tokens": 2092,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

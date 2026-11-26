@@ -1,0 +1,62 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-opus-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-opus-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQPsSBg6hdrgChHUVwRp",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:57:54+00:00",
+ "finished_utc": "2026-11-25T21:58:30+00:00",
+ "seconds": 35.794,
+ "seconds_to_first_text": 18.325,
+ "message": {
+  "id": "msg_011ChQPsWb6abVFfYCypm3id",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy library-selection heuristic. It is not an exact solver.\n\n**Approach**\n\n1. **Sort books.** Each library's books are sorted by score, highest first. Ties are broken by book ID so the output is deterministic.\n\n2. **Value of a library.** At signup start time `cur`, library `j` can ship books for `days = D - cur - T_j` days.\n   - Its capacity is `cap = min(N_j, days \u00b7 M_j)` books.\n   - Its *gain* is the sum of the `cap` best books in it that are not yet scanned.\n   - Its priority is `gain / T_j^\u03b1`.\n\n3. **Lazy greedy.** A library's gain never increases as time passes and books get taken, so a lazy max-heap works:\n   - Pop the top library and recompute its priority.\n   - If it is still at least the next best, sign it up. Mark its assigned books as taken and advance `cur` by `T_j`.\n   - Otherwise push it back with the updated priority.\n   - Libraries with zero remaining gain are dropped for good.\n\n4. **Several runs.** The greedy is run with a fixed list of exponents \u03b1. The schedule with the highest true score is kept.\n   - The list is fixed, so the output is deterministic.\n   - A time guard stops trying further \u03b1 values if the time budget runs low. It only triggers on unexpectedly heavy inputs.\n\n5. **Valid output.**\n   - Every library printed finishes signup before day `D` and has at least one book (K \u2265 1).\n   - Each book is assigned to only one library, so there are no wasted duplicates.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nstatic char buf[1<<25];\nint bufLen=0,bufPos=0;\ninline int gc(){\n    if(bufPos==bufLen){bufLen=fread(buf,1,sizeof(buf),stdin);bufPos=0;if(bufLen<=0)return -1;}\n    return buf[bufPos++];\n}\ninline long long readInt(){\n    int c=gc();while(c!='-'&&(c<'0'||c>'9')){if(c==-1)return 0;c=gc();}\n    bool neg=false;if(c=='-'){neg=true;c=gc();}\n    long long x=0;while(c>='0'&&c<='9'){x=x*10+(c-'0');c=gc();}\n    return neg?-x:x;\n}\n\nint B,L,D;\nvector<int> S;\nvector<vector<int>> lb;\nvector<long long> T,M;\n\nstruct Result{\n    long long score=-1;\n    vector<int> order;\n    vector<vector<int>> books;\n};\n\nvector<char> taken;\n\ndouble computeVal(int j,long long cur,double alpha,vector<double>&powT){\n    long long days=(long long)D-cur-T[j];\n    if(days<=0) return -1;\n    long long cap=min<long long>((long long)lb[j].size(),days*M[j]);\n    long long sum=0,cnt=0;\n    for(int b:lb[j]){\n        if(cnt>=cap)break;\n        if(!taken[b]){sum+=S[b];cnt++;}\n    }\n    if(cnt==0) return -1;\n    if(sum==0) return 0;\n    return (double)sum/powT[j];\n}\n\nResult runGreedy(double alpha){\n    Result r; r.score=0;\n    taken.assign(B,0);\n    vector<double> powT(L);\n    for(int j=0;j<L;j++) powT[j]=pow((double)T[j],alpha);\n    priority_queue<pair<double,int>> pq;\n    for(int j=0;j<L;j++){\n        double v=computeVal(j,0,alpha,powT);\n        if(v>0) pq.push({v,-j});\n    }\n    long long cur=0;\n    while(!pq.empty()){\n        auto tp=pq.top();pq.pop();\n        int j=-tp.second;\n        double v=computeVal(j,cur,alpha,powT);\n        if(v<=0) continue;\n        if(pq.empty() || v>=pq.top().first-1e-12){\n            long long days=(long long)D-cur-T[j];\n            long long cap=min<long long>((long long)lb[j].size(),days*M[j]);\n            vector<int> chosen;\n            for(int b:lb[j]){\n                if((long long)chosen.size()>=cap)break;\n                if(!taken[b]){taken[b]=1;chosen.push_back(b);r.score+=S[b];}\n            }\n            if(chosen.empty()) continue;\n            r.order.push_back(j);\n            r.books.push_back(move(chosen));\n            cur+=T[j];\n            if(cur>=D) break;\n        } else {\n            pq.push({v,-j});\n        }\n    }\n    return r;\n}\n\nint main(){\n    auto start=chrono::steady_clock::now();\n    B=readInt();L=readInt();D=readInt();\n    S.resize(B);\n    for(int i=0;i<B;i++)S[i]=readInt();\n    lb.resize(L);T.resize(L);M.resize(L);\n    for(int j=0;j<L;j++){\n        int n=readInt();T[j]=readInt();M[j]=readInt();\n        lb[j].resize(n);\n        for(int k=0;k<n;k++)lb[j][k]=readInt();\n        sort(lb[j].begin(),lb[j].end(),[&](int a,int b){\n            if(S[a]!=S[b])return S[a]>S[b];\n            return a<b;\n        });\n    }\n    vector<double> alphas={1.0,0.9,1.1,0.8,1.2,1.4,0.7,1.6,0.5,2.0,0.0};\n    Result best;\n    double lastDur=0;\n    for(double a:alphas){\n        double el=chrono::duration<double>(chrono::steady_clock::now()-start).count();\n        if(best.score>=0 && el+lastDur*1.5>8.0) break;\n        auto t0=chrono::steady_clock::now();\n        Result r=runGreedy(a);\n        lastDur=chrono::duration<double>(chrono::steady_clock::now()-t0).count();\n        if(r.score>best.score) best=move(r);\n    }\n    string out;\n    out.reserve(1<<20);\n    out+=to_string(best.order.size());out+='\\n';\n    for(size_t i=0;i<best.order.size();i++){\n        out+=to_string(best.order[i]);out+=' ';\n        out+=to_string(best.books[i].size());out+='\\n';\n        for(size_t k=0;k<best.books[i].size();k++){\n            if(k)out+=' ';\n            out+=to_string(best.books[i][k]);\n        }\n        out+='\\n';\n    }\n    fwrite(out.data(),1,out.size(),stdout);\n    return 0;\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-opus-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 3677,
+   "output_tokens_details": {
+    "thinking_tokens": 1400
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

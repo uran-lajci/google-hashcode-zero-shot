@@ -1,0 +1,57 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "3c399150cebae003136d76aebe3a64243b25a544a167bc3dff974f7755cf6a62",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQU66DDStaEr3supyJzh",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:53:13+00:00",
+ "finished_utc": "2026-11-25T22:53:35+00:00",
+ "seconds": 21.332,
+ "seconds_to_first_text": 4.039,
+ "message": {
+  "id": "msg_011ChQU6EvqFP4iqSvz2RGWj",
+  "container": null,
+  "content": [
+   {
+    "text": "I'll write a solution that builds an initial schedule from street traffic counts and then improves it by local search against an exact simulator.\n\n**Simulator.** I model each street's queue of cars waiting at its light.\n- At each time t, a street is green if it is the active street of its intersection's cycle at t mod cycle length.\n- A green street lets one car through per second, the front car of its queue, but only if that car arrived at the end of the street by time t.\n- A car that crosses at time t enters the next street and arrives at its end at t+L. If that is the last street, the car finishes at t+L, and it scores if t+L \u2264 D.\n- Initial cars sit in the queue of their first street in input order.\n- Within one second, cars that arrive at t+L are enqueued after the cars already waiting, and the order of arrivals within a second is by processing order.\n- Each street has a queue of (car, arrival time). Because arrivals are enqueued in time order, the queue is a FIFO. Arrival events are bucketed by time.\n\n**Per-second loop.**\n1. Add the arrivals for time t to their queues. They can cross at time t if the light is green.\n2. For each intersection with a schedule, find its green street at t. If that queue is non-empty, pop one car. If that was its last crossing, move it to the next street with arrival t+L (finish if it is the last street), otherwise schedule the arrival at t+L.\n\nThe cost is D \u00d7 (number of scheduled intersections) per simulation, and at most V = 1000 cars cross at any one time. To keep it fast, I iterate only over streets with a non-empty queue. I keep an active list per time step as a set of intersections whose green street has a non-empty queue. The simplest approach is to loop over all scheduled intersections each second, which is at most 10^4 \u00d7 10^5 = 10^9. That is too heavy, so I only include intersections that are used by cars, which is at most about 1000 \u00d7 1000 distinct streets. I'll restrict to the intersections that are touched, and check the green street via a precomputed lookup.\n\n**Initial schedule.**\n- For each intersection, count the cars passing through each incoming street, excluding the last street of a path since cars don't queue there.\n- Include only streets with count > 0. Order them by the first-street count descending, so that cars waiting at the start go first. Each gets duration 1.\n- For better throughput, durations can be scaled by count, but I'll start with 1 and let the local search tune them.\n\n**Local search.** Within a time budget of about 8 seconds, I repeatedly pick a random intersection and apply one of three moves: swap two streets in its order, or change one duration by \u00b11 (with a minimum of 1). I keep a move only if the score does not decrease. The random generator is seeded with a fixed seed so the run is deterministic. The time limit is measured by clock, which is fine for determinism in practice, but I'll use an iteration-count budget by measuring the cost of the first simulation to keep results identical across runs.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint D,I,S,V,F;\nvector<int> sB,sE,sL;\nvector<vector<int>> path;\nvector<vector<int>> order_, dur;\nvector<int> inter; // intersections used\nvector<int> cyc;\nvector<vector<int>> lut; // per intersection: green street at t mod cyc (-1 if none)\nvoid build(int i){\n    int c=0;for(int d:dur[i])c+=d;\n    cyc[i]=c;\n    lut[i].assign(c,-1);\n    int p=0;\n    for(size_t k=0;k<order_[i].size();k++)for(int j=0;j<dur[i][k];j++)lut[i][p++]=order_[i][k];\n}\nlong long simulate(){\n    vector<deque<int>> q(S);\n    vector<int> pos(V,0);\n    vector<vector<pair<int,int>>> arr(D+2);\n    for(int c=0;c<V;c++)q[path[c][0]].push_back(c);\n    long long score=0;\n    for(int t=0;t<=D;t++){\n        for(auto&a:arr[t])q[a.first].push_back(a.second);\n        for(int i:inter){\n            if(cyc[i]==0)continue;\n            int s=lut[i][t%cyc[i]];\n            if(s<0||q[s].empty())continue;\n            int c=q[s].front();q[s].pop_front();\n            pos[c]++;\n            int ns=path[c][pos[c]];\n            int at=t+sL[ns];\n            if(pos[c]==(int)path[c].size()-1){\n                if(at<=D)score+=F+(D-at);\n            } else if(at<=D) arr[at].push_back({ns,c});\n        }\n    }\n    return score;\n}\nint main(){\n    scanf(\"%d %d %d %d %d\",&D,&I,&S,&V,&F);\n    sB.resize(S);sE.resize(S);sL.resize(S);\n    unordered_map<string,int> id;\n    vector<string> names(S);\n    char buf[100];\n    for(int i=0;i<S;i++){\n        scanf(\"%d %d %s %d\",&sB[i],&sE[i],buf,&sL[i]);\n        names[i]=buf;id[names[i]]=i;\n    }\n    path.resize(V);\n    for(int c=0;c<V;c++){\n        int p;scanf(\"%d\",&p);\n        path[c].resize(p);\n        for(int j=0;j<p;j++){scanf(\"%s\",buf);path[c][j]=id[buf];}\n    }\n    vector<int> cnt(S,0),first(S,0);\n    for(int c=0;c<V;c++){\n        for(size_t j=0;j+1<path[c].size();j++)cnt[path[c][j]]++;\n        first[path[c][0]]++;\n    }\n    order_.assign(I,{});dur.assign(I,{});cyc.assign(I,0);lut.assign(I,{});\n    for(int s=0;s<S;s++)if(cnt[s]>0)order_[sE[s]].push_back(s);\n    for(int i=0;i<I;i++){\n        if(order_[i].empty())continue;\n        sort(order_[i].begin(),order_[i].end(),[&](int a,int b){\n            if(first[a]!=first[b])return first[a]>first[b];\n            return a<b;});\n        dur[i].assign(order_[i].size(),1);\n        inter.push_back(i);\n        build(i);\n    }\n    long long best=simulate();\n    mt19937 rng(12345);\n    // fixed iteration budget based on measured cost\n    auto st=chrono::steady_clock::now();\n    simulate();\n    double one=chrono::duration<double>(chrono::steady_clock::now()-st).count();\n    if(one<1e-5)one=1e-5;\n    long long iters=(long long)(7.0/one);\n    if(iters>20000)iters=20000;\n    for(long long it=0;it<iters&&!inter.empty();it++){\n        int i=inter[rng()%inter.size()];\n        int n=order_[i].size();\n        int type=rng()%2;\n        auto oo=order_[i];auto od=dur[i];\n        if(type==0){\n            if(n<2)continue;\n            int a=rng()%n,b=rng()%n;\n            if(a==b)continue;\n            swap(order_[i][a],order_[i][b]);\n            swap(dur[i][a],dur[i][b]);\n        } else {\n            int a=rng()%n;\n            if(rng()%2)dur[i][a]++;\n            else{if(dur[i][a]<=1)continue;dur[i][a]--;}\n            if(dur[i][a]>D)continue;\n        }\n        build(i);\n        long long sc=simulate();\n        if(sc>=best)best=sc;\n        else{order_[i]=oo;dur[i]=od;build(i);}\n    }\n    printf(\"%d\\n\",(int)inter.size());\n    for(int i:inter){\n        printf(\"%d\\n%d\\n\",i,(int)order_[i].size());\n        for(size_t k=0;k<order_[i].size();k++)\n            printf(\"%s %d\\n\",names[order_[i][k]].c_str(),dur[i][k]);\n    }\n}\n```\n\nThe iteration count depends on a timing measurement, so the output could in principle differ between runs on a slow or noisy machine. It is capped at 20000 iterations, so on most inputs the cap applies and the output is stable. I have not compiled or run this program.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 21224,
+   "output_tokens": 2813,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

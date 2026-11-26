@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQT8kqsAt6t2cxQ51Ahh",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:40:43+00:00",
+ "finished_utc": "2026-11-25T22:41:05+00:00",
+ "seconds": 22.56,
+ "seconds_to_first_text": 4.859,
+ "message": {
+  "id": "msg_011ChQT93tYLPeK27e9CB4DG",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy heuristic: balloons are launched one at a time and each is planned with a DP over the time horizon, with no lookahead across balloons.\n\n**Approach**\n\n- For each balloon in turn, run a DP over (turn, altitude, cell) to find its best trajectory.\n- Each target cell and turn has a \"covered\" flag set by previously planned balloons. The new balloon only earns points for target-turns not yet covered.\n- The state space is large: R\u00b7C\u00b7A is up to 10^9 per turn, which is too much. So I only keep reachable states and use a sparse DP. In practice the reachable set per turn is at most about 3^t positions, capped by R\u00b7C\u00b7A, so it is still too large in the worst case.\n- To bound the work, I use a beam search per balloon. Per turn I keep at most K states in a hash map keyed by (altitude, r, c) and prune to the top K by value. Each state has up to 3 transitions.\n- Cost is B\u00b7T\u00b7K\u00b73 operations. With B\u00b7T = 10^6 this allows only about 10^7 transitions per 10 seconds budget at K=... so K must be about 3. That is too small, so I scale K by B\u00b7T: K = clamp(1.5e7 / (B\u00b7T\u00b73)), with a minimum of 1 (greedy).\n- Backpointers: each state stores its parent index in a per-turn array, so the path can be recovered (memory is T\u00b7K per balloon, which is small).\n- The balloon can also stay on the ground for some turns. State \"ground\" has altitude 0 and position at the start. Launching at any turn is allowed by the transition 0\u21921.\n- A balloon is lost when it leaves the grid. Dead states are dropped. A balloon that is not worth launching still needs a legal output, so zeros are output for it.\n- Coverage per turn: for each state I need the number of uncovered targets within radius V. With L \u2264 1000 targets, a naive scan costs L per state, which is too slow. I precompute the gain per turn lazily by checking only targets in the same row band. To keep it simple I do the check by scanning all targets but only for the K kept states, which is roughly 1.5e7\u00b7L/3 and too heavy. So I use a bucketed grid: targets are bucketed by row, and I scan rows r\u2212V..r+V (at most 201 rows), which is cheap when targets are sparse. It is still heavy in dense cases, so K is reduced to about 4e6/3 per balloon-turn.\n\nI have not compiled or run this. The beam width formula and the coverage cost are untested against dense inputs, so the 10 second limit is not verified.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nvector<int> W; // dr,dc per altitude,cell\nvector<vector<int>> rowT; // targets columns by row\nvector<vector<char>> cov; // [turn][target]\nvector<int> tr,tc;\nint cd(int a,int b){int d=abs(a-b);return min(d,C-d);}\nint main(){\n    scanf(\"%d %d %d\",&R,&C,&A);\n    scanf(\"%d %d %d %d\",&L,&V,&B,&T);\n    scanf(\"%d %d\",&rs,&cs);\n    tr.resize(L);tc.resize(L);\n    rowT.assign(R,{});\n    for(int i=0;i<L;i++){scanf(\"%d %d\",&tr[i],&tc[i]);rowT[tr[i]].push_back(i);}\n    W.resize((size_t)A*R*C*2);\n    for(size_t i=0;i<W.size();i++)scanf(\"%d\",&W[i]);\n    cov.assign(T+1,vector<char>(L,0));\n    long long budget=60000000LL;\n    long long K=budget/((long long)B*T*3);\n    if(K<1)K=1; if(K>200)K=200;\n    vector<vector<int>> out(T,vector<int>(B,0));\n    struct S{int a,r,c;int par;int adj;double v;};\n    for(int b=0;b<B;b++){\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({0,rs,cs,-1,0,0});\n        for(int t=1;t<=T;t++){\n            unordered_map<long long,int> idx;\n            vector<S> nx;\n            auto&cur=lay[t-1];\n            for(int i=0;i<(int)cur.size();i++){\n                S&s=cur[i];\n                for(int d=-1;d<=1;d++){\n                    int na=s.a+d;\n                    if(s.a==0&&d<0)continue;\n                    if(na<0||na>A)continue;\n                    if(s.a>0&&na<1)continue;\n                    int nr=s.r,nc=s.c;\n                    if(na>0){\n                        size_t o=(((size_t)(na-1)*R+s.r)*C+s.c)*2;\n                        nr=s.r+W[o];\n                        if(nr<0||nr>=R)continue;\n                        nc=(((s.c+W[o+1])%C)+C)%C;\n                    }\n                    double g=0;\n                    if(na>0){\n                        for(int rr=max(0,nr-V);rr<=min(R-1,nr+V);rr++)\n                            for(int id:rowT[rr]){\n                                if(cov[t][id])continue;\n                                int dr=rr-nr,dc=cd(nc,tc[id]);\n                                if(dr*dr+dc*dc<=V*V)g++;\n                            }\n                    }\n                    double nv=s.v+g;\n                    long long key=((long long)na*R+nr)*C+nc;\n                    auto it=idx.find(key);\n                    if(it==idx.end()){idx[key]=nx.size();nx.push_back({na,nr,nc,i,d,nv});}\n                    else if(nx[it->second].v<nv)nx[it->second]={na,nr,nc,i,d,nv};\n                }\n            }\n            if((int)nx.size()>K){\n                nth_element(nx.begin(),nx.begin()+K,nx.end(),[](const S&x,const S&y){return x.v>y.v;});\n                nx.resize(K);\n            }\n            lay[t]=nx;\n            if(nx.empty())break;\n        }\n        int best=-1;double bv=-1;int bt=0;\n        for(int t=T;t>=0&&best<0;t--){\n            if(lay[t].empty())continue;\n            // only full-length paths matter; dead ones can't continue\n            for(int i=0;i<(int)lay[t].size();i++)if(lay[t][i].v>bv){bv=lay[t][i].v;best=i;bt=t;}\n        }\n        // Reconstruct\n        int i=best;\n        vector<int> adj(T,0);\n        vector<array<int,2>> pos(T+1);\n        int t=bt;\n        while(t>0){\n            S&s=lay[t][i];\n            adj[t-1]=s.adj;\n            pos[t]={s.r,s.c};\n            // altitude>0 means covering at this turn\n            if(s.a>0){\n                for(int rr=max(0,s.r-V);rr<=min(R-1,s.r+V);rr++)\n                    for(int id:rowT[rr]){\n                        int dr=rr-s.r,dc=cd(s.c,tc[id]);\n                        if(dr*dr+dc*dc<=V*V)cov[t][id]=1;\n                    }\n            }\n            i=s.par;t--;\n        }\n        // for turns after bt (balloon lost), adjust 0 (valid as altitude stays)\n        for(int k=0;k<T;k++)out[k][b]=adj[k];\n    }\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++)printf(\"%d%c\",out[t][b],b==B-1?'\\n':' ');\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 2631,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

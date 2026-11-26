@@ -1,0 +1,57 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "7135946d354d2d7ef747bda763717ca6fea0f1f209e0fd2a5294865a42972a1b",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQUjTNUrCnqJd9MXmrCW",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:01:40+00:00",
+ "finished_utc": "2026-11-25T23:02:01+00:00",
+ "seconds": 20.754,
+ "seconds_to_first_text": 2.961,
+ "message": {
+  "id": "msg_011ChQUjcCYHd5Q7cxocUYAx",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy simulation in event-driven time order.\n\n**Approach.** Keep the current day `T`, each contributor's free time, and their current skill levels. Maintain a pool of unscheduled projects. Repeat the following:\n\n1. Try each remaining project in priority order. Priority is based on score and duration. Also skip any project whose score would already be zero.\n2. For a project, build a team role by role. For each role, pick the free contributor (free time \u2264 T) with the lowest sufficient level, so strong contributors are saved for later and weak ones get to learn.\n3. Mentoring is handled as follows. A contributor at level `need-1` qualifies if some other member holds the skill at `need` or higher. That member may be already chosen, or may be chosen later. A simple way to cover this is to process roles in descending order of required level and fill each with the best candidate. A role that needs mentoring is only accepted if a team member with the skill at the needed level already exists.\n4. If a team is formed, record the project and set the members' free time to `T + D`. Apply level-ups immediately. Contributors are busy until then, so the levels are not used earlier.\n5. If no project can be scheduled at `T`, advance `T` to the next completion time among busy contributors. If none are busy, stop.\n\n**Details.**\n- Skills are stored per contributor in an `unordered_map<int,int>`, with skill names mapped to ids.\n- Each pass over the remaining projects costs about P \u00d7 R \u00d7 C if done naively, which is too slow. To bound it, for each skill I keep a list of contributors. For a role I scan only the contributors with that skill, plus level-0 candidates when mentoring applies. To keep it simple, I cap the scan: for each skill, scan the list of contributors who have it, and treat the mentored option only when they are in that list at level `need-1`. This misses the case of a contributor with no skill at all being mentored at level 1, which is a loss in quality only, not in validity.\n- Event loop: at each `T`, one pass over the remaining projects, scheduling whatever fits. Then advance `T` to the next free time. The number of passes is bounded by the number of distinct completion times, and I also cap the work by a time check on the clock, stopping at about 8 seconds.\n- Projects are sorted once by score/duration descending. The pass skips a project when `T + D` is at or beyond `B + S`, since it would score zero.\n- Because the levels of contributors only change when a project is scheduled, and their free times were set to the completion time, the levels are applied at scheduling time. This is valid because those contributors are not reused before then.\n\nValidity check on mentoring: the member providing the mentoring must have the skill at `need` or higher at the project's start. Their current level is up to date, since they are free at `T`. Level-ups apply after the project, so I compute the team from the pre-project levels and then update.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int C,P;\n    scanf(\"%d %d\",&C,&P);\n    unordered_map<string,int> id;\n    auto gid=[&](const string&s){auto it=id.find(s);if(it!=id.end())return it->second;int k=id.size();id[s]=k;return k;};\n    vector<string> cn(C);\n    vector<unordered_map<int,int>> lv(C);\n    vector<vector<int>> bySkill;\n    char buf[64];\n    for(int i=0;i<C;i++){\n        int n;scanf(\"%s %d\",buf,&n);cn[i]=buf;\n        for(int j=0;j<n;j++){\n            int l;scanf(\"%s %d\",buf,&l);\n            int s=gid(buf);\n            lv[i][s]=l;\n            if((int)bySkill.size()<=s)bySkill.resize(s+1);\n            bySkill[s].push_back(i);\n        }\n    }\n    struct Pr{string name;int d,s,b;vector<pair<int,int>> r;};\n    vector<Pr> pr(P);\n    for(int i=0;i<P;i++){\n        int r;\n        scanf(\"%s %d %d %d %d\",buf,&pr[i].d,&pr[i].s,&pr[i].b,&r);\n        pr[i].name=buf;\n        for(int j=0;j<r;j++){\n            int l;scanf(\"%s %d\",buf,&l);\n            pr[i].r.push_back({gid(buf),l});\n        }\n    }\n    bySkill.resize(id.size()+1);\n    vector<int> ord(P);\n    iota(ord.begin(),ord.end(),0);\n    stable_sort(ord.begin(),ord.end(),[&](int a,int b){\n        return (double)pr[a].s/pr[a].d/pr[a].r.size()>(double)pr[b].s/pr[b].d/pr[b].r.size();\n    });\n    vector<long long> fr(C,0);\n    vector<int> done(P,0);\n    vector<pair<int,vector<int>>> out;\n    auto lvl=[&](int c,int s){auto it=lv[c].find(s);return it==lv[c].end()?0:it->second;};\n    auto t0=clock();\n    long long T=0;\n    while(true){\n        bool any=false;\n        for(int pi:ord){\n            if(done[pi])continue;\n            Pr&p=pr[pi];\n            if(T+p.d>=(long long)p.b+p.s)continue;\n            int R=p.r.size();\n            vector<int> team(R,-1);\n            set<int> used;\n            bool ok=true;\n            vector<int> ro(R);\n            iota(ro.begin(),ro.end(),0);\n            sort(ro.begin(),ro.end(),[&](int a,int b){return p.r[a].second>p.r[b].second;});\n            map<int,int> maxl;\n            for(int k:ro){\n                int s=p.r[k].first,need=p.r[k].second;\n                int best=-1,bl=1000;\n                for(int c:bySkill[s]){\n                    if(fr[c]>T||used.count(c))continue;\n                    int l=lvl(c,s);\n                    bool q=l>=need||(l==need-1&&maxl.count(s)&&maxl[s]>=need);\n                    if(!q)continue;\n                    if(l<bl){bl=l;best=c;}\n                }\n                if(best<0){ok=false;break;}\n                team[k]=best;used.insert(best);\n                maxl[s]=max(maxl[s],lvl(best,s));\n            }\n            if(!ok)continue;\n            for(int k=0;k<R;k++){\n                int c=team[k],s=p.r[k].first;\n                if(lvl(c,s)<=p.r[k].second)lv[c][s]=lvl(c,s)+1;\n                fr[c]=T+p.d;\n            }\n            done[pi]=1;\n            out.push_back({pi,team});\n            any=true;\n        }\n        long long nt=LLONG_MAX;\n        for(int c=0;c<C;c++)if(fr[c]>T)nt=min(nt,fr[c]);\n        if(nt==LLONG_MAX)break;\n        T=nt;\n        if((double)(clock()-t0)/CLOCKS_PER_SEC>8)break;\n        (void)any;\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&o:out){\n        printf(\"%s\\n\",pr[o.first].name.c_str());\n        for(size_t i=0;i<o.second.size();i++)printf(\"%s%s\",i?\" \":\"\",cn[o.second[i]].c_str());\n        printf(\"\\n\");\n    }\n}\n```\n\n**Caveat.** The mentoring check uses the highest level among members already chosen, and roles are processed in descending requirement order. A mentee whose mentor would be picked later is therefore rejected. That is valid but conservative.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16858,
+   "output_tokens": 2592,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

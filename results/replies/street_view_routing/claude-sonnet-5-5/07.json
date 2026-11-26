@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQVX4qBhYqT2B4pfy866",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:11:58+00:00",
+ "finished_utc": "2026-11-25T23:13:16+00:00",
+ "seconds": 77.185,
+ "seconds_to_first_text": 62.396,
+ "message": {
+  "id": "msg_011ChQVbZyVDTwSFJdNDpVC6",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem. The real instance has N=11348 junctions, M=17958 streets, T=54000, C=8 cars, and S=4516. My approach is a greedy walk per car with a lookahead heuristic, in a single time-bounded program.\n\n**Approach**\n- Build a directed adjacency list. Each street gets an id, and a bidirectional street adds two arcs that share the same id.\n- Cars are planned one at a time, each with its own remaining time. The covered set of streets is shared across cars.\n- At each step, from the current node and with remaining time `rem`, run a bounded Dijkstra by time to find the best target. A target is a node reached via an uncovered edge, scored as the gain of that edge divided by the time to reach it plus the edge cost.\n- Dijkstra is limited to a modest radius, which keeps the work manageable. If no uncovered edge is found within the radius, fall back to a larger search. If none exists at all, stop.\n- The move must leave the car enough time to finish. Cars do not need to return anywhere, so the only constraint is that total time stays at most T.\n- Choosing the target: for each settled node u at distance d, for each outgoing arc (u,v) with an uncovered edge, the cost is d + c, which must be at most rem. The score is L / (d + c). Take the best. Then walk the path to u, traverse the arc, and mark the edges on the path as covered. Marking the path edges as covered while walking is correct, since walking them covers them.\n- To spread the cars out, the shared covered set makes later steps avoid already-covered areas. I interleave the cars round-robin, with each car taking one move at a time and the car with the most remaining time going first. This gives better diversity than running cars sequentially.\n- Complexity: each step runs a Dijkstra that stops after settling a limited number of nodes (about 300). Roughly 54000\u00b78/avg-edge-time \u2248 10^4\u201310^5 steps times about 300 nodes is fine.\n- Dijkstra uses a stamp array to avoid reinitialising, a heap of (dist, node), and parent arc tracking.\n- When the settled count reaches the cap, stop expanding but still consider the best found. If nothing is found, continue the search without the cap, until the heap is empty or the distance exceeds rem.\n- The score also includes a small bonus for the number of uncovered edges, but I keep it simple with L/(d+c).\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Arc{int to,id,c;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<Arc>> g(N);\n    vector<int> L(M);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;\n        scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        L[j]=l;\n        g[a].push_back({b,j,c});\n        if(d==2)g[b].push_back({a,j,c});\n    }\n    vector<char> cov(M,0);\n    vector<vector<int>> path(C,vector<int>(1,S));\n    vector<int> cur(C,S),rem(C,T);\n    vector<char> done(C,0);\n    vector<long long> dist(N,0);\n    vector<int> stamp(N,0),settledStamp(N,0);\n    vector<int> parNode(N),parArc(N);\n    int st=0;\n    int active=C;\n    while(active>0){\n        int car=-1;\n        for(int i=0;i<C;i++)if(!done[i]&&(car<0||rem[i]>rem[car]))car=i;\n        int src=cur[car],R=rem[car];\n        st++;\n        typedef pair<long long,int> P;\n        priority_queue<P,vector<P>,greater<P>> pq;\n        dist[src]=0;stamp[src]=st;parNode[src]=-1;\n        pq.push({0,src});\n        double best=-1;int bu=-1,ba=-1;\n        int settled=0;\n        while(!pq.empty()){\n            auto [d,u]=pq.top();pq.pop();\n            if(settledStamp[u]==st||d!=dist[u])continue;\n            settledStamp[u]=st;\n            settled++;\n            if(settled>400&&bu>=0)break;\n            for(int k=0;k<(int)g[u].size();k++){\n                const Arc&a=g[u][k];\n                long long nd=d+a.c;\n                if(nd>R)continue;\n                if(!cov[a.id]){\n                    double sc=(double)L[a.id]/(double)nd;\n                    if(sc>best){best=sc;bu=u;ba=k;}\n                }\n                if(stamp[a.to]!=st||nd<dist[a.to]){\n                    stamp[a.to]=st;dist[a.to]=nd;\n                    parNode[a.to]=u;parArc[a.to]=k;\n                    pq.push({nd,a.to});\n                }\n            }\n        }\n        if(bu<0){done[car]=1;active--;continue;}\n        vector<pair<int,int>> seq;\n        int x=bu;\n        while(parNode[x]>=0){\n            seq.push_back({parNode[x],parArc[x]});\n            x=parNode[x];\n        }\n        reverse(seq.begin(),seq.end());\n        seq.push_back({bu,ba});\n        for(auto&pr:seq){\n            const Arc&a=g[pr.first][pr.second];\n            cov[a.id]=1;\n            rem[car]-=a.c;\n            path[car].push_back(a.to);\n            cur[car]=a.to;\n        }\n    }\n    string out;\n    out+=to_string(C)+\"\\n\";\n    for(int i=0;i<C;i++){\n        out+=to_string(path[i].size())+\"\\n\";\n        for(int v:path[i])out+=to_string(v)+\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```\n\nTime limits are respected because each step is capped at roughly 400 settled nodes (extended only if no uncovered edge has been found yet). The path to the chosen node fits within `rem` because Dijkstra distances were bounded by R. A rare edge case is a node whose settled count passes 400 with no target, which keeps searching until the heap is empty or `rem` is exhausted, so it still terminates.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2181,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

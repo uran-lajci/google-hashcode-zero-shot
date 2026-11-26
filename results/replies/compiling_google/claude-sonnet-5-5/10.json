@@ -1,0 +1,57 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "d24b8e00735e5fdc5e27fee83fcd4ce46f85fb0f7deca53163d5eee72ee02b0a",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQYqtddvcUbbRud5C1D2",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:55:35+00:00",
+ "finished_utc": "2026-11-25T23:55:49+00:00",
+ "seconds": 14.223,
+ "seconds_to_first_text": 1.776,
+ "message": {
+  "id": "msg_011ChQYqwK8PuMqZXMnpzLHk",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy list-scheduling heuristic that simulates the schedule as it builds it. I have not compiled or run it.\n\n**Approach**\n1. Parse the input and mark every file needed by some target as \"needed\". A target is a candidate only if its deadline is at least its own compile time plus the compile times of all its transitive dependencies. This is a cheap pre-filter on the critical path, not an exact feasibility test.\n2. Process targets in order of deadline, then goal points. For each target, collect the transitive dependencies that have not yet been scheduled anywhere, and schedule them in topological order (ascending file index, since dependencies always appear earlier in the input).\n3. For each file, try every server and pick the one that gives the earliest finish time. The start time on a server is max(server free time, ready time of each dependency on that server).\n4. A dependency's ready time on server s is min(finish on s if compiled there, finish on its compiling server + r). Each file keeps a per-server ready time (100 servers \u00d7 1e5 files = 1e7 ints, about 40 MB, which fits).\n5. Each file is compiled at most once, on its best server. After compiling file f on server s with finish time t, set avail[f][s]=t and avail[f][o]=t+r for all other servers o, taking the minimum with any existing value.\n6. Because steps appear in submission order, a file's dependencies are always output before it. A target is only attempted if it passes the pre-filter. After scheduling, if the target's actual finish time exceeds its deadline, the work is wasted but harmless.\n\nTo avoid wasting work, I do a tentative check before committing: compute the target's finish time through a dry run. Doing this on a copy is too expensive, so I use the simple pre-filter and commit.\n\nComplexity: the number of files scheduled is at most C, and each costs S \u00d7 deps, about 1e5 \u00d7 100 \u00d7 100 = 1e9 in the worst case. That is somewhat heavy, but the dependency count is usually small and the average is lower. To be safe, I compute the start time per server with a loop over dependencies. It stays within the limit in typical cases.\n\nThe transitive collection uses an iterative DFS with a visited stamp, then sorts the collected files by index.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int C,T,S;\n    scanf(\"%d %d %d\",&C,&T,&S);\n    vector<long long> c(C),r(C);\n    vector<vector<int>> dep(C);\n    unordered_map<string,int> id;\n    char buf[64];\n    for(int i=0;i<C;i++){\n        scanf(\"%s %lld %lld\",buf,&c[i],&r[i]);\n        id[buf]=i;\n        int n;scanf(\"%d\",&n);\n        dep[i].resize(n);\n        for(int j=0;j<n;j++){scanf(\"%s\",buf);dep[i][j]=id[buf];}\n    }\n    vector<int> tf(T);vector<long long> td(T),tg(T);\n    for(int i=0;i<T;i++){\n        scanf(\"%s %lld %lld\",buf,&td[i],&tg[i]);\n        tf[i]=id[buf];\n    }\n    // critical path\n    vector<long long> cp(C);\n    for(int i=0;i<C;i++){\n        long long m=0;\n        for(int d:dep[i])m=max(m,cp[d]);\n        cp[i]=m+c[i];\n    }\n    vector<int> ord(T);\n    iota(ord.begin(),ord.end(),0);\n    sort(ord.begin(),ord.end(),[&](int a,int b){\n        if(td[a]!=td[b])return td[a]<td[b];\n        return tg[a]>tg[b];\n    });\n    const int INF=INT_MAX;\n    vector<int> av((size_t)C*S,INF);\n    vector<char> done(C,0);\n    vector<long long> freeT(S,0);\n    vector<pair<int,int>> out;\n    vector<int> stamp(C,-1);\n    for(int oi=0;oi<T;oi++){\n        int t=ord[oi];\n        int f=tf[t];\n        if(cp[f]>td[t])continue;\n        vector<int> need,st;\n        st.push_back(f);\n        stamp[f]=oi;\n        while(!st.empty()){\n            int x=st.back();st.pop_back();\n            if(done[x])continue;\n            need.push_back(x);\n            for(int d:dep[x]){\n                if(!done[d]&&stamp[d]!=oi){stamp[d]=oi;st.push_back(d);}\n            }\n        }\n        sort(need.begin(),need.end());\n        for(int x:need){\n            long long best=LLONG_MAX;int bs=0;\n            for(int s=0;s<S;s++){\n                long long start=freeT[s];\n                for(int d:dep[x]){\n                    long long a=av[(size_t)d*S+s];\n                    if(a>start)start=a;\n                }\n                long long fin=start+c[x];\n                if(fin<best){best=fin;bs=s;}\n            }\n            freeT[bs]=best;\n            done[x]=1;\n            out.push_back({x,bs});\n            for(int s=0;s<S;s++){\n                long long v=(s==bs)?best:best+r[x];\n                if(v>INF-1)v=INF-1;\n                av[(size_t)x*S+s]=(int)v;\n            }\n        }\n    }\n    if(out.empty()){\n        // must output at least one step: compile a file with no dependencies\n        for(int i=0;i<C;i++)if(dep[i].empty()){out.push_back({i,0});break;}\n    }\n    // names\n    vector<string> nm(C);\n    for(auto&p:id)nm[p.second]=p.first;\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&p:out)printf(\"%s %d\\n\",nm[p.first].c_str(),p.second);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16495,
+   "output_tokens": 1973,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

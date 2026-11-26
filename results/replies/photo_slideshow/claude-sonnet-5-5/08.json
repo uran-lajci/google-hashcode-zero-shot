@@ -1,0 +1,57 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9d196ad4a7dbf506228a34339a9cba9d27adce1186319f1575cfdfc979de388f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQWPtaiXa4ZqRb4wPoKQ",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:23:28+00:00",
+ "finished_utc": "2026-11-25T23:23:43+00:00",
+ "seconds": 14.314,
+ "seconds_to_first_text": 1.445,
+ "message": {
+  "id": "msg_011ChQWPvp9p4dKJjeKAXtn7",
+  "container": null,
+  "content": [
+   {
+    "text": "This solution pairs the vertical photos greedily, then orders the slides with a greedy nearest-neighbour walk that only searches candidates sharing a tag. I have not compiled or run it.\n\n**Approach**\n1. Map each tag string to an integer ID and store each photo's sorted tag list.\n2. Sort the vertical photos by tag count and pair them. To keep slides from growing too large, pair the smallest with the largest, so slide sizes stay balanced. Pairing vertical photos with few common tags gives larger unions, which is fine here.\n3. Each slide becomes a sorted tag-ID vector (the union of its photos' tags).\n4. Build an inverted index from tag to slides.\n5. Greedy chain:\n   - Start from slide 0. For the current slide, collect candidates from the inverted lists of its tags, scanning at most about 2000 candidates in total.\n   - Skip slides already used. Frequent tags have long lists, so each list is capped at a window of unused entries.\n   - Pick the candidate with the best interest factor.\n   - If none scores above 0, or no candidates exist, move to any unused slide using a pointer to the next unused one.\n6. Removing used slides: lazily skip them during scanning, and compact each tag's list when it is visited by erasing used entries. Compaction would be O(list) per visit, so instead I keep a per-tag cursor and only advance it past used entries at the front. For each tag, scan from the cursor and examine up to K unused entries, with a cap on total steps.\n\n**Cost**\nThere are up to 1e5 slides, each with a sampled set of about 100 tags or more. For each tag I examine up to about 20 unused entries starting at its cursor, with at most 200 tags considered per slide. That is about 4000 candidate evaluations per step, each costing about 100 operations for the sorted intersection. That totals 4e10, which is too much. So I limit the total candidates to about 300 per step, and with an intersection cost of about 100 that gives 3e9 for the worst case. That is still heavy, so I use a cap of 150 candidates. Many tests have small tag sets, so this should be fine.\n\nScoring: with common c, sizes a and b, the score is min(c, a-c, b-c).\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int n;\n    scanf(\"%d\",&n);\n    unordered_map<string,int> mp;\n    vector<char> o(n);\n    vector<vector<int>> t(n);\n    char buf[32];\n    for(int i=0;i<n;i++){\n        int m;\n        scanf(\" %c %d\",&o[i],&m);\n        for(int j=0;j<m;j++){\n            scanf(\"%s\",buf);\n            string s(buf);\n            auto it=mp.find(s);\n            int id;\n            if(it==mp.end()){id=mp.size();mp[s]=id;}else id=it->second;\n            t[i].push_back(id);\n        }\n        sort(t[i].begin(),t[i].end());\n    }\n    int T=mp.size();\n    vector<vector<int>> sl;\n    vector<array<int,2>> ph;\n    vector<int> vs;\n    for(int i=0;i<n;i++){\n        if(o[i]=='H'){sl.push_back(t[i]);ph.push_back({i,-1});}\n        else vs.push_back(i);\n    }\n    sort(vs.begin(),vs.end(),[&](int a,int b){\n        if(t[a].size()!=t[b].size())return t[a].size()<t[b].size();\n        return a<b;});\n    int l=0,r=(int)vs.size()-1;\n    while(l<r){\n        int a=vs[l],b=vs[r];\n        vector<int> u;\n        set_union(t[a].begin(),t[a].end(),t[b].begin(),t[b].end(),back_inserter(u));\n        sl.push_back(u);\n        ph.push_back({a,b});\n        l++;r--;\n    }\n    int S=sl.size();\n    vector<vector<int>> inv(T);\n    for(int i=0;i<S;i++)for(int x:sl[i])inv[x].push_back(i);\n    vector<int> cur(T,0);\n    vector<char> used(S,0);\n    vector<int> mark(S,-1);\n    vector<int> order;\n    int ptr=0;\n    int c=0;\n    used[0]=1;\n    order.push_back(0);\n    const int CAND=150;\n    for(int step=1;step<S;step++){\n        int best=-1,bs=-1;\n        int cnt=0;\n        const auto&A=sl[c];\n        for(int x:A){\n            auto&L=inv[x];\n            int &cu=cur[x];\n            while(cu<(int)L.size()&&used[L[cu]])cu++;\n            int k=0;\n            for(int p=cu;p<(int)L.size()&&k<6&&cnt<CAND;p++){\n                int s=L[p];\n                if(used[s])continue;\n                k++;\n                if(mark[s]==step)continue;\n                mark[s]=step;\n                cnt++;\n                const auto&B=sl[s];\n                int i=0,j=0,cm=0;\n                while(i<(int)A.size()&&j<(int)B.size()){\n                    if(A[i]<B[j])i++;\n                    else if(A[i]>B[j])j++;\n                    else{cm++;i++;j++;}\n                }\n                int sc=min(cm,min((int)A.size()-cm,(int)B.size()-cm));\n                if(sc>bs){bs=sc;best=s;}\n            }\n            if(cnt>=CAND)break;\n        }\n        if(best<0){\n            while(used[ptr])ptr++;\n            best=ptr;\n        }\n        used[best]=1;\n        order.push_back(best);\n        c=best;\n    }\n    printf(\"%d\\n\",S);\n    for(int s:order){\n        if(ph[s][1]<0)printf(\"%d\\n\",ph[s][0]);\n        else printf(\"%d %d\\n\",ph[s][0],ph[s][1]);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13404,
+   "output_tokens": 2021,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

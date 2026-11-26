@@ -1,0 +1,57 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9d196ad4a7dbf506228a34339a9cba9d27adce1186319f1575cfdfc979de388f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQKvxBq7B9KJP9Xx3wJR",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:06:15+00:00",
+ "finished_utc": "2026-11-25T21:06:30+00:00",
+ "seconds": 15.723,
+ "seconds_to_first_text": 2.017,
+ "message": {
+  "id": "msg_011ChQKw2xpokWyM9cGBewNZ",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy approach, not an optimal one, and I have not compiled or run it.\n\n**Approach**\n1. Read the photos and map each tag string to an integer ID. Each photo's tags become a sorted vector of IDs.\n2. Pair the vertical photos. Sort them by tag count and pair the smallest with the largest, so that merged slides have balanced tag counts. Each horizontal photo is its own slide.\n3. Build the slides. Each slide's tag set is the sorted union of its photos' tags, and the slide keeps its photo IDs.\n4. Order the slides greedily. Start from slide 0. At each step, look only at candidates among unused slides that share a tag with the current slide, and pick the one with the best interest score. Candidates come from the inverted index (tag to slides), and I scan the lists of the current slide's tags.\n5. Bound the work per step. Scanning all of a popular tag's list can be quadratic, so I examine at most about 300 candidates per step, skipping used slides.\n6. Remove used slides lazily. Each tag list has a pointer that skips used slides from the front, and each tag list is walked from its start. Because used slides are skipped by advancing the pointer only while the front is used, a list may still contain used entries in the middle. These entries are ignored during the scan but still count toward the cap.\n7. Handle dead ends. If no candidate is found, fall back to the next unused slide in index order. Slides are initially sorted by the order they were made, so the fallback is simple.\n8. Compute the score of a transition. Count the common tags `c` by merging the two sorted vectors, then take `min(c, a-c, b-c)`.\n9. Early exit. Stop scanning candidates once a score reaches the maximum possible, `min(a,b)/2`.\n\nFor cost, 10^5 slides \u00d7 about 300 candidates \u00d7 a merge of about 50 elements is roughly 1.5\u00d710^9 in the worst case. To keep this inside the time limit, I cap the candidates at 150 total per step, and I use a time check that lowers the cap if the program runs long.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int n;\n    scanf(\"%d\",&n);\n    unordered_map<string,int> mp;\n    vector<vector<int>> tg(n);\n    vector<char> ori(n);\n    char buf[64];\n    for(int i=0;i<n;i++){\n        int m;\n        scanf(\"%s %d\",buf,&m);\n        ori[i]=buf[0];\n        for(int j=0;j<m;j++){\n            scanf(\"%s\",buf);\n            auto it=mp.find(buf);\n            int id;\n            if(it==mp.end()){id=mp.size();mp[buf]=id;}\n            else id=it->second;\n            tg[i].push_back(id);\n        }\n        sort(tg[i].begin(),tg[i].end());\n    }\n    vector<vector<int>> sp;\n    vector<vector<int>> st;\n    vector<int> v;\n    for(int i=0;i<n;i++){\n        if(ori[i]=='H'){sp.push_back({i});st.push_back(tg[i]);}\n        else v.push_back(i);\n    }\n    sort(v.begin(),v.end(),[&](int a,int b){\n        if(tg[a].size()!=tg[b].size())return tg[a].size()<tg[b].size();\n        return a<b;});\n    int l=0,r=(int)v.size()-1;\n    while(l<r){\n        int a=v[l++],b=v[r--];\n        sp.push_back({a,b});\n        vector<int> u;\n        set_union(tg[a].begin(),tg[a].end(),tg[b].begin(),tg[b].end(),back_inserter(u));\n        st.push_back(u);\n    }\n    int S=sp.size();\n    vector<vector<int>> inv(mp.size());\n    for(int i=0;i<S;i++)for(int t:st[i])inv[t].push_back(i);\n    vector<int> ptr(mp.size(),0);\n    vector<char> used(S,0);\n    auto score=[&](int a,int b){\n        auto&A=st[a];auto&B=st[b];\n        size_t i=0,j=0;int c=0;\n        while(i<A.size()&&j<B.size()){\n            if(A[i]==B[j]){c++;i++;j++;}\n            else if(A[i]<B[j])i++;else j++;\n        }\n        return min(c,min((int)A.size()-c,(int)B.size()-c));\n    };\n    vector<int> order;\n    int cur=0;\n    used[0]=1;\n    order.push_back(0);\n    int fb=1;\n    clock_t t0=clock();\n    int cap=150;\n    for(int step=1;step<S;step++){\n        if((step&1023)==0){\n            double el=(double)(clock()-t0)/CLOCKS_PER_SEC;\n            double frac=(double)step/S;\n            if(el>7.0*frac+0.5)cap=max(10,cap/2);\n            else if(el<4.0*frac&&cap<150)cap=min(150,cap*2);\n        }\n        int best=-1,bs=-1;\n        int sz=st[cur].size();\n        int per=max(5,cap/max(1,min(sz,10)));\n        int cnt=0;\n        for(int t:st[cur]){\n            auto&L=inv[t];\n            int&p=ptr[t];\n            while(p<(int)L.size()&&used[L[p]])p++;\n            int seen=0;\n            for(int k=p;k<(int)L.size()&&seen<per;k++){\n                int c=L[k];\n                if(used[c])continue;\n                seen++;\n                int s=score(cur,c);\n                if(s>bs){bs=s;best=c;}\n            }\n            cnt+=seen;\n            if(cnt>=cap)break;\n            if(bs>=sz/2&&bs>0)break;\n        }\n        if(best<0){\n            while(used[fb])fb++;\n            best=fb;\n        }\n        used[best]=1;\n        order.push_back(best);\n        cur=best;\n    }\n    printf(\"%d\\n\",S);\n    for(int s:order){\n        if(sp[s].size()==1)printf(\"%d\\n\",sp[s][0]);\n        else printf(\"%d %d\\n\",sp[s][0],sp[s][1]);\n    }\n}\n```\n\nThe `per` limit divides the cap across up to 10 tags so a single large tag list does not use up the whole budget.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13404,
+   "output_tokens": 2147,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 6,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQTxQGhFN7bzLd1ASFbF",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:51:29+00:00",
+ "finished_utc": "2026-11-25T22:52:52+00:00",
+ "seconds": 82.924,
+ "seconds_to_first_text": 67.855,
+ "message": {
+  "id": "msg_011ChQU3K8GqCQyWpmj4g9CS",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem. The real data set has about 11,348 junctions, 17,958 streets, T=54000, 8 cars, and S=4516. My approach is a greedy heuristic that I have not compiled or tested.\n\n**Approach:** Cars are built one at a time. At each step a car picks its next move by a score that favours new street length per unit of time.\n\n1. For the current junction, look at each outgoing street. If it is uncovered, its value is L/C. If it is already covered, its value is 0.\n2. To avoid dead ends, run a bounded Dijkstra search from the current junction. This finds the best nearby uncovered street by the ratio L / (path time + street time).\n3. Move along the first step of that path, then repeat from the new junction. A car that has no uncovered street within reach falls back to a larger search.\n4. A car must be able to stop at any point, so there is no need to return to the start. The only constraint is that its total time stays at or below T.\n\n**Implementation details:**\n- Each car runs a Dijkstra from its current node over the whole graph. The graph has about 11k nodes, so a full run is cheap. Each car makes roughly 54000/avg-cost moves, around 1000 to 2000.\n- For each Dijkstra, every reachable node v with a not-yet-covered outgoing edge (v\u2192w) gets the value L / (dist[v] + c), provided dist[v] + c plus the car's elapsed time is at most T.\n- The car takes the best-valued target and follows the parent path to it, marking every edge on the path as covered, including the final target edge.\n- The total cost is about 8 cars \u00d7 1500 iterations \u00d7 a Dijkstra of 11k nodes and 36k arcs, which is roughly 5\u00b710^9 in the worst case. That is too much, so I cap each Dijkstra's radius: it stops once the popped distance exceeds a limit, and the limit grows if nothing is found. I use a radius of 600 seconds, doubled while no target is found, up to T.\n- Dijkstra uses a timestamp array so resets are cheap, and the runtime is bounded by the radius.\n- To spread the cars out, they move in round-robin: each iteration extends one car by one path. The shared covered set then keeps them from duplicating work.\n- A car stops when no target is reachable within its remaining time. The loop ends when all cars have stopped.\n- Edges are stored as arcs with an edge id. Covering an edge marks the id, so the opposite direction of a bidirectional street counts as covered too.\n- Input parsing uses scanf, and output goes through a buffered string.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Arc{int to,id,c;};\nint main(){\n    int N,M,T,C,S;\n    if(scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S)!=5)return 0;\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<Arc>> g(N);\n    vector<int> L(M);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        L[j]=l;\n        g[a].push_back({b,j,c});\n        if(d==2)g[b].push_back({a,j,c});\n    }\n    vector<char> cov(M,0);\n    vector<vector<int>> path(C,vector<int>(1,S));\n    vector<int> cur(C,S),tm(C,0);\n    vector<char> done(C,0);\n    vector<long long> dist(N);\n    vector<int> stamp(N,0),par(N),parArc(N);\n    int st=0;\n    int active=C;\n    while(active>0){\n        for(int car=0;car<C;car++){\n            if(done[car])continue;\n            int rem=T-tm[car];\n            int radius=600;\n            int bestV=-1,bestArc=-1;\n            while(true){\n                st++;\n                double bestVal=-1;bestV=-1;\n                priority_queue<pair<long long,int>,vector<pair<long long,int>>,greater<>> pq;\n                int s=cur[car];\n                stamp[s]=st;dist[s]=0;par[s]=-1;pq.push({0,s});\n                vector<char> fin;\n                while(!pq.empty()){\n                    auto [d,u]=pq.top();pq.pop();\n                    if(d!=dist[u])continue;\n                    if(d>radius||d>rem)break;\n                    for(int k=0;k<(int)g[u].size();k++){\n                        const Arc&a=g[u][k];\n                        long long nd=d+a.c;\n                        if(nd>rem)continue;\n                        if(!cov[a.id]){\n                            double val=(double)L[a.id]/nd;\n                            if(val>bestVal){bestVal=val;bestV=u;bestArc=k;}\n                        }\n                        if(nd<=radius&&(stamp[a.to]!=st||nd<dist[a.to])){\n                            stamp[a.to]=st;dist[a.to]=nd;par[a.to]=u;parArc[a.to]=a.id;\n                            pq.push({nd,a.to});\n                        }\n                    }\n                }\n                if(bestV>=0)break;\n                if(radius>=rem){break;}\n                radius*=2;\n            }\n            if(bestV<0){done[car]=1;active--;continue;}\n            // reconstruct path to bestV\n            vector<int> seq;\n            int v=bestV;\n            while(v!=cur[car]){seq.push_back(v);v=par[v];}\n            reverse(seq.begin(),seq.end());\n            int u=cur[car];\n            for(int w:seq){\n                // find arc u->w with parArc\n                cov[parArc[w]]=1;\n                int best=INT_MAX;\n                for(auto&a:g[u])if(a.to==w&&a.id==parArc[w])best=a.c;\n                tm[car]+=best;\n                path[car].push_back(w);\n                u=w;\n            }\n            const Arc&fa=g[bestV][bestArc];\n            cov[fa.id]=1;\n            tm[car]+=fa.c;\n            path[car].push_back(fa.to);\n            cur[car]=fa.to;\n        }\n    }\n    string out=to_string(C)+\"\\n\";\n    for(int c=0;c<C;c++){\n        out+=to_string(path[c].size())+\"\\n\";\n        for(int x:path[c]){out+=to_string(x);out+='\\n';}\n    }\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2216,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

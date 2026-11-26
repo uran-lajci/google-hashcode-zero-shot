@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQRi3VAoaaESQgwQJHNF",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:22:00+00:00",
+ "finished_utc": "2026-11-25T22:22:22+00:00",
+ "seconds": 21.974,
+ "seconds_to_first_text": 4.958,
+ "message": {
+  "id": "msg_011ChQRiM46RkoRryBA9daHc",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution that plans each balloon in turn against the current coverage, using a bounded beam of states per turn.\n\n**Approach**\n- Balloons are planned one at a time. For each balloon, a DP runs over (turn, position, altitude), with the balloon's launch turn as part of the state.\n- The state space is too large to enumerate fully: positions are R\u00b7C = 10^6, altitudes up to 1000, and turns up to 1000. So I keep a beam of states per turn.\n- The value of a state at the end of a turn is the number of target cells it covers that no earlier balloon already covers at that turn. This is a marginal-gain greedy.\n\n**State and beam**\n- A state is (r, c, alt, parent index). Each turn the states are expanded with 3 altitude choices, then pruned to the best K by accumulated score.\n- Each balloon gets its own beam, so there are B beams of T turns each. At K = 30 and 3 children per state, one balloon costs about T\u00b7K\u00b73 gain evaluations, and one balloon over all turns is about 10^5 evaluations. Over 1000 balloons that is about 10^8 evaluations in total.\n- Each gain evaluation loops over the L targets, which is 1000, so about 10^11 operations. That is too slow.\n\n**Faster gain evaluation**\n- Precompute a per-turn grid of uncovered-target counts within radius V. A direct 2D table is too large: 1000 turns \u00d7 10^6 cells.\n- Instead, use a bucket grid of targets. Cells are divided into blocks of size V+1, and for each position only the targets in the 3\u00d73 neighboring blocks are checked. This is typically far fewer than L targets.\n- A per-turn \"covered\" bit for each target marks targets already covered by earlier balloons.\n- To make the cost safe, I cap the work with a time check. Once the elapsed time passes a budget, the remaining balloons stay on the ground with a 0 adjustment, which is valid.\n\n**Pruning and launch**\n- To avoid dead states, a balloon that is lost is dropped from the beam.\n- The launch choice is handled as the first move: at turn t, an unlaunched balloon either stays (0) or launches (+1) to altitude 1. The beam starts with a single \"unlaunched\" state at the start cell, altitude 0, and it carries over every turn.\n- The beam holds the unlaunched state plus the launched states. The unlaunched state has a score of 0 and is always kept.\n- The best final state is found by backtracking through parent pointers, and the adjustments are written to the output.\n\n**Memory**\n- Per balloon, the beam stores T\u00b7K\u00b73 entries, which is small. The adjustments are held as T\u00d7B chars, about 1 MB.\n- The covered bits are T\u00d7L bytes, about 1 MB.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nvector<int> TR,TC;\nvector<vector<int>> bucket;\nint BS,NBR,NBC;\nvector<short> WA_,WB_;\nstruct S{int r,c,a,par,sc;signed char d;};\nint main(){\n    scanf(\"%d %d %d %d %d %d %d %d %d\",&R,&C,&A,&L,&V,&B,&T,&rs,&cs);\n    TR.resize(L);TC.resize(L);\n    for(int i=0;i<L;i++)scanf(\"%d %d\",&TR[i],&TC[i]);\n    WA_.resize((size_t)A*R*C);WB_.resize((size_t)A*R*C);\n    for(size_t i=0;i<(size_t)A*R*C;i++){int a,b;scanf(\"%d %d\",&a,&b);WA_[i]=a;WB_[i]=b;}\n    BS=V+1;NBR=(R+BS-1)/BS;NBC=(C+BS-1)/BS;\n    bucket.assign(NBR*NBC,{});\n    for(int i=0;i<L;i++)bucket[(TR[i]/BS)*NBC+TC[i]/BS].push_back(i);\n    vector<char> cov((size_t)T*L,0);\n    vector<vector<signed char>> out(T,vector<signed char>(B,0));\n    auto start=chrono::steady_clock::now();\n    const int K=20;\n    long long V2=(long long)V*V;\n    auto gain=[&](int r,int c,int t,bool mark)->int{\n        int g=0;\n        int br=r/BS,bc=c/BS;\n        for(int dr=-1;dr<=1;dr++){\n            int rr=br+dr;if(rr<0||rr>=NBR)continue;\n            for(int dc=-1;dc<=1;dc++){\n                int cc=((bc+dc)%NBC+NBC)%NBC;\n                if(NBC<3&&dc!=0&&((bc+dc)%NBC+NBC)%NBC==bc)continue;\n                if(NBC==2&&dc==-1&&((bc-1)%NBC+NBC)%NBC==((bc+1)%NBC))continue;\n                for(int i:bucket[rr*NBC+cc]){\n                    char&cv=cov[(size_t)t*L+i];\n                    if(cv)continue;\n                    int dR=r-TR[i];int d=abs(c-TC[i]);d=min(d,C-d);\n                    if((long long)dR*dR+(long long)d*d<=V2){g++;if(mark)cv=1;}\n                }\n            }\n        }\n        return g;\n    };\n    for(int b=0;b<B;b++){\n        double el=chrono::duration<double>(chrono::steady_clock::now()-start).count();\n        if(el>7.0)break;\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({rs,cs,0,-1,0,0});\n        for(int t=0;t<T;t++){\n            vector<S> nx;\n            auto&cur=lay[t];\n            for(int i=0;i<(int)cur.size();i++){\n                S&s=cur[i];\n                for(int d=-1;d<=1;d++){\n                    int na=s.a+d;\n                    if(s.a==0){if(d<0)continue;if(d==0){nx.push_back({s.r,s.c,0,i,s.sc,0});continue;}}\n                    if(na<1||na>A)continue;\n                    size_t idx=((size_t)(na-1)*R+s.r)*C+s.c;\n                    int nr=s.r+WA_[idx];\n                    if(nr<0||nr>=R)continue;\n                    int nc=((s.c+WB_[idx])%C+C)%C;\n                    int g=gain(nr,nc,t,false);\n                    nx.push_back({nr,nc,na,i,s.sc+g,(signed char)d});\n                }\n            }\n            if((int)nx.size()>K){\n                nth_element(nx.begin(),nx.begin()+K,nx.end(),[](const S&x,const S&y){return x.sc>y.sc;});\n                nx.resize(K);\n            }\n            lay[t+1]=nx;\n        }\n        int bi=-1,bs=-1;\n        for(int i=0;i<(int)lay[T].size();i++)if(lay[T][i].sc>bs){bs=lay[T][i].sc;bi=i;}\n        if(bi<0||bs<=0)continue;\n        int idx=bi;\n        vector<int> ids(T+1);\n        for(int t=T;t>=1;t--){\n            S&s=lay[t][idx];\n            out[t-1][b]=s.d;\n            ids[t]=idx;\n            idx=s.par;\n        }\n        for(int t=1;t<=T;t++){\n            S&s=lay[t][ids[t]];\n            gain(s.r,s.c,t-1,true);\n        }\n    }\n    string o;\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++){\n            if(b)o+=' ';\n            o+=to_string((int)out[t][b]);\n        }\n        o+='\\n';\n    }\n    fputs(o.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 2729,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

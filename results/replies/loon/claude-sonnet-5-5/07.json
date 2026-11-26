@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQUej5tpZFv56AcmsJuw",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:00:36+00:00",
+ "finished_utc": "2026-11-25T23:00:56+00:00",
+ "seconds": 20.208,
+ "seconds_to_first_text": 3.828,
+ "message": {
+  "id": "msg_011ChQUewRJU2Xdvvto8Mf44",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy approach, not an optimal one. I have not compiled or run it.\n\n**Approach.** Balloons are planned one at a time. Each balloon follows its own route through the simulation, and a per-turn coverage count of the target cells records what the earlier balloons already cover.\n\nFor each balloon, a DP over (turn, position, altitude) would be too large: 1000 turns \u00d7 10^6 cells \u00d7 1000 altitudes. So I use a beam search over states (row, col, altitude).\n\n- State: (r, c, a), with a = 0 meaning not yet launched.\n- At each turn, every state in the beam expands to up to 3 successors (altitude change \u22121, 0 or +1).\n- Each successor gets the marginal gain of that balloon at its new cell for this turn. The gain is the number of targets within radius V whose count at this turn is 0.\n- The beam keeps the best W states by cumulative score. Duplicate states are removed with a hash map.\n- Back-pointers are stored per turn.\n\n**Cost.** The gain is computed by iterating over the targets (L \u2264 1000), which is expensive. Cost per evaluation is L, per turn it is W \u00d7 3 \u00d7 L, and per balloon it is T \u00d7 W \u00d7 3 \u00d7 L, so over B balloons it is B \u00d7 T \u00d7 W \u00d7 3 \u00d7 L. With B = T = L = 1000 this is 3\u00d710^9 \u00d7 W, which is far too much.\n\nTo speed it up, I precompute for each turn a grid of gain per cell only when needed. A cheaper option is a bucket grid of targets, which restricts the check to targets near the cell.\n\nI take a simpler route. I limit the beam to W = 3 and reduce the per-evaluation cost with a target list sorted by row, using binary search to find the row range [r\u2212V, r+V]. The remaining cost is the number of targets in that row window, which is on average small when the targets are spread out. I also add a global time check: once about 8.5 s have elapsed, the remaining balloons just stay on the ground (output 0s). This keeps the output valid.\n\n**Scoring a state.** Gain is computed for the cell after the move. A balloon lost to the row boundary becomes dead and is dropped from the beam. If the beam empties, the balloon outputs 0 for the remaining turns, which is valid because adjustments for lost balloons only need to respect the altitude bounds. Output is built with a per-balloon adjustment array. For lost balloons I keep adjustment 0, which is valid in both cases: an unlaunched balloon stays at altitude 0, and a launched one stays within its bounds.\n\nAfter a balloon is planned, I replay its path and increment the counts for the covered targets at each turn.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nvector<pair<int,int>> tg;\nvector<vector<int>> cnt; // T+1 x L\nvector<int> wr,wc;\ninline int cd(int a,int b){int d=abs(a-b);return min(d,C-d);}\nint main(){\n    scanf(\"%d %d %d %d %d %d %d %d %d\",&R,&C,&A,&L,&V,&B,&T,&rs,&cs);\n    tg.resize(L);\n    for(auto&p:tg)scanf(\"%d %d\",&p.first,&p.second);\n    sort(tg.begin(),tg.end());\n    wr.assign((size_t)A*R*C,0);wc.assign((size_t)A*R*C,0);\n    for(size_t i=0;i<(size_t)A*R*C;i++){scanf(\"%d %d\",&wr[i],&wc[i]);}\n    cnt.assign(T+1,vector<int>(L,0));\n    vector<vector<signed char>> out(T,vector<signed char>(B,0));\n    auto gain=[&](int r,int c,int t){\n        int lo=lower_bound(tg.begin(),tg.end(),make_pair(r-V,-1))-tg.begin();\n        int g=0;\n        for(int i=lo;i<L&&tg[i].first<=r+V;i++){\n            if(cnt[t][i])continue;\n            int dr=tg[i].first-r,dc=cd(c,tg[i].second);\n            if(dr*dr+dc*dc<=V*V)g++;\n        }\n        return g;\n    };\n    auto t0=chrono::steady_clock::now();\n    const int W=3;\n    struct S{int r,c,a;long long sc;int par;signed char d;};\n    for(int b=0;b<B;b++){\n        double el=chrono::duration<double>(chrono::steady_clock::now()-t0).count();\n        if(el>8.0)break;\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({rs,cs,0,0,-1,0});\n        for(int t=1;t<=T;t++){\n            vector<S> cand;\n            auto&prev=lay[t-1];\n            for(int i=0;i<(int)prev.size();i++){\n                S&s=prev[i];\n                for(int d=-1;d<=1;d++){\n                    int na=s.a+d;\n                    if(na<0||na>A)continue;\n                    if(s.a==0&&d==-1)continue;\n                    if(s.a>0&&na<1)continue;\n                    int nr=s.r,nc=s.c;\n                    if(na>0){\n                        size_t k=((size_t)(na-1)*R+s.r)*C+s.c;\n                        nr=s.r+wr[k];\n                        nc=((s.c+wc[k])%C+C)%C;\n                        if(nr<0||nr>=R)continue;\n                    }\n                    long long sc=s.sc;\n                    if(na>0)sc+=gain(nr,nc,t);\n                    cand.push_back({nr,nc,na,sc,i,(signed char)d});\n                }\n            }\n            sort(cand.begin(),cand.end(),[](const S&x,const S&y){return x.sc>y.sc;});\n            vector<S>&nx=lay[t];\n            for(auto&s:cand){\n                bool dup=false;\n                for(auto&q:nx)if(q.r==s.r&&q.c==s.c&&q.a==s.a){dup=true;break;}\n                if(dup)continue;\n                nx.push_back(s);\n                if((int)nx.size()>=W)break;\n            }\n            if(nx.empty())break;\n        }\n        // find best final: use deepest layer reached\n        int tt=T;\n        while(tt>0&&lay[tt].empty())tt--;\n        if(tt==0)continue;\n        int idx=0;\n        // path\n        vector<pair<int,int>> pos(T+1,{-1,-1});\n        int cur=idx;\n        for(int t=tt;t>=1;t--){\n            S&s=lay[t][cur];\n            out[t-1][b]=s.d;\n            if(s.a>0)pos[t]={s.r,s.c};\n            cur=s.par;\n        }\n        for(int t=1;t<=tt;t++){\n            if(pos[t].first<0)continue;\n            int r=pos[t].first,c=pos[t].second;\n            int lo=lower_bound(tg.begin(),tg.end(),make_pair(r-V,-1))-tg.begin();\n            for(int i=lo;i<L&&tg[i].first<=r+V;i++){\n                int dr=tg[i].first-r,dc=cd(c,tg[i].second);\n                if(dr*dr+dc*dc<=V*V)cnt[t][i]++;\n            }\n        }\n    }\n    string s;\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++){\n            if(b)s+=' ';\n            s+=to_string((int)out[t][b]);\n        }\n        s+='\\n';\n    }\n    fputs(s.c_str(),stdout);\n}\n```\n\n**Caveat.** If a beam dies partway at turn tt, the balloon's later adjustments are 0. That is valid, since the balloon is lost at that point.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 2671,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

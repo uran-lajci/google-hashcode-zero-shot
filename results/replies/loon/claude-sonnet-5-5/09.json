@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQXe1uF2c1whE8LGBGiK",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:39:47+00:00",
+ "finished_utc": "2026-11-25T23:40:11+00:00",
+ "seconds": 24.431,
+ "seconds_to_first_text": 3.987,
+ "message": {
+  "id": "msg_011ChQXeFAiAEy2aoc38a1fJ",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy approach, not an optimal one. Balloons are simulated turn by turn, and each balloon picks its altitude move by a one-step lookahead heuristic.\n\n**Setup.** Each balloon has a state: altitude 0 (not launched), a position, and an alive flag. The program tracks a coverage count per target cell.\n\n**Per-turn decision.** For each balloon in order, I evaluate the possible altitude changes and choose the best one. For each option I compute the new position and score it.\n\n- **Option score.** An option scores the number of targets covered by the new position that are not already covered this turn by balloons processed earlier. Because a balloon's position at the end of the turn depends on its own choice, I process balloons sequentially and mark cells covered as I go.\n- **Tie-breaking.** Ties are broken by a potential: the negative of the distance from the new position to the nearest target. That gives a gradient toward targets when nothing is covered.\n- **Lost balloons.** An option that leaves the grid is heavily penalised, unless every option is lost.\n- **Launch.** An unlaunched balloon may launch (+1) or wait. Launching is scored the same way, with the position computed from the movement grid at altitude 1. Staying costs nothing, so a balloon launches if its score is positive or its potential is better than staying. To spread balloons out, I launch one balloon per turn, which staggers them. If the best option is not launching, the balloon waits.\n\n**Coverage counting.** A coverage check costs L per option. With B=1000 balloons, 3 options, L=1000 and T=1000, that is 3\u00b710^9 operations, which is too slow. I reduce it with a per-turn grid `cov[r][c]` marking covered targets, and for each candidate position I iterate over the targets in the rows within V of it. Rows are bucketed by target, so a check costs the number of targets in about 2V+1 rows. This is still potentially heavy, so I use a cheap early filter: precompute for each cell the nearest-target distance (a multi-source BFS in row/column-circular metric, approximated), and compute the exact coverage count only when that distance is at most V. Many balloons are far from targets, so this saves a lot.\n\n**Distance potential.** Nearest-target distance is computed by BFS over the cyclic grid with 8-neighbour moves (Chebyshev distance). That is R\u00b7C = 10^6 cells, which is cheap.\n\n**Time check.** The exact count is done only for candidates within V of a target. In the worst case there are 3\u00b710^6 candidate evaluations per 1000 turns times the cost of scanning the target list, which could reach about 3\u00b710^9. To bound this, I cap the exact scan using a target-per-row list. I also keep a running time check: if the elapsed time exceeds about 8 s, the program switches to potential-only evaluation (no exact counts).\n\n**Memory.** Winds are stored as A\u00b7R\u00b7C\u00b72 values. At 10^9 entries in the worst case that is too large as int8, so I store them as two int8 arrays of size A\u00b7R\u00b7C. That is 2 GB at the maximum, which fits within 3.5 GB.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nint main(){\n    scanf(\"%d %d %d\",&R,&C,&A);\n    scanf(\"%d %d %d %d\",&L,&V,&B,&T);\n    scanf(\"%d %d\",&rs,&cs);\n    vector<int> tr(L),tc(L);\n    vector<vector<int>> rowT(R);\n    for(int i=0;i<L;i++){scanf(\"%d %d\",&tr[i],&tc[i]);rowT[tr[i]].push_back(tc[i]);}\n    size_t N=(size_t)A*R*C;\n    vector<signed char> da(N),db(N);\n    for(size_t i=0;i<N;i++){int a,b;scanf(\"%d %d\",&a,&b);da[i]=a;db[i]=b;}\n    // distance potential\n    vector<int> dist((size_t)R*C,1e9);\n    {\n        vector<int> q;q.reserve((size_t)R*C);\n        for(int i=0;i<L;i++){dist[(size_t)tr[i]*C+tc[i]]=0;q.push_back(tr[i]*C+tc[i]);}\n        for(size_t h=0;h<q.size();h++){\n            int r=q[h]/C,c=q[h]%C;int d=dist[q[h]];\n            for(int dr=-1;dr<=1;dr++)for(int dc=-1;dc<=1;dc++){\n                if(!dr&&!dc)continue;\n                int nr=r+dr;if(nr<0||nr>=R)continue;\n                int nc=(c+dc+C)%C;\n                if(dist[(size_t)nr*C+nc]>d+1){dist[(size_t)nr*C+nc]=d+1;q.push_back(nr*C+nc);}\n            }\n        }\n    }\n    vector<int> alt(B,0),pr(B,rs),pc(B,cs);\n    vector<char> alive(B,1);\n    vector<vector<int>> out(T,vector<int>(B,0));\n    vector<int> mark((size_t)R*C,-1);\n    // targets index map\n    vector<int> tid((size_t)R*C,-1);\n    for(int i=0;i<L;i++)tid[(size_t)tr[i]*C+tc[i]]=i;\n    vector<int> covT(L,-1);\n    auto t0=chrono::steady_clock::now();\n    bool fast=false;\n    int launchedCount=0;\n    auto cnt=[&](int r,int c,int turn,bool apply){\n        int n=0;\n        for(int u=max(0,r-V);u<=min(R-1,r+V);u++){\n            int dr=r-u;\n            for(int v:rowT[u]){\n                int d=abs(c-v);d=min(d,C-d);\n                if(dr*dr+d*d<=V*V){\n                    int id=tid[(size_t)u*C+v];\n                    if(covT[id]!=turn){n++;if(apply)covT[id]=turn;}\n                }\n            }\n        }\n        return n;\n    };\n    for(int t=0;t<T;t++){\n        if(!fast&&(t&7)==0){\n            double el=chrono::duration<double>(chrono::steady_clock::now()-t0).count();\n            if(el>6.5)fast=true;\n        }\n        bool launchedThis=false;\n        for(int b=0;b<B;b++){\n            if(!alive[b])continue;\n            int bestO=0;long long bestS=LLONG_MIN;\n            for(int o=-1;o<=1;o++){\n                int na=alt[b]+o;\n                if(na<1&&alt[b]==0&&o==0){\n                    // stay\n                    long long s=-1000000;\n                    // staying on ground: tiny score\n                    if(bestS<s){bestS=s;bestO=0;}\n                    continue;\n                }\n                if(alt[b]==0&&o==-1)continue;\n                if(na<1||na>A)continue;\n                if(alt[b]==0&&o==1&&launchedThis)continue;\n                size_t idx=(size_t)(na-1)*R*C+(size_t)pr[b]*C+pc[b];\n                int nr=pr[b]+da[idx];\n                if(nr<0||nr>=R){\n                    long long s=-100000000LL;\n                    if(s>bestS){bestS=s;bestO=o;}\n                    continue;\n                }\n                int nc=((pc[b]+db[idx])%C+C)%C;\n                int d=dist[(size_t)nr*C+nc];\n                long long s=0;\n                if(!fast&&d<=V)s=(long long)cnt(nr,nc,t,false)*1000;\n                s-=min(d,100000);\n                if(alt[b]==0)s-=0;\n                if(s>bestS){bestS=s;bestO=o;}\n            }\n            if(alt[b]==0){\n                if(bestO==1){launchedThis=true;alt[b]=1;}\n                else {continue;}\n            } else alt[b]+=bestO;\n            out[t][b]=bestO;\n            size_t idx=(size_t)(alt[b]-1)*R*C+(size_t)pr[b]*C+pc[b];\n            int nr=pr[b]+da[idx];\n            if(nr<0||nr>=R){alive[b]=0;continue;}\n            pc[b]=((pc[b]+db[idx])%C+C)%C;pr[b]=nr;\n            if(!fast&&dist[(size_t)nr*C+pc[b]]<=V)cnt(nr,pc[b],t,true);\n        }\n    }\n    string s;\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++){\n            if(b)s+=' ';\n            s+=to_string(out[t][b]);\n        }\n        s+='\\n';\n    }\n    fputs(s.c_str(),stdout);\n}\n```\n\n**Known weaknesses.**\n\n- **Launch scoring.** An unlaunched balloon's \"stay\" score is a fixed very low value, so any launch option that does not exit the grid beats staying. In effect, one balloon launches per turn. That is fine for staggering, but a launch that would be lost (score \u221210^8) is still worse than staying only if it is below \u221210^6, which it is, so such launches are skipped.\n- **Early exit.** A balloon that stays on the ground (`continue`) keeps output 0, which is valid.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 3203,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

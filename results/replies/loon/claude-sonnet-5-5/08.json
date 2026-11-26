@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQW8XivHmmcdEcRh3mb8",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:20:00+00:00",
+ "finished_utc": "2026-11-25T23:20:21+00:00",
+ "seconds": 21.252,
+ "seconds_to_first_text": 4.792,
+ "message": {
+  "id": "msg_011ChQW8pJK8bMasiWzr3bKy",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution that moves balloons one at a time.\n\n**Approach.** Each balloon is planned in turn with a DP over (turn, altitude), using the cells already covered by earlier balloons as a baseline. I store a per-turn boolean \"covered\" marker for each target.\n\n**Simulation details.**\n- A balloon at altitude 0 is on the ground. It can stay at 0 or launch to altitude 1.\n- At the start of each turn, a balloon can change altitude by -1, 0 or +1, with the new altitude in [1, A]. Launched balloons never return to 0.\n- The balloon then moves by the wind vector at its new altitude. If the row leaves [0, R), it is lost.\n- The state is (row, col) together with the altitude. The position depends on the path, so the DP must be over (position, altitude), which is too large: 10^6 cells \u00d7 1000 altitudes \u00d7 1000 turns.\n\n**Practical approach.** Planning each balloon with a beam search is feasible.\n- State: (altitude, row, col), with a score so far.\n- At each turn, expand each state into 3 children and keep the best K by score. Score is the marginal gain, meaning the number of targets covered that are not yet covered at that turn, plus a small heuristic.\n- Deduplicate states with a hash map per turn, keeping the best score for each key.\n- With beam width K = 30, cost per balloon is T \u00d7 K \u00d7 3 \u00d7 (coverage check). The coverage check loops over L = 1000 targets, so 1000 \u00d7 30 \u00d7 3 \u00d7 1000 = 9\u00b710^7 per balloon. Across 1000 balloons that is 9\u00b710^10, which is too slow.\n\n**Speedup.** Precompute, for each turn, only the uncovered targets. Cheaper still, use a spatial bucket of targets. I'll use a simple rule: the per-balloon work is capped by a global time budget. Beam width is set from the budget as K = 3 for large inputs, and balloons beyond the time limit just stay on the ground, outputting 0.\n\nTo avoid wasted effort, the check loops over only the uncovered targets for that turn, held in a list. An early reject uses the row difference: |dr| > V skips the target. Targets are sorted by row, so I binary search the row range [r-V, r+V] and test only those.\n\n**Heuristic.** Pure marginal gain is myopic, so I add a small tie-break toward the nearest uncovered target, but this is omitted for simplicity. The beam keeps the best by score and ties go to earlier insertion, which is deterministic.\n\n**Time control.** I use `clock()` and give each balloon an equal share of about 8 seconds. If the budget is exceeded, the remaining balloons output 0 for all turns. Each balloon's beam width is fixed at 8.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nvector<int> W; // dr,dc per altitude\nint main(){\n    scanf(\"%d %d %d %d %d %d %d %d %d\",&R,&C,&A,&L,&V,&B,&T,&rs,&cs);\n    vector<pair<int,int>> tg(L);\n    for(auto&p:tg)scanf(\"%d %d\",&p.first,&p.second);\n    sort(tg.begin(),tg.end());\n    vector<int> tr(L);\n    for(int i=0;i<L;i++)tr[i]=tg[i].first;\n    vector<signed char> dr((size_t)A*R*C),dc((size_t)A*R*C);\n    for(size_t i=0;i<(size_t)A*R*C;i++){int a,b;scanf(\"%d %d\",&a,&b);dr[i]=a;dc[i]=b;}\n    vector<vector<unsigned char>> cov(T+1,vector<unsigned char>(L,0));\n    vector<vector<signed char>> out(T,vector<signed char>(B,0));\n    auto gain=[&](int t,int r,int c){\n        int lo=lower_bound(tr.begin(),tr.end(),r-V)-tr.begin();\n        int g=0;\n        for(int i=lo;i<L&&tr[i]<=r+V;i++){\n            if(cov[t][i])continue;\n            int d=abs(c-tg[i].second);d=min(d,C-d);\n            int e=tr[i]-r;\n            if(e*e+d*d<=V*V)g++;\n        }\n        return g;\n    };\n    auto mark=[&](int t,int r,int c){\n        int lo=lower_bound(tr.begin(),tr.end(),r-V)-tr.begin();\n        for(int i=lo;i<L&&tr[i]<=r+V;i++){\n            int d=abs(c-tg[i].second);d=min(d,C-d);\n            int e=tr[i]-r;\n            if(e*e+d*d<=V*V)cov[t][i]=1;\n        }\n    };\n    struct S{int alt,r,c,par,sc;signed char mv;};\n    const int K=8;\n    clock_t st=clock();\n    for(int b=0;b<B;b++){\n        double el=(double)(clock()-st)/CLOCKS_PER_SEC;\n        if(el>8.0)break;\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({0,rs,cs,-1,0,0});\n        for(int t=1;t<=T;t++){\n            vector<S> cand;\n            auto&pl=lay[t-1];\n            for(int i=0;i<(int)pl.size();i++){\n                S&s=pl[i];\n                for(int m=-1;m<=1;m++){\n                    int na=s.alt+m;\n                    if(s.alt==0){if(m<0)continue;}\n                    else if(na<1||na>A)continue;\n                    if(na>A)continue;\n                    int nr=s.r,nc=s.c;\n                    if(na>0){\n                        size_t k=((size_t)(na-1)*R+s.r)*C+s.c;\n                        nr=s.r+dr[k];nc=((s.c+dc[k])%C+C)%C;\n                        if(nr<0||nr>=R)continue;\n                    }\n                    int g=na>0?gain(t,nr,nc):0;\n                    cand.push_back({na,nr,nc,i,s.sc+g,(signed char)m});\n                }\n            }\n            stable_sort(cand.begin(),cand.end(),[](const S&a,const S&b){return a.sc>b.sc;});\n            set<tuple<int,int,int>> seen;\n            for(auto&s:cand){\n                if((int)lay[t].size()>=K)break;\n                if(seen.insert({s.alt,s.r,s.c}).second)lay[t].push_back(s);\n            }\n            if(lay[t].empty())break;\n        }\n        int bt=-1;\n        for(int t=T;t>=0;t--)if(!lay[t].empty()){bt=t;break;}\n        if(bt<0)continue;\n        // pick best at bt; if died early, fine\n        int bi=0;\n        for(int i=0;i<(int)lay[bt].size();i++)if(lay[bt][i].sc>lay[bt][bi].sc)bi=i;\n        int idx=bi;\n        for(int t=bt;t>=1;t--){\n            S&s=lay[t][idx];\n            out[t-1][b]=s.mv;\n            mark(t,s.r,s.c);\n            idx=s.par;\n        }\n        // remaining turns after loss: need valid zeros; altitude unchanged is valid\n    }\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++)printf(\"%d%c\",(int)out[t][b],b+1<B?' ':'\\n');\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 2597,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

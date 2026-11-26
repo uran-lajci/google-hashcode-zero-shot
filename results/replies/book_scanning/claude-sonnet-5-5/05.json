@@ -1,0 +1,57 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 5,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQRQ5iMFzjHqbGTbejjk",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:17:57+00:00",
+ "finished_utc": "2026-11-25T22:18:11+00:00",
+ "seconds": 13.953,
+ "seconds_to_first_text": 2.966,
+ "message": {
+  "id": "msg_011ChQRQEsX9LtyveBjyRyNe",
+  "container": null,
+  "content": [
+   {
+    "text": "The approach is a greedy construction followed by a book-assignment pass. I have not compiled or run it against any data set.\n\n**Library ordering.** Libraries are chosen one at a time. At the current time `t`, each candidate library has `rem = D - t - T` days left to scan, so it can ship at most `cap = rem * M` books. Its value is the sum of the top `cap` scores among its books that are not yet taken. The library with the best value divided by `T` (or value divided by `T^1.0`) is picked next.\n\n**Lazy evaluation.** Re-scoring every library at every step would be too slow, so I use a priority queue with lazy re-evaluation. A library's value only decreases as books become taken, and its time-dependent cap also decreases as `t` grows. So a stored score is an upper bound on the true score. I pop the top entry and recompute its score at the current state. If it is still at least the next top entry's stored score, I pick it. Otherwise I push it back with the new score.\n\n**Recomputing a score.** Each library keeps its books sorted by score in descending order. To score it, I scan the list, skip taken books, and sum up to `cap` books. This is O(N) per evaluation, which is acceptable given that the total number of books is at most 10^6 and re-evaluations are lazy. To limit the worst case I stop scanning once `cap` books are collected, and I also drop taken books from the front of the list permanently where I can.\n\n**Picking and output.** When a library is picked, I take its first `min(cap, available)` untaken books in descending score order and mark them taken. Libraries with `rem <= 0` or no available books are discarded. For output, I emit libraries only if they have at least one book, in pick order, and list the books in descending score order. Each library ships `M` books per day in the listed order, so the output stays valid.\n\n**Score metric.** The score is `value / T`. A slightly better variant would use `value / T` with a tie-break, but this form is simple and works well in practice.\n\n**Implementation details.** I use fast input reading. Scores are doubles in the priority queue, and ties are broken by library index so the output is deterministic.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int B,L,D;\n    scanf(\"%d %d %d\",&B,&L,&D);\n    vector<int> S(B);\n    for(auto&x:S)scanf(\"%d\",&x);\n    vector<int> T(L),M(L);\n    vector<vector<int>> bk(L);\n    for(int j=0;j<L;j++){\n        int n;\n        scanf(\"%d %d %d\",&n,&T[j],&M[j]);\n        bk[j].resize(n);\n        for(auto&x:bk[j])scanf(\"%d\",&x);\n        sort(bk[j].begin(),bk[j].end(),[&](int a,int b){\n            if(S[a]!=S[b])return S[a]>S[b];\n            return a<b;});\n    }\n    vector<char> taken(B,0);\n    vector<int> start(L,0);\n    long long t=0;\n    auto eval=[&](int j,long long t)->double{\n        long long rem=D-t-T[j];\n        if(rem<=0)return -1;\n        long long cap=rem*(long long)M[j];\n        size_t &st=*(new size_t(0));\n        delete &st;\n        long long cnt=0,sum=0;\n        for(size_t i=start[j];i<bk[j].size()&&cnt<cap;i++){\n            int b=bk[j][i];\n            if(taken[b])continue;\n            sum+=S[b];cnt++;\n        }\n        if(cnt==0)return -1;\n        return (double)sum/T[j];\n    };\n    priority_queue<pair<double,int>> pq;\n    for(int j=0;j<L;j++){\n        double v=eval(j,0);\n        if(v>=0)pq.push({v,-j});\n    }\n    vector<pair<int,vector<int>>> res;\n    while(!pq.empty()){\n        auto [v,nj]=pq.top();pq.pop();\n        int j=-nj;\n        // drop taken books from the front\n        while(start[j]<(int)bk[j].size()&&taken[bk[j][start[j]]])start[j]++;\n        double nv=eval(j,t);\n        if(nv<0)continue;\n        if(!pq.empty()&&nv<pq.top().first){\n            pq.push({nv,-j});\n            continue;\n        }\n        long long rem=D-t-T[j];\n        long long cap=rem*(long long)M[j];\n        vector<int> chosen;\n        for(size_t i=start[j];i<bk[j].size()&&(long long)chosen.size()<cap;i++){\n            int b=bk[j][i];\n            if(taken[b])continue;\n            taken[b]=1;\n            chosen.push_back(b);\n        }\n        if(chosen.empty())continue;\n        res.push_back({j,chosen});\n        t+=T[j];\n    }\n    string out;\n    out+=to_string(res.size())+\"\\n\";\n    for(auto&r:res){\n        out+=to_string(r.first)+\" \"+to_string(r.second.size())+\"\\n\";\n        for(size_t i=0;i<r.second.size();i++){\n            if(i)out+=' ';\n            out+=to_string(r.second[i]);\n        }\n        out+=\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 1786,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

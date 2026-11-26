@@ -1,0 +1,57 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "c276ea8b06a193981074bba62c6d3766b8f628310015012d061ea97eac57b233",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQR5xbDmtBrbuxZMKizZ",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:13:51+00:00",
+ "finished_utc": "2026-11-25T22:14:08+00:00",
+ "seconds": 17.086,
+ "seconds_to_first_text": 2.332,
+ "message": {
+  "id": "msg_011ChQR64dMvkXW4Y8P1q5mD",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with lazy evaluation, in C++17.\n\n**Approach.** Aggregate the requests per (endpoint, video) pair. Each step picks the (cache, video) placement with the best gain per MB of video size, and stops when no placement has positive gain.\n\n**Data structures.**\n- For each cache c, keep the list of endpoints connected to it, with the latency Lc.\n- For each endpoint e, keep `best[e][v]`, the current best latency for video v. It is initialised to LD, so I store it as a map from video to current latency, with the default being LD.\n- For each endpoint, keep its requests as a sorted vector of (video, count).\n- The gain of placing video v in cache c is the sum over endpoints e connected to c of n(e,v) \u00b7 max(0, best(e,v) \u2212 Lc(e,c)).\n\n**Computing gains.** To avoid scanning all videos for each cache, use a per-cache `unordered_map` or a dense array of gain per video. The number of (cache, endpoint, request) triples can reach about 1000 caches \u00d7 1000 endpoints \u00d7 requests. With R \u2264 1e6 and each endpoint connected to at most C caches, the worst case is about 1e6 \u00d7 1000 = 1e9 triples, which is too many to precompute directly. This is the true worst case, so I use a lazy approach instead.\n\n**Lazy greedy.**\n1. Build a candidate list of (cache, video) pairs by iterating over the requests and their endpoint's caches. This can be large, so compute the initial gain on the fly per pair and push it into a priority queue. The memory is the pair count times 16 bytes. Capping at 3.5 GB is risky, so I limit the work as follows.\n2. Within each endpoint, I keep only its caches sorted by latency, and the initial gain is computed per (cache, video) via accumulation into a dense array `gain[c][v]`. That is 1000 \u00d7 10000 = 1e7 doubles or int64, about 80 MB, which is fine.\n3. Accumulate the initial gains with the triple loop over requests and connected caches. This is up to 1e9 simple operations, which should be feasible in a few seconds.\n4. Push all pairs with positive gain into a heap keyed by gain/size. This is up to 1e7 entries at 16 bytes each, which is fine.\n5. Pop the top entry and recompute its true gain. Skip it if the video is already in the cache or does not fit. If the recomputed ratio is at least the next top's ratio, accept it. Otherwise push it back with the new value.\n6. Recomputing a gain needs the endpoints connected to c, with n(e,v) and the current best. Store `n` in a hash per (e,v), or look up each endpoint's video requests with a sorted vector and binary search. The recompute costs about E_c \u00b7 log. To be faster, keep for each video the list of (endpoint, count) pairs and a cache-endpoint latency matrix `lat[c][e]` (1e6 ints, 0 meaning not connected). Recomputing then loops over the endpoints requesting v and checks `lat[c][e]`. `best` is stored as `bestlat[e]` per request, using a per-video request index.\n7. On acceptance, update the best latency for each request of video v using `lat[c][e]`.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int V,E,R,C,X;\n    scanf(\"%d %d %d %d %d\",&V,&E,&R,&C,&X);\n    vector<int> S(V);\n    for(auto&s:S)scanf(\"%d\",&s);\n    vector<int> LD(E);\n    vector<int> lat((size_t)C*E,0);\n    vector<vector<int>> ec(E);\n    for(int e=0;e<E;e++){\n        int k;\n        scanf(\"%d %d\",&LD[e],&k);\n        while(k--){\n            int c,l;\n            scanf(\"%d %d\",&c,&l);\n            lat[(size_t)c*E+e]=l;\n            ec[e].push_back(c);\n        }\n    }\n    struct Rq{int e;int n;int best;};\n    vector<vector<Rq>> rv(V);\n    {\n        map<pair<int,int>,int> dummy;\n        for(int i=0;i<R;i++){\n            int v,e,n;\n            scanf(\"%d %d %d\",&v,&e,&n);\n            rv[v].push_back({e,n,LD[e]});\n        }\n    }\n    vector<long long> gain((size_t)C*V,0);\n    for(int v=0;v<V;v++)\n        for(auto&q:rv[v])\n            for(int c:ec[q.e])\n                gain[(size_t)c*V+v]+=(long long)q.n*(LD[q.e]-lat[(size_t)c*E+q.e]);\n    typedef pair<double,int> P;\n    priority_queue<P> pq;\n    for(int c=0;c<C;c++)\n        for(int v=0;v<V;v++){\n            long long g=gain[(size_t)c*V+v];\n            if(g>0&&S[v]<=X)pq.push({(double)g/S[v],c*V+v});\n        }\n    vector<int> used(C,0);\n    vector<vector<int>> out(C);\n    vector<char> in((size_t)C*V,0);\n    while(!pq.empty()){\n        auto [r,id]=pq.top();pq.pop();\n        int c=id/V,v=id%V;\n        if(in[id]||used[c]+S[v]>X)continue;\n        long long g=0;\n        for(auto&q:rv[v]){\n            int l=lat[(size_t)c*E+q.e];\n            if(l&&q.best>l)g+=(long long)q.n*(q.best-l);\n        }\n        if(g<=0)continue;\n        double nr=(double)g/S[v];\n        if(!pq.empty()&&nr<pq.top().first){\n            pq.push({nr,id});\n            continue;\n        }\n        in[id]=1;\n        used[c]+=S[v];\n        out[c].push_back(v);\n        for(auto&q:rv[v]){\n            int l=lat[(size_t)c*E+q.e];\n            if(l&&q.best>l)q.best=l;\n        }\n    }\n    printf(\"%d\\n\",C);\n    for(int c=0;c<C;c++){\n        printf(\"%d\",c);\n        for(int v:out[c])printf(\" %d\",v);\n        printf(\"\\n\");\n    }\n}\n```\n\nThe output lists every cache, including empty ones. That is valid, since N \u2264 C and each cache appears once.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 14504,
+   "output_tokens": 2182,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-opus-5-5",
+ "generation": 2,
+ "request": {
+  "model": "claude-opus-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQN4SCzSGD3wK6V633PG",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:34:10+00:00",
+ "finished_utc": "2026-11-25T21:36:26+00:00",
+ "seconds": 135.985,
+ "seconds_to_first_text": 116.625,
+ "message": {
+  "id": "msg_011ChQNBt6Rs4cVNr7bhjqBM",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSih0KEAgUGAI4AUIIdGhpbmtpbmcSDN4DSTKDUkQ7BvqqJxoM+JENZmQu6YzqYlsiIjA+iee3Z1jYn1sJ0w0SroV7jcpjhauyLqHtXyckqLsBMfbEvz9Oa2T6kRHpSS0Fj1cqpxxc4pMkKHnWifBliB0VORURVCXqFmZvQkwyEv1Sj28XNDtUOa0NgTh2XeX3traSp/AIjOl7JRryjow5Y6cwcD+6AK4ZcXchLVlyfykG5Stsa8JeSd1Am2R1QDILVEWpXkSAxkbyLkkz+HzZjB+kwUzVpgh/fNLGtRCjJ/8jPv/mpkTUf3KlCZx6RkxfRvW2kxe7sQ+1Ql52UikmJcXqgO4QdYhfbBvRvadN0RMtc9YcIS+SsjIZRmlAsQC1gV6TpWNlx15iQNCmblJlKDVSfyAhcOaV4ThIvbvaXz7XjpzmmgG48jgM6wwd3KQj+2pBoJfIrpi8smCnkTM8Bxr3dH1+/c99SdUKjDdZlexIgtwRrwmXQH4gc20z9dD1rBnShSFsaNP4tmxwf5CmgKEhjzPMfbdb9romx9siBt6L8N7clE4YMTf+FRgY5cBffurYdvn9YxLoGIssmrNDbtdNqnoXzc/gAmUigDC1PL28tZ0ByhG2wcebZnjFHCgQ+7NPUhtebhw827wcHVuShV79BB1ps0WdCieEbhxtvG+EaAoaEtigvvzNfRGvt/xTj1Mz/xu6yoxPKJ9eLaEAPJVdqWcdnR6VRspxm6QIUran3f3f6HBPCLFLdDU70LQAMv6Uv+PJ2ZlxMl/7q23qoHMmoGXe4gYhR8aR7tykMaqplhGVqMG69/IaVWltyfYAGp0z2I5Why0k5JslbpIVuwDwV9UcDhgGloEZpMrtqnJoSSJCtlT/r5+KDXEv7VIrJSbH8A832wiP/ILBW/c0RThjvNMzLjh6gon0CZOcJbR/jOSY9Fqws3VLAIThz+pCuVRBFAsHSFlgw9nGJAnRrmljM+zMfbMZt0ZG9BuHnjmev87eJ+/5HAT3fYQhWQMj4y7FSiWxlxFMKFklZta2aAxYBug8QVFMXXRS5XwqXyaKcz19HeeAcJZnUUvzYgy7EzQZYiCfp2qoIUdBxmJLmN6/8tiDJG1gbcFzCvvcmULBM/veCR4dseLGU68qMjRWL6fDKDGC09860ZJnqPaSvbSaHgrqUc2lCNAmukoSZKV2Dc2ItqHMR7E/DYi+nnprJuLBpiV/UkQOfpWdeRZU/Qf9ins4D7kKREcO2oeap6cj+LKs8VHIl1atRiso2DCjODbCaBuiEZc2IOfunaK4NrsEG372Pu2p2GzJ5VnSqzQjcwm7IfpTjtHFp8gC8NrroFfmX4vZzwlmdJh8i18stc0yyEVCv1aWvmabia+ezl8OHwd4YjD3fnBmHFJrgoZKnjJVz0Zitg9hLX5XS+WOQrm5bPQ5StRP9PlWBsuNWcPtAtfp3LidtdzCvtdCsG3GSzsYp1imCSKsOS1oolbCcr3Lpq9VAV11G3W14838JGSd1qNshQAg8Xf5ayPax5Opmn2kNUZ62Vm5Vrpl3PU0g2Fvtjxnn1N2+9ZyKZv7xcFg72zYdHnRnidkFftzQSkSVFqABsThwEvOmF3CdaBiVmOCUkt9zpqFZL/tJOZAWppLswy7wYcTL96MX2KYHUP2ul/xSe/hH3rHW6ME/bYo7yY3YWZwsrQztWVLJKXRDUiCbGddriPYkpuEIQ9r4b5twqeidOAVF2qjrqp+UmpizFv87p10Op1c0SiLdoKKEnZyONr7ZBeTUvVy2G4XgbHD7/d/MkLvpL6X01nJbR/tHNkcaO0qjqtfmRiEE829HWyurP3p5Izov3+0GFtTn4at2ChWvKPYyWoMNT4lFcGsQY7Mkx5pk4fIlW9GJsl05r+3Lmi1GUb/EWhFLERsD4d3JcguZ91wxQHzEKU+k1XW4Zo0TYY0aYuXCC6seNGTquUysHc4mP+OsUalcz/TD1psNw6aSYqX8i+pDI6ylZJ8+jL5E5H/TfegKFYr2GUWWtWX8UTzSF/85pOy0IL6fbHLxT9b0DwcLmS3Gy/vWm9ulgggPaAAaPNFeFIjPig9oyF2u65Sl7ljgGK4s3mzLWcUOCFQztug6AUOkgrrWlv7/FFPvapuPnungPL+sZwNd64TTBifVYe9xpVDmvsZlcWuwL6Ut5JoMivWsR18L9srl+39ZUAgrjFUcP5qRHSJSAPeSUpmKv4VVHqBreMXHoWw25OAiAANe82u/hrOcZTawJd/p01t0aQIn+W1SoTKh7Rk4oWzqv3V3cONIzUwP+LhOx9eE3jDwjP2PSbMF+xnhQJr1iXnjijkd/XURyUZRJDXIpRpk9QIOBxw90vMppCUb4ewP5DLU+j3U8G4H3o2TTA083QMby1mN8Pgk5Koag0iMam1iRZ+5iwIVeioM5bhjPldrd+H2WD4t2EKw5qkh4K8TyQEnwA8fEIc31muHRTpINKf39HuiYj8Fo2dQmdR54pNsETZ0unYFwYMKbqB2EmBGtGKNP279msutsnUPTx+batEEeSO94y3Hr4CvTaS09CQLi5HrSz/+PbJbV3nJpwgichk2T4Q/1P1C0kmcd+f1KEIq7dMi2poBK2TF9eyXe8fiQk5JZXZL3loCB6SM/1LhcG1O3FnR31WvnrM8ApU2mulgOOf6TUS7FkizSlJVC5yU8aw+cKPKCBHCtOlVrAqxiInW1z/S01Ui4eLzoXeqoflMQ+ViF+EopQCGFYfCS5KonTxI7A2ueeGOAxBmxff2EjBZiRhKwpxDv5ikUuWEog0hDB9slF8hRQYDH9KfS6eib21kBDDlrztd1q8gOPCzR4v03uHF13k/gqNfCMuuc3FmQYpyqwCLEIaaHt8IRkz8d24K/p4ZzvfGqto9k8V7uZq56XSEaiF2aPr1yC7fGRE/eydpKGb3PicMwerL82UARcD4/DEArASjQk1AyzBhpHMSzsJi/DT0tFvYLvFrgB3f6TTcuSqC4zxS9YLp3GrvwBrQ9e1qYRMI66hi3CLBoaB70lQzxEGcEmgGpFarIKaudNPLiIK9RWzLrlw2lraiGocjC7OSJGrP5aWwVcIZ73g3HSBkgboY+OdXqg4ZrRqEzMqj1PyhIBWVZu+3/CaowHAGnXdOgJtWKGr8hMf8H88grv2LcSjdZgYE0H5q24arN1BmORReY9b8JjLIbMzQmW6yCZELu8NvWsN1YCMMVfmHye6qy6l3h9C/WvrToYMOC1viAq6NchSrA+7LRZNwHx/0NAN+8ig4+PidFdKKrcLacYn6V5/NgLI5bediUcYSEkbi+9JV5PM6aLypoPyjHNaPiBx/8Rp+EJkidhECe+P/81PyOetUM9Tbjmadx0m7cGoVA5BTi/vIfn0+BbiClXjgJ1HI1OpLLrEqRwuPBrRY73RiCzFzRtQulcDfR8FzVfRf47QPkMcL7ok67hdC0CkVv4Q0Mi39FAavBPGmX8heO+cszIVrc9yR0dj7MbmtWJ6t1FxSq4WaJdjNqGL2W8ZNlufd97HAfLsvNXieMOkTE0d+P1UzHvDKabYBlaSmxw0963Y+MxeTOWLM5q3naBQff4N0zf29D4OYcCRjNmyUgwp9abOHb3s1IdsbJ7+eYAUqJtgv8bK8tlzGlmHK07/oBS2iJ3AuU5YjPke53amYBYfPHU7ekmJ72D/xc8KdI01+vmF8jCBEt2zRKkK77x5368F4sZEXCrUORW0qX5bDYs0DsB9DeQ4yN1DfYYaJD7msK+W1uY7tFEtBX18I1qDjUtU8HrAyxe2zeWSm/8i4ueFeNwQpIP/i43d8HfWDLZPAEcP+4auMiF/NY+gUvxPYSRuGJqW5JmDWvJJe78Ttv4jm30voQSK8YzvlC94o5oJg/Xv1F7i/GuQqNI++OFC1Y6+1zDfCKkf96p6V0bNuLzaLVOtT0bC/ANY8n4Nx/OjmhyGt7ZtCXQ+v9P7I/YNo0bZtERmBrTG7I0T9v+cMginKi1rLKy3T9nMVCf4QnfVIEPo93ONQexGYNFqjS41oWgPY/UYkNcseKtZDj0qMm6bW3oXPxAfePl2OMbRpJCvR3yXxqDhYhX68A0GD0+9hlDpJtFZFcFSIlRkvCa1gHjkH9ZaI1A2WLNl8cMWzDbQcSysy4cYsGlxcWJ8qURzWM9mgPEFVNT3oddylzmDZYx74hylDgRHEqkZihBic3QzYYQi3CKdill35Hu7fxnLRnGolaPv5Wjx9OZ1IAZvZ1P4AmRtcV4MlUmHzK4FSkYj1O7CSGWPrC3Yai/fC3IEP0AiOaM0GUV6UaJsLzEclBRdtx89ZHT0BrU/c29UlqdhoUaC4s0HRn3LGSjpD8pkA5Avzp8a65NBO3dAkn+1h486KhG0nyw5CD86rwvvllLD1LEVSO+Hfzsf8/k2bv7HM7z3W2cSU6CByj65Xp5ZdZ2P4XGApGvj7UaZqgZX3d+nhuEFCXlSMGkjdXVHseWMnnyj7MvZ4wqxQPcwdKarHnfmB31LTshUMRNuqQhr1N9osD+PzEIMC5HZPof2ilNBq0hdXqGkp8NgRARsrx6+G4Irm1pAbqFQFXrh0/+21vfJ/gQXaHlE0Zw+nZWBO5MYat+fNTmV9zErqDcN/DLMxEums6bgrTblw7FvY0KtwXgmPZKhm07P9CiuFBD3C+cRiLQKznfSB9y07FNMdty5pceg/JDbE4DWGipjN9tjiCCRUWhWA9WtLPu46r747ZHSzqHzJzEywXNuKMOiLHcOGFyNTBFvAfNM+OPKR+3oCRjVgwUbNp4JrRyiVbFNdFa41k4VMvgfbIpqpEOe8F9Og12+e/lSfqhdvLMFugj2UmlwAg5NBLN5LBDEVE6TIoz1RYa4ybyldgHy3RW/frRZADuGSMdRRT4FjMpUAbcxkCoQTegQNbD634ojHHC+SGpoXcwVgMw3Uka+XGmUXPxEjMnOCKftXhgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy simulation. Cars move one step at a time, and the car with the smallest elapsed time always moves next, so the cars spread over the city instead of following each other.\n\n**How each step is chosen**\n- **Lookahead search:** a depth-limited search from the car's junction finds the path of up to `D` streets that gains the most new street length. Ties go to the path that takes less time.\n  - Streets already covered, or covered earlier on the same candidate path, earn nothing.\n  - Only streets that still fit in the remaining time are explored.\n  - The car then takes the first street of the best path and the search is repeated.\n- **Fallback when nothing new is nearby:** if no new length is reachable within the lookahead, a shortest-time search (Dijkstra) finds the nearest junction that has a not-yet-covered street leaving it which can still be finished before time `T`. The car drives the whole route there and continues.\n- **Stopping:** a car stops when no uncovered street can be reached and finished in time.\n\n**Validity of the output**\n- Every move follows an existing street in an allowed direction.\n- Every move is checked against the remaining time, so no itinerary exceeds `T`.\n- If an itinerary would pass 10^6 junctions, the car stops at that limit.\n\n**Time limit**\n- The lookahead depth `D` is 8 by default.\n- It is lowered to 6 if the street network is dense (more than 3 streets per junction on average).\n- Every 256 steps the program checks the elapsed time. If it has run past 7 seconds, the depth drops to 1, and past 9 seconds it drops to 0.\n\n**Determinism:** there is no randomness, and ties are broken by a fixed order, so repeated runs give identical output.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Arc{int v,e,c;};\nint N,M,T,C,S;\nvector<vector<Arc>> adj;\nvector<int> Lw;\nvector<char> vis;\nlong long bestGain; int bestTime, bestFirst;\nint D;\nvoid dfs(int u,int depth,int tl,long long gain,int used,int first){\n    if(gain>bestGain||(gain==bestGain&&gain>0&&used<bestTime)){bestGain=gain;bestTime=used;bestFirst=first;}\n    if(depth==0)return;\n    for(auto&a:adj[u]){\n        if(a.c>tl)continue;\n        int f=first<0?(int)(&a-&adj[u][0]):first;\n        if(!vis[a.e]){vis[a.e]=1;dfs(a.v,depth-1,tl-a.c,gain+Lw[a.e],used+a.c,f);vis[a.e]=0;}\n        else dfs(a.v,depth-1,tl-a.c,gain,used+a.c,f);\n    }\n}\nint main(){\n    auto st=chrono::steady_clock::now();\n    if(scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S)!=5)return 0;\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    adj.assign(N,{});Lw.resize(M);vis.assign(M,0);\n    for(int j=0;j<M;j++){int a,b,d,c,l;scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);Lw[j]=l;\n        adj[a].push_back({b,j,c});if(d==2)adj[b].push_back({a,j,c});}\n    vector<int> pos(C,S),tm(C,0);vector<char> done(C,0);\n    vector<vector<int>> path(C,vector<int>{S});\n    D=8;\n    // adjust depth for dense graphs\n    double avgdeg=0;for(int i=0;i<N;i++)avgdeg+=adj[i].size();avgdeg/=max(1,N);\n    if(avgdeg>3.0)D=6;\n    vector<long long> dist(N);vector<int> par(N),parNode(N);\n    long long steps=0;\n    while(true){\n        int ci=-1;\n        for(int i=0;i<C;i++)if(!done[i]&&(ci<0||tm[i]<tm[ci]))ci=i;\n        if(ci<0)break;\n        if(path[ci].size()>=999990){done[ci]=1;continue;}\n        if((++steps&255)==0){\n            double el=chrono::duration<double>(chrono::steady_clock::now()-st).count();\n            if(el>7.0)D=1;\n            if(el>9.0)D=0;\n        }\n        int u=pos[ci],tl=T-tm[ci];\n        bestGain=0;bestTime=INT_MAX;bestFirst=-1;\n        if(D>0)dfs(u,D,tl,0,0,-1);\n        if(bestGain>0&&bestFirst>=0){\n            Arc a=adj[u][bestFirst];\n            vis[a.e]=1;pos[ci]=a.v;tm[ci]+=a.c;path[ci].push_back(a.v);\n            continue;\n        }\n        // Dijkstra to nearest node with feasible unvisited outgoing edge\n        fill(dist.begin(),dist.end(),LLONG_MAX);\n        priority_queue<pair<long long,int>,vector<pair<long long,int>>,greater<>> pq;\n        dist[u]=0;pq.push({0,u});par[u]=-1;int target=-1;\n        while(!pq.empty()){\n            auto [d,x]=pq.top();pq.pop();\n            if(d!=dist[x])continue;\n            if(d>tl)break;\n            bool ok=false;\n            for(auto&a:adj[x])if(!vis[a.e]&&d+a.c<=tl){ok=true;break;}\n            if(ok){target=x;break;}\n            for(auto&a:adj[x]){long long nd=d+a.c;if(nd<=tl&&nd<dist[a.v]){dist[a.v]=nd;parNode[a.v]=x;par[a.v]=a.c;pq.push({nd,a.v});}}\n        }\n        if(target<0){done[ci]=1;continue;}\n        // then take best unvisited edge from target\n        vector<int> seq;int x=target;\n        while(x!=u){seq.push_back(x);x=parNode[x];}\n        reverse(seq.begin(),seq.end());\n        tm[ci]+=(int)dist[target];\n        for(int y:seq)path[ci].push_back(y);\n        pos[ci]=target;\n        int tl2=T-tm[ci];int bi=-1;double br=-1;\n        for(int k=0;k<(int)adj[target].size();k++){auto&a=adj[target][k];\n            if(!vis[a.e]&&a.c<=tl2){double r=(double)Lw[a.e]/max(1,a.c);if(r>br){br=r;bi=k;}}}\n        if(bi>=0){Arc a=adj[target][bi];vis[a.e]=1;pos[ci]=a.v;tm[ci]+=a.c;path[ci].push_back(a.v);}\n        if(path[ci].size()>1000000){ // safety trim (should not happen)\n            path[ci].resize(1000000);done[ci]=1;\n        }\n    }\n    string out;out.reserve(1<<22);\n    out+=to_string(C)+\"\\n\";\n    for(int i=0;i<C;i++){out+=to_string(path[i].size())+\"\\n\";for(int v:path[i]){out+=to_string(v);out+='\\n';}}\n    fwrite(out.data(),1,out.size(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-opus-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 3786,
+   "output_tokens_details": {
+    "thinking_tokens": 1204
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

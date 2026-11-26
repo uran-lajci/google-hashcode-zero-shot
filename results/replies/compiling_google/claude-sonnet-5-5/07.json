@@ -1,0 +1,57 @@
+{
+ "problem": "compiling_google",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "d24b8e00735e5fdc5e27fee83fcd4ce46f85fb0f7deca53163d5eee72ee02b0a",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQUVzhFHPB9uCMAhufs2",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:58:38+00:00",
+ "finished_utc": "2026-11-25T22:58:52+00:00",
+ "seconds": 14.152,
+ "seconds_to_first_text": 1.33,
+ "message": {
+  "id": "msg_011ChQUW2rUzrwBQaQ9Y1pBd",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy list-scheduling heuristic. I have not compiled or run it.\n\n**Approach**\n1. Only files that are ancestors of some target (including the target itself) are considered.\n2. Targets are processed in order of deadline. For each one, I simulate scheduling the missing ancestors (in input order, which is topological) onto servers and check whether the target meets its deadline. If it does, I commit the schedule. If not, I roll the state back.\n3. Each file keeps its earliest availability time per server, `avail[f][s]`:\n   - On the server that compiled it, the file is available at its finish time.\n   - On every other server it is available at the earliest finish time over all compilations plus the replication time `r`.\n   - Compiling the same file on a second server is allowed. I do not use this for replication reasons, since it is rarely worth it.\n4. To place a file `f`, I try each server `s`:\n   - Start time = max(server free time, max over dependencies of their availability on `s`).\n   - Pick the server with the earliest finish. The finish time is the start time plus the compile time `c`.\n5. Each file is compiled at most once.\n   - `fin[f]` is the finish time of its single compilation.\n   - `srv[f]` is the server that compiled it.\n   - Availability on server `s` is `fin[f]` if `s == srv[f]`, otherwise `fin[f] + r[f]`.\n6. The output must have steps in a valid dependency order. Per-server order follows the submission order. Since I commit steps in topological order and each step starts no earlier than the server's free time, the server's own order is consistent with the simulation.\n\n**Rollback**\n- Within a trial, I record the changed server free times and the set of newly compiled files.\n- I keep a trial list of `(file, server, fin)` entries and a copy of the `free` array for the 100 servers.\n- Ancestors are gathered by DFS over uncompiled files, then sorted by index. Dependencies always have a smaller index, so this is topological.\n- Because the trial sets `fin` for new files, rollback resets them to -1.\n\n**Cost**\n- Each trial costs the number of new files times S times the number of dependencies.\n- Failed trials can repeat work. To bound it, I stop after a total work budget of about 3e8 operations.\n- Targets with a deadline below their own compile time are skipped.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int C,T,S;\n    scanf(\"%d %d %d\",&C,&T,&S);\n    unordered_map<string,int> id;\n    vector<string> nm(C);\n    vector<long long> c(C),r(C);\n    vector<vector<int>> dep(C);\n    char buf[64];\n    for(int i=0;i<C;i++){\n        long long a,b;\n        scanf(\"%s %lld %lld\",buf,&a,&b);\n        nm[i]=buf;id[nm[i]]=i;c[i]=a;r[i]=b;\n        int n;scanf(\"%d\",&n);\n        for(int j=0;j<n;j++){scanf(\"%s\",buf);dep[i].push_back(id[buf]);}\n    }\n    struct Tg{int f;long long d,g;};\n    vector<Tg> tg(T);\n    for(auto&t:tg){long long d,g;scanf(\"%s %lld %lld\",buf,&d,&g);t.f=id[buf];t.d=d;t.g=g;}\n    sort(tg.begin(),tg.end(),[](const Tg&a,const Tg&b){return a.d<b.d;});\n    vector<long long> fin(C,-1);\n    vector<int> srv(C,-1);\n    vector<long long> fr(S,0);\n    vector<pair<int,int>> out;\n    vector<int> mark(C,0);\n    int stamp=0;\n    long long work=0;\n    for(auto&t:tg){\n        if(fin[t.f]>=0){continue;}\n        if(work>300000000LL)break;\n        stamp++;\n        vector<int> need;\n        vector<int> st={t.f};\n        mark[t.f]=stamp;\n        while(!st.empty()){\n            int u=st.back();st.pop_back();\n            need.push_back(u);\n            for(int d:dep[u])if(fin[d]<0&&mark[d]!=stamp){mark[d]=stamp;st.push_back(d);}\n        }\n        sort(need.begin(),need.end());\n        vector<long long> sf=fr;\n        vector<pair<int,int>> placed;\n        bool ok=true;\n        for(int f:need){\n            long long bestF=LLONG_MAX;int bs=0;\n            for(int s=0;s<S;s++){\n                long long st2=fr[s];\n                for(int d:dep[f]){\n                    long long av=(srv[d]==s)?fin[d]:fin[d]+r[d];\n                    if(av>st2)st2=av;\n                }\n                work+=dep[f].size()+1;\n                if(st2+c[f]<bestF){bestF=st2+c[f];bs=s;}\n            }\n            fin[f]=bestF;srv[f]=bs;fr[bs]=bestF;\n            placed.push_back({f,bs});\n            if(bestF>t.d&&f==t.f){ok=false;}\n            if(bestF>t.d){ok=false;break;}\n        }\n        if(ok){\n            for(auto&p:placed)out.push_back(p);\n        } else {\n            for(auto&p:placed){fin[p.first]=-1;srv[p.first]=-1;}\n            fr=sf;\n        }\n    }\n    if(out.empty()){\n        // must output at least one valid step\n        int f=0;\n        for(int i=0;i<C;i++)if(dep[i].empty()){f=i;break;}\n        if(!dep[f].empty()){printf(\"1\\n%s 0\\n\",nm[0].c_str());return 0;}\n        printf(\"1\\n%s 0\\n\",nm[f].c_str());\n        return 0;\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&p:out)printf(\"%s %d\\n\",nm[p.first].c_str(),p.second);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16495,
+   "output_tokens": 2044,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

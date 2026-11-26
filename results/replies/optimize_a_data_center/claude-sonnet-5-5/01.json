@@ -1,0 +1,57 @@
+{
+ "problem": "optimize_a_data_center",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9e12f4bba8f91a4f331f164abf56b76474d75b65469074869572d06a495d6d46",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQKqtf8F3Mum1cVsRfF4",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:05:06+00:00",
+ "finished_utc": "2026-11-25T21:06:02+00:00",
+ "seconds": 56.533,
+ "seconds_to_first_text": 44.237,
+ "message": {
+  "id": "msg_011ChQKu5TLy6EiEH9fUScDY",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a heuristic solution; I have not compiled or run it. The approach has two phases: place servers into slots, then assign them to pools.\n\n**Placement**\n1. Sort servers by capacity/size ratio, descending.\n2. Find the free segments in each row. Place servers greedily: take the best remaining server and put it in the row with the least capacity so far, in a segment that fits it.\n3. To avoid wasting space, I place each server in the row with the lowest total capacity that has any segment where it fits. The first-fit position within that row is used.\n4. If a server fits nowhere, it is skipped. A cheap search over rows is fine: M is up to 10^6 and R up to 1000, so I scan rows for each server. That is 10^9 in the worst case, which is too slow. Instead I keep a priority queue of rows by capacity. If the top row cannot fit the server, I pop it temporarily and try the next. Per-row free-space tracking is a vector of segments, searched first-fit with a pointer. A server of size z needs a segment with length \u2265 z, so I scan the row's segment list, which is short-ish.\n\n**Pool assignment**\n1. Process the placed servers in descending capacity order.\n2. Keep a table `cap[pool][row]` and a per-pool total.\n3. For each server, pick the pool with the lowest guaranteed capacity, where the guarantee is total minus the max over rows of the row's capacity. Put the server in that pool.\n4. P is up to 1000 and the server count is up to 10^6, so scanning all pools is 10^9. To be cheaper, I use a round-robin variant: sort servers descending and assign each to the pool with the smallest guaranteed capacity via a min-heap keyed by guaranteed capacity. The key changes only for the chosen pool, so I pop it, update its key, and push it back. Updating the guarantee costs O(R) for a max over rows, but I maintain the row max incrementally, because capacities only increase. The guarantee is then total \u2212 maxrow.\n\nThis gives the heap O(log P) per server, and the row-max update is O(1).\n\nSince a pool's row distribution matters, the heap choice ignores which row the server is in. That is acceptable for a heuristic: the pool with the lowest guarantee gets the next server, and the row spread comes from the descending order and the least-loaded-row placement.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int R,S,U,P,M;\n    scanf(\"%d %d %d %d %d\",&R,&S,&U,&P,&M);\n    vector<vector<char>> bad(R,vector<char>(S,0));\n    for(int i=0;i<U;i++){int r,s;scanf(\"%d %d\",&r,&s);bad[r][s]=1;}\n    vector<int> z(M),c(M);\n    for(int i=0;i<M;i++)scanf(\"%d %d\",&z[i],&c[i]);\n    // segments per row\n    vector<vector<pair<int,int>>> seg(R); // start,len\n    for(int r=0;r<R;r++){\n        int s=0;\n        while(s<S){\n            if(bad[r][s]){s++;continue;}\n            int e=s;\n            while(e<S&&!bad[r][e])e++;\n            seg[r].push_back({s,e-s});\n            s=e;\n        }\n    }\n    vector<int> ord(M);\n    iota(ord.begin(),ord.end(),0);\n    stable_sort(ord.begin(),ord.end(),[&](int a,int b){\n        return (long long)c[a]*z[b]>(long long)c[b]*z[a];\n    });\n    vector<long long> rowcap(R,0);\n    vector<int> ar(M,-1),as(M,-1),ap(M,-1);\n    typedef pair<long long,int> pli;\n    priority_queue<pli,vector<pli>,greater<pli>> pq;\n    for(int r=0;r<R;r++)pq.push({0,r});\n    for(int idx=0;idx<M;idx++){\n        int k=ord[idx];\n        vector<pli> tmp;\n        bool placed=false;\n        while(!pq.empty()){\n            pli t=pq.top();pq.pop();\n            int r=t.second;\n            bool ok=false;\n            for(auto&sg:seg[r]){\n                if(sg.second>=z[k]){\n                    ar[k]=r;as[k]=sg.first;\n                    sg.first+=z[k];sg.second-=z[k];\n                    ok=true;break;\n                }\n            }\n            if(ok){\n                rowcap[r]+=c[k];\n                pq.push({rowcap[r],r});\n                placed=true;break;\n            }\n            // row can't fit this size; drop it only for this server\n            tmp.push_back(t);\n        }\n        for(auto&t:tmp)pq.push(t);\n    }\n    // pool assignment\n    vector<int> pl;\n    for(int k=0;k<M;k++)if(ar[k]>=0)pl.push_back(k);\n    stable_sort(pl.begin(),pl.end(),[&](int a,int b){return c[a]>c[b];});\n    vector<long long> tot(P,0),mx(P,0);\n    vector<vector<int>> pr(P,vector<int>(R,0));\n    priority_queue<pli,vector<pli>,greater<pli>> hp;\n    for(int p=0;p<P;p++)hp.push({0,p});\n    for(int k:pl){\n        pli t=hp.top();hp.pop();\n        int p=t.second;\n        ap[k]=p;\n        tot[p]+=c[k];\n        pr[p][ar[k]]+=c[k];\n        mx[p]=max(mx[p],(long long)pr[p][ar[k]]);\n        hp.push({tot[p]-mx[p],p});\n    }\n    for(int k=0;k<M;k++){\n        if(ar[k]<0)puts(\"x\");\n        else printf(\"%d %d %d\\n\",ar[k],as[k],ap[k]);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 10747,
+   "output_tokens": 2008,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

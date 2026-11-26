@@ -1,0 +1,57 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "7135946d354d2d7ef747bda763717ca6fea0f1f209e0fd2a5294865a42972a1b",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQQPHLxF7kNmxefP3RYU",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:04:39+00:00",
+ "finished_utc": "2026-11-25T22:05:01+00:00",
+ "seconds": 22.228,
+ "seconds_to_first_text": 2.99,
+ "message": {
+  "id": "msg_011ChQQPRtQnAKFmSizKLoC8",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy simulation that schedules projects in event order.\n\n**Approach**\n- Each contributor has a free time and a skill map from skill name to level.\n- Repeat until no project can be scheduled:\n  - Among the unscheduled projects, try to fill the roles.\n  - A project is only attempted if it is not hopeless, meaning its score at the earliest possible finish is still above zero.\n  - Take the first feasible project in priority order, sorted by best-before minus duration (earliest deadline first), with ties broken by higher score.\n- To keep this fast, I use rounds. In each round I iterate over the projects in priority order. For each project, I try to assign contributors greedily, then commit it if feasible. A round that commits nothing ends the loop.\n- Each project is committed at most once, and the number of rounds is limited by a time check.\n\n**Assigning a project**\n- Roles are processed in order, sorted by descending required level.\n- For each role, choose the contributor not already used in this project who meets the level (level \u2265 required), picking the one with the smallest free time and then the smallest level.\n- If no contributor meets the level, allow level = required\u22121 when a mentor exists. The mentor can be any already-chosen team member with the skill at \u2265 required, or any contributor chosen later. To keep it simple, I do a two-pass approach: first fill all roles with full-level contributors where possible, and fill a role with a level\u22121 contributor only if some member of the team already has the skill at the required level.\n- The contributors' levels used for the check are their current levels, which is consistent because they are updated at commit time in the order of the output.\n\n**Timing and scheduling**\n- Contributors' free times are tracked, and the start time is the maximum of the team's free times.\n- Candidate search per role is a linear scan over all C contributors. That is expensive: 1e5 projects \u00d7 1e5 contributors \u00d7 roles is too much.\n- To bound the cost, I index contributors by skill (a vector of contributor ids per skill). For each role I scan only that skill's list, capped at a limited number of entries, plus a mentee fallback scan limited to the same cap.\n- A total operation budget is enforced.\n\n**Output order and validity**\n- The output order is the commit order. Because I simulate commits in that order and the start time is the max of the free times, the scoring is identical to my simulation.\n- Levels are updated at commit time, which matches the judge, since a contributor's projects run in submission order.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Pr{string name;int d,s,b;vector<pair<int,int>> r;};\nint main(){\n    int C,P;\n    scanf(\"%d %d\",&C,&P);\n    unordered_map<string,int> sid;\n    vector<string> cn(C);\n    vector<unordered_map<int,int>> sk(C);\n    auto gid=[&](const string&s){auto it=sid.find(s);if(it!=sid.end())return it->second;int k=sid.size();sid[s]=k;return k;};\n    char b1[64],b2[64];\n    for(int i=0;i<C;i++){\n        int n;scanf(\"%s %d\",b1,&n);cn[i]=b1;\n        for(int j=0;j<n;j++){int l;scanf(\"%s %d\",b2,&l);sk[i][gid(b2)]=l;}\n    }\n    vector<Pr> pr(P);\n    for(int i=0;i<P;i++){\n        int R;scanf(\"%s %d %d %d %d\",b1,&pr[i].d,&pr[i].s,&pr[i].b,&R);\n        pr[i].name=b1;\n        for(int j=0;j<R;j++){int l;scanf(\"%s %d\",b2,&l);pr[i].r.push_back({gid(b2),l});}\n    }\n    int S=sid.size();\n    vector<vector<int>> bySk(S);\n    for(int i=0;i<C;i++)for(auto&p:sk[i])bySk[p.first].push_back(i);\n    vector<int> order(P);\n    iota(order.begin(),order.end(),0);\n    stable_sort(order.begin(),order.end(),[&](int a,int b){\n        long long x=pr[a].b-pr[a].d,y=pr[b].b-pr[b].d;\n        if(x!=y)return x<y;\n        return pr[a].s>pr[b].s;});\n    vector<long long> fr(C,0);\n    vector<char> done(P,0);\n    vector<int> usedMark(C,-1);\n    int stamp=0;\n    vector<pair<int,vector<int>>> out;\n    auto lvl=[&](int c,int s){auto it=sk[c].find(s);return it==sk[c].end()?0:it->second;};\n    auto st=chrono::steady_clock::now();\n    bool timeUp=false;\n    const int CAP=300;\n    for(int round=0;round<50&&!timeUp;round++){\n        int committed=0;\n        for(int pi:order){\n            if(done[pi])continue;\n            if(chrono::duration<double>(chrono::steady_clock::now()-st).count()>8){timeUp=true;break;}\n            Pr&p=pr[pi];\n            int R=p.r.size();\n            stamp++;\n            vector<int> asg(R,-1);\n            vector<int> idx(R);\n            iota(idx.begin(),idx.end(),0);\n            sort(idx.begin(),idx.end(),[&](int a,int b){return p.r[a].second>p.r[b].second;});\n            bool ok=true;\n            vector<int> team;\n            long long bestStart=0;\n            // pass 1: full-level\n            for(int k:idx){\n                int s=p.r[k].first,l=p.r[k].second;\n                int best=-1;long long bk=0;int cnt=0;\n                for(int c:bySk[s]){\n                    if(usedMark[c]==stamp)continue;\n                    int lv=lvl(c,s);\n                    if(lv<l)continue;\n                    long long key=max(fr[c],0LL)*20+(lv-l);\n                    if(best<0||key<bk){best=c;bk=key;}\n                    if(++cnt>=CAP)break;\n                }\n                if(best>=0){asg[k]=best;usedMark[best]=stamp;team.push_back(best);}\n            }\n            // pass 2: mentee\n            for(int k:idx){\n                if(asg[k]>=0)continue;\n                int s=p.r[k].first,l=p.r[k].second;\n                bool has=false;\n                for(int c:team)if(lvl(c,s)>=l){has=true;break;}\n                if(!has||l==0){ok=false;break;}\n                int best=-1;long long bk=0;int cnt=0;\n                if(l-1==0){\n                    // anyone with level 0: scan contributors, capped\n                    for(int c=0;c<C&&cnt<CAP*3;c++){\n                        if(usedMark[c]==stamp)continue;\n                        cnt++;\n                        long long key=fr[c];\n                        if(best<0||key<bk){best=c;bk=key;}\n                    }\n                } else {\n                    for(int c:bySk[s]){\n                        if(usedMark[c]==stamp)continue;\n                        if(lvl(c,s)!=l-1)continue;\n                        long long key=fr[c];\n                        if(best<0||key<bk){best=c;bk=key;}\n                        if(++cnt>=CAP)break;\n                    }\n                }\n                if(best<0){ok=false;break;}\n                asg[k]=best;usedMark[best]=stamp;team.push_back(best);\n            }\n            if(!ok)continue;\n            for(int c:team)bestStart=max(bestStart,fr[c]);\n            long long fin=bestStart+p.d;\n            if(fin>=p.b+p.s)continue; // zero score\n            // commit\n            for(int k=0;k<R;k++){\n                int c=asg[k],s=p.r[k].first,l=p.r[k].second;\n                if(lvl(c,s)<=l)sk[c][s]=lvl(c,s)+1;\n                if(lvl(c,s)==1&&bySk[s].size()>=0){\n                    // newly gained skill: register\n                    if(find(bySk[s].begin(),bySk[s].end(),c)==bySk[s].end()&&bySk[s].size()<2000000)bySk[s].push_back(c);\n                }\n                fr[c]=fin;\n            }\n            done[pi]=1;committed++;\n            out.push_back({pi,asg});\n        }\n        if(!committed)break;\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&o:out){\n        printf(\"%s\\n\",pr[o.first].name.c_str());\n        for(size_t i=0;i<o.second.size();i++)printf(\"%s%s\",i?\" \":\"\",cn[o.second[i]].c_str());\n        printf(\"\\n\");\n    }\n}\n```\n\n**Known weaknesses**\n- The find on `bySk[s]` when a skill is newly gained can be slow for large lists. It runs only when the level becomes exactly 1, so it is bounded by the number of new skills gained.\n- A contributor with level 0 in a skill who is promoted to level 1 and is already in the list is handled correctly by the find check.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16858,
+   "output_tokens": 3081,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

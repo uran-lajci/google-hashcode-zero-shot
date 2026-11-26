@@ -1,0 +1,57 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQLt1ATqWaphyyFVM7tm",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:18:41+00:00",
+ "finished_utc": "2026-11-25T21:18:54+00:00",
+ "seconds": 12.394,
+ "seconds_to_first_text": 1.959,
+ "message": {
+  "id": "msg_011ChQLt5fpU4M9ZCL2wTxJ5",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with a lazy priority queue. I have not compiled or run it.\n\n**Approach**\n\n1. Keep a current time `t`, starting at 0. A library signed up at time `t` finishes at `t+T`, and scanning starts on day `t+T`. The days available to it are `D - t - T`, so it can scan at most `cap = (D-t-T)*M` books.\n2. For each library, the value is the sum of the top `cap` scores among its books not yet taken. Score per signup day is `value / T`.\n3. Selection uses a lazy max-heap keyed on that ratio. Pop the top library and recompute its value at the current `t`. If the recomputed ratio is at least the next heap top, accept it. Otherwise push it back with the new ratio. Ratios only fall over time, so stale keys are always upper bounds, which makes the lazy approach valid.\n4. Recomputing a library costs O(N log N) with a partial sort. Libraries total up to 1e6 books, and the number of recomputations is bounded by a cap on iterations, so I limit the work for safety.\n5. Libraries are stored with their books sorted by score descending. To recompute, scan the list, skip used books, and take up to `cap` of them. The scan stops once `cap` books are collected. A lazy front pointer skips used books at the start of the list, and `cap` is at most `D*M`.\n6. Cost is bounded by a time check. Each recomputation scans at most the library's list, so the total could be large. I add a clock check: after about 8 seconds, accept the popped library with its recomputed value without further re-pushing.\n7. When a library is accepted, `t += T`, its chosen books are marked used, and they are output in descending score order. Only libraries with at least one book to scan are output, so K \u2265 1.\n8. A library is skipped if `t+T >= D`, which means it has no days left.\n\nBecause the output order is signup order and each library's books are listed in the order scanned, the output is valid. Values are recomputed with ties broken by library index in the heap, which keeps it deterministic.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int B,L,D;\n    scanf(\"%d %d %d\",&B,&L,&D);\n    vector<int> s(B);\n    for(auto&x:s)scanf(\"%d\",&x);\n    vector<vector<int>> bk(L);\n    vector<int> T(L),M(L);\n    for(int j=0;j<L;j++){\n        int n;\n        scanf(\"%d %d %d\",&n,&T[j],&M[j]);\n        bk[j].resize(n);\n        for(auto&x:bk[j])scanf(\"%d\",&x);\n        sort(bk[j].begin(),bk[j].end(),[&](int a,int b){\n            if(s[a]!=s[b])return s[a]>s[b];\n            return a<b;});\n    }\n    vector<char> used(B,0);\n    vector<int> front(L,0);\n    long long t=0;\n    auto eval=[&](int j,long long tt,vector<int>*out)->double{\n        long long days=D-tt-T[j];\n        if(days<=0)return 0;\n        long long cap=days*M[j];\n        auto&v=bk[j];\n        int&f=front[j];\n        while(f<(int)v.size()&&used[v[f]])f++;\n        long long sum=0,c=0;\n        for(size_t i=f;i<v.size()&&c<cap;i++){\n            if(used[v[i]])continue;\n            sum+=s[v[i]];c++;\n            if(out)out->push_back(v[i]);\n        }\n        return (double)sum/T[j];\n    };\n    priority_queue<pair<double,int>> pq;\n    for(int j=0;j<L;j++){\n        double r=eval(j,0,nullptr);\n        if(r>0)pq.push({r,-j});\n    }\n    auto start=chrono::steady_clock::now();\n    vector<pair<int,vector<int>>> res;\n    int iter=0;\n    bool late=false;\n    while(!pq.empty()){\n        auto [r,nj]=pq.top();pq.pop();\n        int j=-nj;\n        if(!late&&(++iter&255)==0){\n            double el=chrono::duration<double>(chrono::steady_clock::now()-start).count();\n            if(el>7.0)late=true;\n        }\n        double nr=eval(j,t,nullptr);\n        if(nr<=0)continue;\n        if(!late&&!pq.empty()&&nr<pq.top().first){\n            pq.push({nr,-j});\n            continue;\n        }\n        vector<int> out;\n        eval(j,t,&out);\n        if(out.empty())continue;\n        for(int b:out)used[b]=1;\n        t+=T[j];\n        res.push_back({j,out});\n    }\n    string o;\n    o+=to_string(res.size())+\"\\n\";\n    for(auto&p:res){\n        o+=to_string(p.first)+\" \"+to_string(p.second.size())+\"\\n\";\n        for(size_t i=0;i<p.second.size();i++){\n            if(i)o+=' ';\n            o+=to_string(p.second[i]);\n        }\n        o+=\"\\n\";\n    }\n    fputs(o.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 1746,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

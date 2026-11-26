@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQZod74AMh1938Enyz8p",
+ "attempts": 1,
+ "started_utc": "2026-11-26T00:08:11+00:00",
+ "finished_utc": "2026-11-26T00:08:55+00:00",
+ "seconds": 44.669,
+ "seconds_to_first_text": 30.977,
+ "message": {
+  "id": "msg_011ChQZqqZUEBP45S92tn3ua",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem. The known input has N=11348 junctions, M=17958 streets, T=54000 seconds, C=8 cars, starting at junction 4516. The program does not assume these values and handles any input.\n\n**Approach:** greedy construction with a shortest-path search per car.\n\n1. Cars are planned one at a time, each with its own remaining time. For each car, from the current junction, run Dijkstra over the graph with edge cost `time`.\n2. Among all reachable junctions, pick the next target by the best ratio of gain to time. The gain is the sum of lengths of uncovered edges. The cheap approximation of that gain is the uncovered length of the outgoing edges at the target.\n3. Running full Dijkstra at every step is too expensive: the route has about 54000/30 = 1800 steps per car, and each Dijkstra over 11k nodes costs roughly 1 ms. That gives 8 \u00d7 1800 \u00d7 1 ms \u2248 15 s, which is too slow.\n4. To fit the budget, use a bounded Dijkstra. Stop it when the first node that has an uncovered outgoing edge is popped and a few more candidates have been examined. Then pick the candidate that maximizes `uncovered length / (dist + edge time)`.\n5. The search expands in order of distance, so it terminates quickly when uncovered edges are nearby. Otherwise it expands further. Stop after finding K=1 candidates, or after a settled-node limit. If nothing is found, expand fully.\n6. A move to the target is feasible only if `dist + edge time <= remaining time`. Candidates whose distance already exceeds the remaining time are discarded, and the search stops when the popped distance exceeds the remaining time.\n7. Cars take turns in round-robin, one move at a time, with the least-advanced car moving first. This spreads the cars out. Each car has a time used, and the car with the smallest time used moves next.\n8. Candidate scoring: for each settled node u with an uncovered outgoing edge e (u\u2192v, allowed direction), the score is `L / (dist[u] + cost)`. Take the best over the first ~30 settled nodes that have uncovered edges. A car that cannot move is finished.\n9. The path is reconstructed via the parent array and appended as a whole to the car's route, with all edges on the path marked covered. The last edge is the uncovered one. Mark the edges used by the path as covered, which also gives them credit.\n\nEdges are stored as adjacency lists with an edge id. Covered is a per-edge flag. Dijkstra uses a timestamp-reset array to avoid O(N) clears.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct E{int to,c,l,id;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<E>> g(N);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        g[a].push_back({b,c,l,j});\n        if(d==2)g[b].push_back({a,c,l,j});\n    }\n    vector<char> cov(M,0);\n    vector<vector<int>> route(C,vector<int>{S});\n    vector<int> pos(C,S),used(C,0);\n    vector<char> done(C,0);\n    vector<long long> dist(N,0);\n    vector<int> stamp(N,0),par(N,-1),pe(N,-1);\n    int cur=0;\n    const long long INF=1e18;\n    while(true){\n        int car=-1;\n        for(int i=0;i<C;i++)if(!done[i]&&(car<0||used[i]<used[car]))car=i;\n        if(car<0)break;\n        int rem=T-used[car];\n        int src=pos[car];\n        cur++;\n        typedef pair<long long,int> P;\n        priority_queue<P,vector<P>,greater<P>> pq;\n        stamp[src]=cur;dist[src]=0;par[src]=-1;\n        pq.push({0,src});\n        vector<char> settled; \n        double best=-1;int bu=-1,be=-1;\n        int found=0,cnt=0;\n        while(!pq.empty()){\n            auto [d,u]=pq.top();pq.pop();\n            if(d>dist[u])continue;\n            if(d>rem)break;\n            cnt++;\n            for(auto&e:g[u]){\n                if(!cov[e.id]&&d+e.c<=rem){\n                    double s=(double)e.l/(d+e.c);\n                    if(s>best){best=s;bu=u;be=e.id;}\n                    found=1;\n                }\n            }\n            if(found){\n                // allow some more exploration\n                if(cnt>0&&found>0){found++;}\n                if(found>40)break;\n            }\n            for(auto&e:g[u]){\n                long long nd=d+e.c;\n                if(nd>rem)continue;\n                if(stamp[e.to]!=cur||nd<dist[e.to]){\n                    stamp[e.to]=cur;dist[e.to]=nd;par[e.to]=u;pe[e.to]=e.id;\n                    pq.push({nd,e.to});\n                }\n            }\n        }\n        if(bu<0){done[car]=1;continue;}\n        // reconstruct path to bu\n        vector<int> path;\n        int x=bu;\n        while(x!=src){\n            path.push_back(x);\n            cov[pe[x]]=1;\n            x=par[x];\n        }\n        reverse(path.begin(),path.end());\n        for(int v:path)route[car].push_back(v);\n        used[car]+=(int)dist[bu];\n        // final edge\n        for(auto&e:g[bu])if(e.id==be){\n            cov[be]=1;\n            route[car].push_back(e.to);\n            used[car]+=e.c;\n            pos[car]=e.to;\n            break;\n        }\n    }\n    printf(\"%d\\n\",C);\n    for(int i=0;i<C;i++){\n        printf(\"%d\\n\",(int)route[i].size());\n        for(int v:route[i])printf(\"%d\\n\",v);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2119,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

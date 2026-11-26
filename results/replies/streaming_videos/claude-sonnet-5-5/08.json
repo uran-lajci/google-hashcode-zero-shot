@@ -1,0 +1,57 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "c276ea8b06a193981074bba62c6d3766b8f628310015012d061ea97eac57b233",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQWzyx9CdWgWpLGB7g8Z",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:31:24+00:00",
+ "finished_utc": "2026-11-25T23:31:40+00:00",
+ "seconds": 15.881,
+ "seconds_to_first_text": 2.05,
+ "message": {
+  "id": "msg_011ChQX14N4PFGDtjrYpWrK5",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with lazy evaluation, followed by output of the cache contents.\n\n**Approach.** Each request description (endpoint e, video v, count n) saves n \u00d7 (LD \u2212 current best latency) if a cache connected to e holds v.\n\nFor each pair (cache c, video v), the gain of adding v to c is the sum over request descriptions (v, e, n) where e is connected to c of n \u00d7 max(0, curBest[e][v] \u2212 Lc[e][c]). Here curBest starts at LD[e].\n\nThe gain per megabyte is gain / size[v]. Gains only decrease as caches fill, so a lazy priority queue works:\n\n1. Compute the initial gain for every (c, v) pair that has a nonzero gain.\n2. Pop the top entry. If its stored gain is stale, recompute it and push it back if it is still positive.\n3. If the entry is fresh and the video fits in the cache's remaining capacity, add it and update curBest for the affected requests. Otherwise discard it.\n\n**Data structures.**\n- For each video, a list of its requests (e, n).\n- For each endpoint, a list of its (cache, latency) connections.\n- For each cache, a list of its endpoints with latency. The gain computation iterates over the video's requests, finds the endpoint's latency to cache c via a lookup, and skips if there is none.\n- To make the lookup fast, a latency matrix of E\u00d7C ints (1000\u00d71000 = 4 MB) with 0 meaning not connected.\n\n**Initial gain cost.** For each request (v, e), loop over the caches connected to e. That is at most R \u00d7 K = 10^9 in the worst case, which is heavy. Typical data sets have K around 10\u2013100 and R up to 10^6, so this is acceptable. I accumulate into a hash map per video, or into a dense array of size C for each video. Processing video by video with a dense array of C doubles plus a touched list is fast enough. Only entries with positive gain are pushed.\n\n**Staleness check.** Recomputing a gain costs the number of requests for that video, and each recompute is checked against the version stored in the queue entry. I keep a stamp per (c, v), but simply recomputing and comparing to the stored value is enough: if the recomputed gain equals the stored key, it is fresh. Otherwise push it back with the new key.\n\n**Queue.** The key is a double, gain / size. Memory is about 10^7 entries at most, each 16 bytes, which is fine. Entries are tuples of (key, c, v). A video already in a cache is skipped, tracked with a bitset on c\u00d7V.\n\n**Output.** Print the number of caches with videos, then each cache's id followed by its video ids.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint V,E,R,C,X;\nvector<int> sz;\nvector<int> LD;\nvector<vector<int>> lat; // E x C\nvector<vector<pair<int,int>>> reqs; // per video (e,n)\nvector<vector<int>> cur; // per video aligned with reqs\nvector<vector<int>> conn;\nstruct It{double k;int c,v;bool operator<(const It&o)const{return k<o.k;}};\nint main(){\n    scanf(\"%d %d %d %d %d\",&V,&E,&R,&C,&X);\n    sz.resize(V);\n    for(auto&s:sz)scanf(\"%d\",&s);\n    LD.resize(E);\n    lat.assign(E,vector<int>(C,0));\n    conn.resize(E);\n    for(int e=0;e<E;e++){\n        int k;scanf(\"%d %d\",&LD[e],&k);\n        for(int i=0;i<k;i++){int c,l;scanf(\"%d %d\",&c,&l);lat[e][c]=l;conn[e].push_back(c);}\n    }\n    reqs.resize(V);\n    for(int i=0;i<R;i++){\n        int v,e,n;scanf(\"%d %d %d\",&v,&e,&n);\n        reqs[v].push_back({e,n});\n    }\n    cur.resize(V);\n    for(int v=0;v<V;v++)for(auto&p:reqs[v])cur[v].push_back(LD[p.first]);\n    auto gain=[&](int c,int v)->long long{\n        long long g=0;\n        for(size_t i=0;i<reqs[v].size();i++){\n            int e=reqs[v][i].first;\n            int l=lat[e][c];\n            if(l&&cur[v][i]>l)g+=(long long)reqs[v][i].second*(cur[v][i]-l);\n        }\n        return g;\n    };\n    priority_queue<It> pq;\n    vector<long long> acc(C);\n    vector<int> touched;\n    vector<char> seen(C,0);\n    for(int v=0;v<V;v++){\n        touched.clear();\n        for(size_t i=0;i<reqs[v].size();i++){\n            int e=reqs[v][i].first;\n            for(int c:conn[e]){\n                if(!seen[c]){seen[c]=1;touched.push_back(c);acc[c]=0;}\n                acc[c]+=(long long)reqs[v][i].second*(LD[e]-lat[e][c]);\n            }\n        }\n        for(int c:touched){\n            seen[c]=0;\n            if(acc[c]>0&&sz[v]<=X)pq.push({(double)acc[c]/sz[v],c,v});\n        }\n    }\n    vector<int> rem(C,X);\n    vector<vector<int>> out(C);\n    vector<char> in((size_t)C*V,0);\n    while(!pq.empty()){\n        It t=pq.top();pq.pop();\n        int c=t.c,v=t.v;\n        if(in[(size_t)c*V+v]||sz[v]>rem[c])continue;\n        long long g=gain(c,v);\n        if(g<=0)continue;\n        double k=(double)g/sz[v];\n        if(k<t.k-1e-12){\n            if(!pq.empty()&&pq.top().k>k){pq.push({k,c,v});continue;}\n        }\n        in[(size_t)c*V+v]=1;\n        rem[c]-=sz[v];\n        out[c].push_back(v);\n        for(size_t i=0;i<reqs[v].size();i++){\n            int l=lat[reqs[v][i].first][c];\n            if(l&&cur[v][i]>l)cur[v][i]=l;\n        }\n    }\n    int n=0;\n    for(int c=0;c<C;c++)if(!out[c].empty())n++;\n    printf(\"%d\\n\",n);\n    for(int c=0;c<C;c++)if(!out[c].empty()){\n        printf(\"%d\",c);\n        for(int v:out[c])printf(\" %d\",v);\n        printf(\"\\n\");\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 14504,
+   "output_tokens": 2250,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

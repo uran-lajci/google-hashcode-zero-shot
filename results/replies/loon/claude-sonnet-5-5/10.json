@@ -1,0 +1,57 @@
+{
+ "problem": "loon",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "8d4b8e1bd7c6566c04788c0f82a401c57425cb21d90ec1f551a471e162bf7c33",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQYz8vqvU3rbYtgc2s8d",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:57:27+00:00",
+ "finished_utc": "2026-11-25T23:57:49+00:00",
+ "seconds": 22.019,
+ "seconds_to_first_text": 4.449,
+ "message": {
+  "id": "msg_011ChQYzQ2SWJnfQo8YJkWGZ",
+  "container": null,
+  "content": [
+   {
+    "text": "The approach is a greedy, per-balloon plan: each balloon in turn picks the altitude sequence that maximizes the score added on top of the coverage already claimed by earlier balloons.\n\n**State space.** A balloon's state is (altitude, row, col). With R, C, A up to 1000 this is far too large for a full DP, so I restrict to what can be reached.\n\n**Per-balloon planning.**\n- Reachable states are stored as a sparse layer per turn, with at most A\u00b7(reachable cells) entries per layer.\n- At each turn, a state at altitude a moves to altitude a+d for d in {-1, 0, 1} (within 1..A), then moves by the wind vector at the new altitude.\n- Only the best value per state is kept in a hash map, and a back-pointer is stored for reconstruction.\n- The total state count can still blow up (up to about 1e6 states per layer, times 1000 turns, times 1000 balloons).\n\n**Cheaper approximation.** I use beam search per balloon: the top K states per turn, with K small (about 30), keyed by (altitude, r, c). Cost is B\u00b7T\u00b7K\u00b73 \u2248 1000\u00b71000\u00b730\u00b73 = 9e7 transitions, and each needs a gain evaluation.\n\n**Gain evaluation.** For a position (r, c) at turn t, the gain is the number of target cells within radius V that are not yet covered at turn t.\n- Targets are bucketed by row, so a query scans targets in rows r-V..r+V.\n- To keep this cheap, I precompute a list of targets for each row and test each with the distance formula.\n- L \u2264 1000, so the worst case is 1000 checks per query, which is too slow at 9e7 queries.\n- Fix: cache the gain per (t, r, c) lazily in a hash map? That is also costly.\n- Instead I reduce K to about 6 and cap the work with a time check, because the total work is bounded by the clock. Balloons are planned until time runs out (about 8 s). Any balloon not planned stays on the ground with all zeros, which is valid.\n\n**Beam scoring.** Value = accumulated gain. Ties are broken by a heuristic: distance to the nearest target, which I skip for simplicity. Because a beam of 6 with pure greedy gain gets stuck when no target is near, I add a small potential: negative distance to the nearest target, computed per row and column using a coarse scan over the targets, weighted lightly. This is cheap enough only if limited to the beam candidates, so I compute it once per candidate over at most 1000 targets, only when the gain is 0.\n\n**Time guard.** The loop checks the clock per balloon. Balloon planning is cut off when the budget is exceeded. Unplanned balloons output zeros.\n\n**Output.** An answer matrix of T\u00d7B, initialised to 0. After planning, the beam's best path is reconstructed and its altitude deltas are written in. Lost balloons follow the same rule: once off the grid the state is dead, and the remaining deltas are 0, which is valid.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint R,C,A,L,V,B,T,rs,cs;\nvector<int> wr,wc;\nvector<pair<int,int>> tg;\nvector<vector<char>> cov;\nvector<vector<int>> rowT;\nint gain(int t,int r,int c){\n    int g=0;\n    for(int rr=max(0,r-V);rr<=min(R-1,r+V);rr++)\n        for(int id:rowT[rr]){\n            if(cov[t][id])continue;\n            int dc=abs(c-tg[id].second);dc=min(dc,C-dc);\n            int dr=r-rr;\n            if(dr*dr+dc*dc<=V*V)g++;\n        }\n    return g;\n}\nvoid mark(int t,int r,int c){\n    for(int rr=max(0,r-V);rr<=min(R-1,r+V);rr++)\n        for(int id:rowT[rr]){\n            int dc=abs(c-tg[id].second);dc=min(dc,C-dc);\n            int dr=r-rr;\n            if(dr*dr+dc*dc<=V*V)cov[t][id]=1;\n        }\n}\nstruct S{int a,r,c;long long v;int par;int d;};\nint main(){\n    auto st=chrono::steady_clock::now();\n    scanf(\"%d %d %d %d %d %d %d %d %d\",&R,&C,&A,&L,&V,&B,&T,&rs,&cs);\n    tg.resize(L);rowT.assign(R,{});\n    for(int i=0;i<L;i++){scanf(\"%d %d\",&tg[i].first,&tg[i].second);rowT[tg[i].first].push_back(i);}\n    wr.resize((size_t)A*R*C);wc.resize((size_t)A*R*C);\n    for(size_t i=0;i<(size_t)A*R*C;i++)scanf(\"%d %d\",&wr[i],&wc[i]);\n    cov.assign(T+1,vector<char>(L,0));\n    vector<vector<signed char>> ans(T,vector<signed char>(B,0));\n    const int K=6;\n    for(int b=0;b<B;b++){\n        double el=chrono::duration<double>(chrono::steady_clock::now()-st).count();\n        if(el>7.0)break;\n        vector<vector<S>> lay(T+1);\n        lay[0].push_back({0,rs,cs,0,-1,0});\n        for(int t=1;t<=T;t++){\n            vector<S> cand;\n            for(int i=0;i<(int)lay[t-1].size();i++){\n                S&s=lay[t-1][i];\n                for(int d=-1;d<=1;d++){\n                    int na=s.a+d;\n                    if(na<0||na>A)continue;\n                    if(s.a==0&&d<0)continue;\n                    if(s.a>0&&na<1)continue;\n                    int nr=s.r,nc=s.c;\n                    if(na>=1){\n                        size_t k=((size_t)(na-1)*R+s.r)*C+s.c;\n                        nr=s.r+wr[k];\n                        if(nr<0||nr>=R)continue;\n                        nc=((s.c+wc[k])%C+C)%C;\n                    }\n                    long long v=s.v;\n                    if(na>=1){\n                        int g=gain(t,nr,nc);\n                        v+=g*1000;\n                        if(g==0){\n                            int best=1<<30;\n                            for(auto&p:tg){\n                                int dc=abs(nc-p.second);dc=min(dc,C-dc);\n                                best=min(best,abs(nr-p.first)+dc);\n                            }\n                            v-=min(best,999);\n                        }\n                    }\n                    cand.push_back({na,nr,nc,v,i,d});\n                }\n            }\n            sort(cand.begin(),cand.end(),[](const S&x,const S&y){\n                if(x.v!=y.v)return x.v>y.v;\n                if(x.a!=y.a)return x.a<y.a;\n                if(x.r!=y.r)return x.r<y.r;\n                return x.c<y.c;});\n            for(auto&s:cand){\n                bool dup=false;\n                for(auto&q:lay[t])if(q.a==s.a&&q.r==s.r&&q.c==s.c){dup=true;break;}\n                if(dup)continue;\n                lay[t].push_back(s);\n                if((int)lay[t].size()>=K)break;\n            }\n            if(lay[t].empty()){\n                for(int u=t+1;u<=T;u++)lay[u].clear();\n                break;\n            }\n        }\n        int bi=-1;\n        long long bv=-1;\n        for(int i=0;i<(int)lay[T].size();i++)if(lay[T][i].v>bv){bv=lay[T][i].v;bi=i;}\n        if(bi<0)continue;\n        int idx=bi;\n        for(int t=T;t>=1;t--){\n            S&s=lay[t][idx];\n            ans[t-1][b]=s.d;\n            if(s.a>=1)mark(t,s.r,s.c);\n            idx=s.par;\n        }\n    }\n    string out;\n    for(int t=0;t<T;t++){\n        for(int b=0;b<B;b++){\n            out+=to_string((int)ans[t][b]);\n            out+=(b+1<B?' ':'\\n');\n        }\n    }\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13445,
+   "output_tokens": 2844,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

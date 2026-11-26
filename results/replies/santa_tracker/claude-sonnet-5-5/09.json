@@ -1,0 +1,62 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "79f0b9fd2dce77a12feb8a441c62cc5f373d23877c26faf3c77ce4d35168e38f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQXzW6xCYrfnmTdrE9Zw",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:44:25+00:00",
+ "finished_utc": "2026-11-25T23:44:35+00:00",
+ "seconds": 10.504,
+ "seconds_to_first_text": 8.298,
+ "message": {
+  "id": "msg_011ChQXzf1jYdBd1SDBSYoQy",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This program only delivers gifts whose recipients are within range D of Lapland. The sleigh never moves, so each such gift is loaded and delivered immediately from the base. All the rules are satisfied because there are no accelerations or floats. Gifts further than D from (0,0) are skipped. I did not implement any movement planning, so the score is only the sum of the scores of those nearby gifts.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    long long T,D,W,G;\n    cin>>T>>D>>W>>G;\n    for(int i=0;i<W;i++){long long a,b;cin>>a>>b;}\n    vector<string> out;\n    for(int i=0;i<G;i++){\n        string n;long long s,w,c,r;\n        cin>>n>>s>>w>>c>>r;\n        if(c*c+r*r<=D*D){\n            out.push_back(\"LoadGift \"+n);\n            out.push_back(\"DeliverGift \"+n);\n        }\n    }\n    printf(\"%zu\\n\",out.size());\n    for(auto&s:out)printf(\"%s\\n\",s.c_str());\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 24495,
+   "output_tokens": 996,
+   "output_tokens_details": {
+    "thinking_tokens": 616
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "7135946d354d2d7ef747bda763717ca6fea0f1f209e0fd2a5294865a42972a1b",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQXiUVGTqCk5NH6wHMrS",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:40:47+00:00",
+ "finished_utc": "2026-11-25T23:41:09+00:00",
+ "seconds": 21.738,
+ "seconds_to_first_text": 2.782,
+ "message": {
+  "id": "msg_011ChQXicSVwjsqRhiTydBXf",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy simulation. Each contributor has an available day, and I schedule projects in event order.\n\n**Approach**\n\n1. Keep a pool of unscheduled projects, ordered by a priority. The priority is the latest start day for a positive score: B + S - D, with ties broken by the earlier B. Projects with a lower value are more urgent.\n2. Repeat until no progress is possible. Start at the current time T = 0 and loop over the remaining projects in priority order. For each project, try to build a team from contributors who are free at time T (avail \u2264 T).\n3. If a team is found, schedule the project: set each member's availability to T + D, apply level-ups at once (this is safe because those members are busy until then), and record the project in the output. If no project can be scheduled at T, advance T to the next availability time greater than T.\n4. Stop when T exceeds the maximum useful time, or when no projects remain.\n\n**Team building**\n\n- For each role in order, pick a free, unused contributor whose level in that skill is \u2265 the requirement. Prefer the one with the lowest level, so strong people are saved for later.\n- If a role has no such candidate, allow a contributor with level = requirement \u2212 1, provided some team member (already chosen, or a candidate for a later role) has the skill at \u2265 the requirement. To keep this simple, process roles in descending order of required level and check the mentor against the members chosen so far. As a fallback, validate the whole team at the end: for each member with level < required, some other member must have level \u2265 required in that skill. If validation fails, the team is rejected.\n- Per-role candidate lookup uses a map from skill to the contributors who have that skill at any level. A mentee with level 0 would require scanning everyone, so I only allow mentees who already have the skill at level req\u22121 \u2265 1. This is cheap to find via the skill's contributor list.\n\n**Cost control**\n\n- Scanning every project at every event time is too expensive, so I limit the work per time step with a budget on total candidate checks. Projects that failed at a time T are retried only when availability changes, and the scan is capped by an operation budget.\n- The skill lists are vectors of contributor ids per skill. A candidate scan iterates the list, which can be long, so a global operation counter stops the whole process after a fixed budget, and the program outputs what it has so far.\n\n**Validity**\n\nStart times follow the scoring rule (all members must be available), which is why I schedule at T when every member has avail \u2264 T. The output order is the order of scheduling, which is non-decreasing in start time, so the judge's simulation gives the same starts or earlier. Levels only increase, so the skill requirements stay satisfied.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int C,P;\n    scanf(\"%d %d\",&C,&P);\n    unordered_map<string,int> sid;\n    vector<string> cname(C);\n    vector<unordered_map<int,int>> lvl(C);\n    vector<vector<int>> bySkill;\n    char buf[64],buf2[64];\n    auto getS=[&](const string&s){\n        auto it=sid.find(s);\n        if(it!=sid.end())return it->second;\n        int k=sid.size();sid[s]=k;bySkill.push_back({});return k;\n    };\n    for(int i=0;i<C;i++){\n        int n;scanf(\"%s %d\",buf,&n);cname[i]=buf;\n        for(int j=0;j<n;j++){\n            int l;scanf(\"%s %d\",buf2,&l);\n            int s=getS(buf2);lvl[i][s]=l;bySkill[s].push_back(i);\n        }\n    }\n    struct Pr{string name;int D,S,B;vector<pair<int,int>> r;};\n    vector<Pr> pr(P);\n    for(int i=0;i<P;i++){\n        int R;scanf(\"%s %d %d %d %d\",buf,&pr[i].D,&pr[i].S,&pr[i].B,&R);\n        pr[i].name=buf;\n        for(int j=0;j<R;j++){\n            int l;scanf(\"%s %d\",buf2,&l);\n            pr[i].r.push_back({getS(buf2),l});\n        }\n    }\n    vector<int> ord(P);\n    iota(ord.begin(),ord.end(),0);\n    sort(ord.begin(),ord.end(),[&](int a,int b){\n        long long x=(long long)pr[a].B+pr[a].S-pr[a].D;\n        long long y=(long long)pr[b].B+pr[b].S-pr[b].D;\n        if(x!=y)return x<y;\n        return a<b;});\n    vector<long long> avail(C,0);\n    vector<int> rem=ord;\n    vector<pair<int,vector<int>>> out;\n    long long ops=0;const long long BUDGET=300000000LL;\n    long long T=0;\n    auto L=[&](int c,int s){auto it=lvl[c].find(s);return it==lvl[c].end()?0:it->second;};\n    vector<char> used(C,0);\n    while(!rem.empty()&&ops<BUDGET){\n        bool any=false;\n        vector<int> nrem;\n        for(size_t k=0;k<rem.size();k++){\n            int p=rem[k];\n            if(ops>=BUDGET){nrem.push_back(p);continue;}\n            Pr&q=pr[p];\n            if((long long)T+q.D>=(long long)q.B+q.S){continue;} // worthless\n            int R=q.r.size();\n            vector<int> team(R,-1);\n            bool ok=true;\n            vector<int> idx(R);\n            iota(idx.begin(),idx.end(),0);\n            sort(idx.begin(),idx.end(),[&](int a,int b){return q.r[a].second>q.r[b].second;});\n            vector<int> usedl;\n            for(int ri:idx){\n                int s=q.r[ri].first,need=q.r[ri].second;\n                int best=-1,bl=1e9;\n                bool mentor=false;\n                for(int m:usedl)if(L(m,s)>=need)mentor=true;\n                for(int c:bySkill[s]){\n                    ops++;\n                    if(used[c]||avail[c]>T)continue;\n                    int l=L(c,s);\n                    if(l>=need||(mentor&&l==need-1)){\n                        int key=l;\n                        if(key<bl){bl=key;best=c;}\n                    }\n                }\n                if(best<0){ok=false;break;}\n                team[ri]=best;used[best]=1;usedl.push_back(best);\n            }\n            if(ok){\n                for(int ri=0;ri<R&&ok;ri++){\n                    int s=q.r[ri].first,need=q.r[ri].second;\n                    if(L(team[ri],s)<need){\n                        bool m=false;\n                        for(int rj=0;rj<R;rj++)if(rj!=ri&&L(team[rj],s)>=need)m=true;\n                        if(!m)ok=false;\n                    }\n                }\n            }\n            for(int c:usedl)used[c]=0;\n            if(ok){\n                any=true;\n                for(int ri=0;ri<R;ri++){\n                    int c=team[ri],s=q.r[ri].first;\n                    if(L(c,s)<=q.r[ri].second){\n                        if(!lvl[c].count(s))bySkill[s].push_back(c);\n                        lvl[c][s]=L(c,s)+1;\n                    }\n                    avail[c]=T+q.D;\n                }\n                out.push_back({p,team});\n            } else nrem.push_back(p);\n        }\n        rem=nrem;\n        if(any)continue;\n        long long nt=LLONG_MAX;\n        for(int c=0;c<C;c++)if(avail[c]>T)nt=min(nt,avail[c]);\n        if(nt==LLONG_MAX)break;\n        T=nt;\n        if(T>300000)break;\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&o:out){\n        printf(\"%s\\n\",pr[o.first].name.c_str());\n        for(size_t i=0;i<o.second.size();i++)\n            printf(\"%s%s\",i?\" \":\"\",cname[o.second[i]].c_str());\n        printf(\"\\n\");\n    }\n}\n```\n\nOne flaw: level-ups are applied at schedule time and the contributor's `avail` is set to T+D. A contributor with a pending level-up is never reselected before avail \u2264 T, so this is consistent.\n\nI did not compile or run this program, so I have not tested it against the example or any data set.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16858,
+   "output_tokens": 2858,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

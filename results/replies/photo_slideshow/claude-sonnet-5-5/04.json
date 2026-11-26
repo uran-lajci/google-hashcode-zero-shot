@@ -1,0 +1,57 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9d196ad4a7dbf506228a34339a9cba9d27adce1186319f1575cfdfc979de388f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQQaFQRjPSfnCkUqhCwB",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:07:08+00:00",
+ "finished_utc": "2026-11-25T22:07:22+00:00",
+ "seconds": 14.508,
+ "seconds_to_first_text": 1.534,
+ "message": {
+  "id": "msg_011ChQQaHNW22aMy3hRvWMer",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy heuristic, not an optimal solution, and I haven't compiled or tested it.\n\n**Approach**\n\n1. Map each tag to an integer ID and store each photo's sorted tag list.\n2. Pair the vertical photos. Sort them by tag count, then pair neighbours in that order. This is simple and ignores tag overlap. A better scheme would pair photos with minimal overlap to maximize the number of tags per slide, but a union with more tags tends to score better, so I pair the largest with the smallest instead. That keeps slide sizes balanced and avoids very large slides.\n3. Order the slides greedily. Keep an inverted index from tag to slides. From the current slide, look at the slides sharing its tags and score a bounded number of candidates, then move to the best one.\n   - Walk the current slide's tags, taking the posting lists of the rarest tags first, and gather candidates up to a cap of about 300 per step.\n   - Skip slides already used. Used entries are removed lazily by swap-removal from the posting lists, which keeps them short.\n   - If no candidate exists, jump to any unused slide using a pointer that advances through the slide list.\n4. Score a transition as min(common, a\u2212common, b\u2212common), computed by merging the two sorted tag lists.\n\n**Cost**\n\nThere are up to 1e5 slides and about 1e5 steps. Each step scans at most about 300 candidates, and each merge costs about 100 to 200 operations. That is roughly 1e5 \u00d7 300 \u00d7 150 = 4.5e9 in the worst case, which is too slow. I cap candidates at 100 and stop early when a candidate reaches a score of about half the slide size, which is the maximum possible. That gives roughly 1e9 in the worst case, which is acceptable.\n\nFor posting lists, I use per-tag vectors of slide IDs and delete a slide from its tag lists when it is used. That costs the slide's tag count times a position lookup, so instead I do lazy deletion while scanning: when I encounter a used slide, I swap it out and pop it from the list.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nint main(){\n    int n;\n    scanf(\"%d\",&n);\n    unordered_map<string,int> mp;\n    vector<char> o(n);\n    vector<vector<int>> t(n);\n    char buf[32];\n    for(int i=0;i<n;i++){\n        char c[4];int m;\n        scanf(\"%s %d\",c,&m);\n        o[i]=c[0];\n        for(int j=0;j<m;j++){\n            scanf(\"%s\",buf);\n            auto it=mp.find(buf);\n            int id;\n            if(it==mp.end()){id=mp.size();mp[buf]=id;}else id=it->second;\n            t[i].push_back(id);\n        }\n        sort(t[i].begin(),t[i].end());\n    }\n    vector<vector<int>> sp; // photos in slide\n    vector<vector<int>> st;\n    vector<int> vs;\n    for(int i=0;i<n;i++){\n        if(o[i]=='H'){sp.push_back({i});st.push_back(t[i]);}\n        else vs.push_back(i);\n    }\n    sort(vs.begin(),vs.end(),[&](int a,int b){\n        if(t[a].size()!=t[b].size())return t[a].size()<t[b].size();\n        return a<b;});\n    int l=0,r((int)vs.size()-1);\n    while(l<r){\n        int a=vs[l++],b=vs[r--];\n        vector<int> u;\n        set_union(t[a].begin(),t[a].end(),t[b].begin(),t[b].end(),back_inserter(u));\n        sp.push_back({a,b});st.push_back(u);\n    }\n    int S=sp.size();\n    if(S==0){printf(\"1\\n0\\n\");return 0;}\n    int T=mp.size();\n    vector<vector<int>> post(T);\n    for(int i=0;i<S;i++)for(int x:st[i])post[x].push_back(i);\n    vector<char> used(S,0);\n    vector<int> cnt(T);\n    for(int x=0;x<T;x++)cnt[x]=post[x].size();\n    auto score=[&](int a,int b){\n        auto&A=st[a];auto&B=st[b];\n        size_t i=0,j=0;int c=0;\n        while(i<A.size()&&j<B.size()){\n            if(A[i]==B[j]){c++;i++;j++;}\n            else if(A[i]<B[j])i++;else j++;\n        }\n        return min(c,min((int)A.size()-c,(int)B.size()-c));\n    };\n    vector<int> order;\n    int ptr=0;\n    int cur=0;\n    used[0]=1;order.push_back(0);\n    const int CAP=100;\n    while((int)order.size()<S){\n        int best=-1,bs=-1,seen=0;\n        vector<int> tg=st[cur];\n        sort(tg.begin(),tg.end(),[&](int a,int b){return post[a].size()<post[b].size();});\n        int half=st[cur].size()/2;\n        for(int x:tg){\n            auto&p=post[x];\n            size_t k=0;\n            while(k<p.size()&&seen<CAP){\n                int s=p[k];\n                if(used[s]){p[k]=p.back();p.pop_back();continue;}\n                k++;seen++;\n                int sc=score(cur,s);\n                if(sc>bs){bs=sc;best=s;}\n                if(bs>=half&&half>0)break;\n            }\n            if(seen>=CAP||(bs>=half&&half>0))break;\n        }\n        if(best<0){\n            while(used[ptr])ptr++;\n            best=ptr;\n        }\n        used[best]=1;order.push_back(best);cur=best;\n    }\n    printf(\"%d\\n\",S);\n    for(int s:order){\n        if(sp[s].size()==1)printf(\"%d\\n\",sp[s][0]);\n        else printf(\"%d %d\\n\",sp[s][0],sp[s][1]);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13404,
+   "output_tokens": 2021,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

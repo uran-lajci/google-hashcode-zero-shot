@@ -1,0 +1,57 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "3c399150cebae003136d76aebe3a64243b25a544a167bc3dff974f7755cf6a62",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQRGNE4cbcStv49ztSDp",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:16:12+00:00",
+ "finished_utc": "2026-11-25T22:16:36+00:00",
+ "seconds": 24.286,
+ "seconds_to_first_text": 8.588,
+ "message": {
+  "id": "msg_011ChQRGrD4cThz8Q3UWESzD",
+  "container": null,
+  "content": [
+   {
+    "text": "This solution uses a simulation-guided local search. Candidate schedules are evaluated by a full simulation, and the best one found within the time limit is output.\n\n**Initial schedule.** For each intersection, count the cars that use each incoming street. This counts only streets that are not the last street of a path, since cars never queue at the end of their last street. Streets with a count above zero are included, ordered by the time of the first car's arrival (or by count) and given duration 1. Ordering by earliest arrival at the light helps because many cars start there.\n\n**Simulation.** Each street has a queue. At each second t, for every intersection with a schedule, compute the green street from `t mod cycle`. The head car of that street's queue crosses if it has arrived by t. Each street passes one car per second, which holds naturally since only one street per intersection is green.\n\nA car that crosses at time t onto the next street arrives at its end at t+L. If that street is the car's last, the car finishes at t+L and scores F+(D\u2212t\u2212L) if that is \u2264 D. Otherwise it joins the queue at t+L.\n\nArrivals are processed with buckets by time. At each tick t, first add the cars arriving at t to their queues (in a stable order), then process the green streets. Arriving cars have to be queued behind existing ones, and a car arriving at exactly t can cross at t.\n\nWithin one second, cars arriving at the same street at the same time are ordered by when they were scheduled. This is deterministic and approximates the statement. Initial cars are queued in input order. A car crossing at t is placed in the bucket for t+L, with L\u22651, so it never affects the current tick.\n\n**Cost.** Cost per simulation is about D \u00d7 (active intersections) plus car movements. Iterating all scheduled intersections each tick could reach 10^4 \u00d7 10^5, which is too slow. Instead, track only the intersections that have cars waiting. Simpler: keep a list of streets with a non-empty queue, and for each check whether it is green. The number of such streets is at most V=1000, so each tick costs about 1000 operations. A simulation therefore costs at most about 10^7 operations, giving roughly 100 or more evaluations in a few seconds.\n\n**Local search.** Randomly pick an intersection (using a fixed seed) and either swap two streets in its order or change a duration between 1 and 3. Keep the change if the score does not drop. Stop at about 8 seconds of wall time, which is deterministic enough in practice.\n\nTo keep the green lookup fast, each intersection stores its cycle length and a per-second lookup computed from the order and durations.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint D,I,S,V,F;\nvector<int> sE,sL;vector<string> sN;\nvector<vector<int>> path;\nvector<vector<int>> ord,dur;\nvector<int> cyc;\nvector<vector<int>> cand;\nlong long sim(){\n    vector<vector<pair<int,int>>> sched(I);\n    // per street: offset start and dur\n    vector<int> st(S,-1),du(S,0);\n    for(int i=0;i<I;i++){int o=0;for(size_t k=0;k<ord[i].size();k++){st[ord[i][k]]=o;du[ord[i][k]]=dur[i][k];o+=dur[i][k];}cyc[i]=o;}\n    vector<deque<int>> q(S);\n    vector<int> pos(V,0);\n    vector<vector<int>> bucket(D+2);\n    for(int c=0;c<V;c++)q[path[c][0]].push_back(c);\n    long long score=0;\n    vector<int> active;vector<char> inA(S,0);\n    for(int s=0;s<S;s++)if(!q[s].empty()){active.push_back(s);inA[s]=1;}\n    for(int t=0;t<=D;t++){\n        for(int c:bucket[t]){int s=path[c][pos[c]];q[s].push_back(c);if(!inA[s]){inA[s]=1;active.push_back(s);}}\n        bucket[t].clear();\n        vector<int> na;\n        for(int s:active){\n            if(q[s].empty()){inA[s]=0;continue;}\n            na.push_back(s);\n            if(st[s]<0)continue;\n            int e=sE[s];int m=t%cyc[e];\n            if(m>=st[s]&&m<st[s]+du[s]){\n                int c=q[s].front();q[s].pop_front();\n                pos[c]++;int ns=path[c][pos[c]];int at=t+sL[ns];\n                if(at>D)continue;\n                if(pos[c]==(int)path[c].size()-1){score+=F+(D-at);}\n                else bucket[at].push_back(c);\n            }\n        }\n        active.swap(na);\n    }\n    return score;\n}\nint main(){\n    scanf(\"%d %d %d %d %d\",&D,&I,&S,&V,&F);\n    sE.resize(S);sL.resize(S);sN.resize(S);\n    unordered_map<string,int> id;\n    char buf[64];\n    for(int i=0;i<S;i++){int b;scanf(\"%d %d %s %d\",&b,&sE[i],buf,&sL[i]);sN[i]=buf;id[sN[i]]=i;}\n    path.resize(V);\n    vector<int> cnt(S,0);\n    for(int c=0;c<V;c++){int p;scanf(\"%d\",&p);path[c].resize(p);for(int j=0;j<p;j++){scanf(\"%s\",buf);path[c][j]=id[buf];if(j<p-1)cnt[path[c][j]]++;}}\n    ord.assign(I,{});dur.assign(I,{});cyc.assign(I,1);\n    vector<vector<int>> in(I);\n    for(int s=0;s<S;s++)if(cnt[s]>0)in[sE[s]].push_back(s);\n    for(int i=0;i<I;i++){\n        sort(in[i].begin(),in[i].end(),[&](int a,int b){return cnt[a]>cnt[b];});\n        ord[i]=in[i];dur[i].assign(in[i].size(),1);\n    }\n    vector<int> act;\n    for(int i=0;i<I;i++)if(!ord[i].empty())act.push_back(i);\n    long long best=sim();\n    auto start=chrono::steady_clock::now();\n    mt19937 rng(12345);\n    while(!act.empty()){\n        double el=chrono::duration<double>(chrono::steady_clock::now()-start).count();\n        if(el>7.0)break;\n        int i=act[rng()%act.size()];\n        int n=ord[i].size();\n        auto so=ord[i];auto sd=dur[i];\n        int r=rng()%3;\n        if(r==0&&n>1){int a=rng()%n,b=rng()%n;swap(ord[i][a],ord[i][b]);swap(dur[i][a],dur[i][b]);}\n        else if(r==1){int a=rng()%n;dur[i][a]=1+rng()%3;}\n        else if(n>1){int a=rng()%n;int s=ord[i][a];int d=dur[i][a];ord[i].erase(ord[i].begin()+a);dur[i].erase(dur[i].begin()+a);int b=rng()%n;ord[i].insert(ord[i].begin()+b,s);dur[i].insert(dur[i].begin()+b,d);}\n        long long sc=sim();\n        if(sc>=best)best=sc;else{ord[i]=so;dur[i]=sd;}\n    }\n    printf(\"%d\\n\",(int)act.size());\n    for(int i:act){\n        printf(\"%d\\n%d\\n\",i,(int)ord[i].size());\n        for(size_t k=0;k<ord[i].size();k++)printf(\"%s %d\\n\",sN[ord[i][k]].c_str(),dur[i][k]);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 21224,
+   "output_tokens": 2646,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

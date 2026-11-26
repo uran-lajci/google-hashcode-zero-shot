@@ -1,0 +1,57 @@
+{
+ "problem": "photo_slideshow",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "9d196ad4a7dbf506228a34339a9cba9d27adce1186319f1575cfdfc979de388f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQUuRriUi4Njd8qJVCyJ",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:03:55+00:00",
+ "finished_utc": "2026-11-25T23:04:09+00:00",
+ "seconds": 13.525,
+ "seconds_to_first_text": 1.369,
+ "message": {
+  "id": "msg_011ChQUuTwF2ja4v1ggDKMLT",
+  "container": null,
+  "content": [
+   {
+    "text": "The approach is greedy: pair up the vertical photos, then build the slideshow by repeatedly picking a good next slide from a small candidate set.\n\n**Reading input.** Each tag string is mapped to an integer ID, and each photo's tags are stored as a sorted vector of IDs.\n\n**Pairing vertical photos.** Sort the vertical photos by tag count. Pair neighbours in that order, which keeps slides reasonably sized. A better approach would pair photos with few common tags, but the simple pairing is enough here. If there is an odd vertical photo, drop it.\n\n**Building slides.** Each slide is a sorted tag vector, made by merging the two photos for a vertical pair (union).\n\n**Ordering.** Greedy nearest-neighbour with a limited search:\n- Keep an inverted index from tag to the slides containing it. Use only tags with a modest posting list, and skip huge lists.\n- From the current slide, take candidates from the posting lists of its tags, scanning unused slides only. Cap the number of candidates examined at about 300\u2013500. Lazily remove used slides from the lists by advancing a pointer per tag, so used slides at the front are skipped. Used entries in the middle remain, so scan with a cap.\n- Score each candidate with the interest factor, using a merge-based intersection. Pick the best, and stop early if the score reaches the upper bound min(|A|,|B|)/2 style, or just cap the scan.\n- If there are no candidates, fall back to the next unused slide in index order, using a global pointer.\n\nTo get diverse candidates, iterate over the tags of the current slide in order and, for each tag, scan up to K entries from the start of its list (the entries are mostly unused because of the pointer advancing). Total work is the sum of K over tags, so cap the total examined at about 400 per step. With 1e5 slides and about 400 candidates of roughly 20 tags each, that is about 1e5 \u00d7 400 \u00d7 30 = 1.2e9 operations, which is too heavy. Use a cap of 150 candidates instead, giving about 4.5e8, which is fine.\n\nTo keep the examined entries distinct, mark the visited candidates with a stamp array.\n\nThe start slide is slide 0. Output the slide order.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int n;\n    scanf(\"%d\",&n);\n    unordered_map<string,int> mp;\n    vector<vector<int>> t(n);\n    vector<char> o(n);\n    char buf[64];\n    for(int i=0;i<n;i++){\n        int m;\n        scanf(\" %c %d\",&o[i],&m);\n        for(int j=0;j<m;j++){\n            scanf(\"%s\",buf);\n            auto it=mp.emplace(buf,(int)mp.size());\n            t[i].push_back(it.first->second);\n        }\n        sort(t[i].begin(),t[i].end());\n    }\n    vector<vector<int>> st;\n    vector<array<int,2>> ids;\n    vector<int> v;\n    for(int i=0;i<n;i++){\n        if(o[i]=='H'){st.push_back(t[i]);ids.push_back({i,-1});}\n        else v.push_back(i);\n    }\n    stable_sort(v.begin(),v.end(),[&](int a,int b){return t[a].size()<t[b].size();});\n    for(size_t i=0;i+1<v.size();i+=2){\n        vector<int> u;\n        set_union(t[v[i]].begin(),t[v[i]].end(),t[v[i+1]].begin(),t[v[i+1]].end(),back_inserter(u));\n        st.push_back(u);\n        ids.push_back({v[i],v[i+1]});\n    }\n    int S=st.size();\n    int T=mp.size();\n    vector<vector<int>> post(T);\n    for(int i=0;i<S;i++)for(int x:st[i])post[x].push_back(i);\n    vector<int> ptr(T,0);\n    vector<char> used(S,0);\n    vector<int> stamp(S,-1);\n    auto score=[&](int a,int b){\n        auto&A=st[a];auto&B=st[b];\n        size_t i=0,j=0;int c=0;\n        while(i<A.size()&&j<B.size()){\n            if(A[i]==B[j]){c++;i++;j++;}\n            else if(A[i]<B[j])i++;else j++;\n        }\n        return min(c,(int)min(A.size()-c,B.size()-c));\n    };\n    vector<int> order;\n    int cur=0;\n    used[0]=1;\n    order.push_back(0);\n    int g=0;\n    for(int step=1;step<S;step++){\n        int best=-1,bs=-1,cnt=0;\n        for(int x:st[cur]){\n            auto&p=post[x];\n            int&q=ptr[x];\n            while(q<(int)p.size()&&used[p[q]])q++;\n            int k=0;\n            for(int idx=q;idx<(int)p.size()&&k<12;idx++){\n                int c=p[idx];\n                if(used[c]||stamp[c]==step)continue;\n                stamp[c]=step;\n                k++;cnt++;\n                int s=score(cur,c);\n                if(s>bs){bs=s;best=c;}\n            }\n            if(cnt>=150)break;\n        }\n        if(best<0){\n            while(used[g])g++;\n            best=g;\n        }\n        used[best]=1;\n        order.push_back(best);\n        cur=best;\n    }\n    printf(\"%d\\n\",S);\n    for(int s:order){\n        if(ids[s][1]<0)printf(\"%d\\n\",ids[s][0]);\n        else printf(\"%d %d\\n\",ids[s][0],ids[s][1]);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 13404,
+   "output_tokens": 1919,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

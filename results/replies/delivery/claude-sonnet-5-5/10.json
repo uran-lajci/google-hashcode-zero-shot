@@ -1,0 +1,62 @@
+{
+ "problem": "delivery",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "cdf39077bb66a512116cd380e6a1ced5bedc5cdb8ec3dd395a27c7da41d0f1a7",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQYvFFymSz66oBSx4bVr",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:56:34+00:00",
+ "finished_utc": "2026-11-25T23:57:00+00:00",
+ "seconds": 26.227,
+ "seconds_to_first_text": 15.446,
+ "message": {
+  "id": "msg_011ChQYvNfj1SU4siZVGnQ3C",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSyCMKEAgUGAI4AUIIdGhpbmtpbmcSDJ1heGo4W7m28UBkFhoMt0wvzyVp3a19WKgCIjDVSkCu+5PYLM0RsgRyazkoeocd+PuA2F26OGCjIAKE2hXXiO+yEArOqNQSz8/S20kq5SLjLDYldxmtBuoIW1gZopTYIbYr9MWIlUvw4Iq6NFjP1J3OHI8bbiNTHWY4nOJfYXdMPwhzlj8ptG2MzbEn+NvFiUeV9ZSEXE1y9Z52kDMgAogiKraRbu6wGOz+1c8aSz6Qik0GlQQ2Ly+EDgLy4QI+YzSh1AtvCbyDzEhEuj3qMPOBZwC0DFKV+Hnj7eu6L46Rgs4Ruut7tpP4CpCZ9k4RvYhT0RQUcJyh4sjzPCsW2NG1ILl2EzbvS2CriEC1SoRgxzhi9Km8qs1C4uMBNnoxABxMjJOg8NscclS+Lb3a8UJz8SU1nCPdDBAtxhq6pFotL4f5hfbZ2j67T9gus7AZpMYFwqkiozFnvuDjP2X5QMjRGettAwr2WgscAyu9h/n0aBLCur8Jhn0pBhGvhZmHo07mvH40wJweH3SFKK//WymAXMW1c2whYmkdpML+yMA5QtPkQdVNCVWRbIh28IgIjj9ehLwHaUYbAbU2KOloxxnVQ+9UdlSFmuSB24Wz5CnpNA1ygA0RNrJfvmoZO0oxWw1LgExsg+Ycovekp94xdwqMYBkLhrp9aR8T9rMWTlwNssuEU2elM6tKohcHfBZ3aUqaxjeal9d1DUhZpD67NQVSeEp4QrP3GYYPoc41LL2a6a0H6G2qf2nMEY7NMln3Skpu2zvoKr7Dc9mpHSfLOvKhrIhaI9lounkBoNNSjXHpjBLXSV10krFtVrNsVQiktrf4VQN/LleMkH+Bqtb5GPg+dDgiJuwEu+ibQKwmKiyioqVycWhY58SGz71biCXu8u1yzW0XW0qE72GK9O4Ny4aMJCA0mLBWMvvNP3JhRb0yg3P+OISrLkM5cRo6yLsYjRYmVKFSA5na7Wfey+y9aLJ6/VIj8tczA4V7LKmjV2giAGYUmZ01/GKsQ6P9geR6nlqY4NO7OAsJZ0++rz/Pdwor7N2yOqPcldPzGe4FKnYO6j1rH7y9j8Sy/S6WYuxQa/5NsAb1Gm4rHHTNpOzEPo4Dw07wlcE33Hs5mlQfBWDvfX1Po2zjqHGDXDXjdc/2hIvD1jn+s/ZI+RrFS5Xa/9rz1nTAKkL0zZkJOIPsbLH3V9HPvEuUNkl2GJaVmmK7t9bpAup7Xh6MEOfpMJYPw+dNxozd10t37XX9ZwvYoDpSnUiKClK1mAFiEcJ133YzDPULb2TUyHnU6bqgO7CWoYLxftOHXjFhHewjDHucm48J1nSQds6MGMMkD3UCWfrgv0MXchWg84IDY9Xx4YjP0llrIo9TdKWRSUb9p+OCtez80i5UZxLjy3bnOP3XNnmkK1wS33Pav9LlF0eziZAEJd26cRGOpZUFWTehuJBq7vtOI5bLYLjcHMarQmaXJyca1HPqInoEx2zSd1gPIOYfcS2CifIk0z7MPksBTRIs8M1RiuFi97SJnZ1XjTN7Q6B/LkCnwOuT1+ICQl9/6gR2oxTxR2ieO/hX0GwhMMZpAvB3z+t5rpi5RhUypr/IxD7cwdAp/Yl6VxF83KtZUW64aPqVdq2zB809hR/ysJR2AQo+/MfyPJgkJ8KC17lYSTklbdDN1oI1kL1C89gRZExnqbUmnJxq2Z/jRgSmdzcykBZZtZUFhj06ITUMAztc9ZYa3ZVBPx1ULwwDUllK02LY9iqUB5ziDf4IQmIxujaJn7bYZo18Nl4kvGZYyhpF4ySx9Fao3gEQnQNNNWLB0Y1WlQ/BzHrKwsdDUm//ciwMMf7sqCBJA2XdrSD9HgeLaKM7+25p0AW57xGeoSpeEs/aRTdPjlgoPEK3N8LfWowhSwWreUAGLpT5ygU/8Ofo5ozmckSA/j0N5LckWa9LDfEv8Dd3DIbgAUHikgUiMz7g/xu6uQIWgwBIkUeMFDWs/Mjm8VbxZBbmf3uQrzHtBgwgJoXBKi/9H/igQu9/EH1BEmzcRRo/FWk8wl3/pkXWMZMnfm4bYlaeWj9mtrdHJ/Ap5zEBG796qsJMT2AmYaN+5/FTBpem95Y7iAkVFAft4qm4spVXA17sUSe8l3+4n5S1eehWtSS00jqyvQTXW7Up9G5Wzi/jvHZo1VZhVBoPFv5slIgUtFFtiBjQPfmzB5PxJAQooFXf9il2qpPNSCGJs4FGKH0cZnFbpRKSpzxxBVB1gOuYWgo2llpeTuicmbRrj0ukcGc2CckQs5c4Nygi13tXkH+GGXIdw5aW8fYmGYpBEiPH3I3SWq4vNETgwDQPhwj7qLe8clWx+4IwtYMOdLNzsxbl9xFROZYHFz13ZR4sizorhDeLsiXfmrnNkjNOVnZz+eOim05oerGI90HcKP8UOphputVT8Wem4h937YmKbx3ddqtE05VT8MjNFHU2AYzJaLGIhUD+coGgyR3/gk1CiOY8tkUz33wCCKCBXX0wOwXPoixcvee0spTHSpjkrUFEVqrFKQ8MQ523vRoKK1SJbArlmhxEnRCmSqsc/6Igp9hIw+lN1xJ9yQQ8LHP6w9qUFRYRAGcICNb9PBWouEQgSnQsOajFGZBQIHyy7o/c32ZFqaUZ9zAXvFjj9OelCw7X/A4mYMZ4HJlbpzIIJxYwS9gi61MWNcO8l0KPFMMp+q8yxmJUYMnniGTj7Tv+13SyUqkXNzxVqGafcZU/CwwtJZ91yI12VlZMjjw84bj7THRVtON7tGiEb0UpUdBXVZnUqU95FqIYhjhs9SrllpZ3PBvdCrQJHipDhcZilo5riT6rFP/3lANTYygmKxuDEuii0uHLFwnIGLD5yb8NSoozwG0WGF4dRQTa5ovBMqkwYn8MdgUnvNIplSM7CzG0qqnK5jtX2o8mMoUVnMpPWQMtlntSknZZ/iJI7usinrS3yeGexCaUzW8g9APr4vdfB4R7yJdMbu9h3DIRp0eTXH8MSbU7HiLzLzggSs2yRikg7K6Z3iEiS2Q45K4RQGmR50mWA/f/iornv46QVcW8gM4H8Hy/o0l4ZwE9Pm0IqFSkQuXLJ4mTPuoYft2hWvxdJz1Gw6NQH/kfXOJUl4GYFJQ37HpFPYwrsgIyHQSXt4KAqRHgmloNQdSaVwb95+pFKMpTvhXhb/piqcLH+suCccaVX3iAILBhjEe2iloD4keHzW2AcN/9jseSau4lmXGN+Xj88ZLEsDXhtEm3cypFIDyFypFz7zwf38A5gNkY1qByw0yl+nrSifqOEc6JM6fThfy8IeEPEo6GxK2sf/41+m5Py6g6hEu7yI5LuLFVaogIFsTugDruMmQ1PInuW+KDHS/5DvSG/Ab2oGutrkGMhJQzf4BjzDrE84Pb+S38ffqijSOnsp1fSK3Yfx1At7gGIRB0V/ZL5BVc8OYPgmS167OulurGKGqo1mtjMN32pI7H+cxMdw6Se8yJ0p5Ae9ehI/djEjRo4HEQXDFrWL4n2hiuy5RndFxmS5aPOQNCL1GGIHqYgKpHHKcT6dDPc9vK131vqyDSpOKavGJgHUzDDy0/GkZLrlEGLhU8+GmD8uoT3yDTjByDdee0m2usi+R3blGlvdZdKFIRDMoJs2Hl34tze9xDrsblJjUuvuRVbzq/jlBIBfBnMTnfXe9unlJpBM6aJsIQplQUJ3xy9mNt/CYkxUgw7qnzZd97w4QYcG6C51s4fD3k6mDaO5HPNNkvDc9astPePaXI32WzfLjnYVY3rEgracL/YnD/PxECjb3695iisxprRLl+DCI5by/OrcdhNvvOz89xY5FWHppvNc1tb8Pf3+dm5GxWtBRR3rhxITZi44hfYbgCr+ajYiLZyrdtEeSUL9S7WDTUEr3o9dnry1uCaNRmmUtXhFLacjP/hEKJuWhJB3o4DFLKFxJvw5uKOdkjnvTx9I7GrdMal9zl0nLGhl3+W05cteuB+gMepRp16GgjJylyPPux+JotaZ1MNhLhDjw5efXGfl0fA4zmrZCClqz38IEkliutbsAGzRURpeujMM/Wykmw8L8vHMTbxHEYPG8o0nRwCwpju+68LATtdAncflYhIaIerPIhIFOOvQwXGvZoXp+tqEWPBVJmRLtJVEg8FiUz8fk4lyF79AcDhIl08AzFuBNHrrn9TXKnoHLlOxNJGxzxvEn2mIVLwmTGqNCNY7Udtd2eAmawqWdDI16LJPC61doqwKsSwFXEinuWRBXwTNEAWXR1M1FGGe+i6sAoWQrEo8LHOZcy82h7sNrOKLe3devIYm2Xh0n5J4srX9x/Uwy/NdU/Q3gBjSLqbVimhwl6SqIw5Ia6I4iAiuKR8Ot7oQCHThfNv6nsn/VYr27eysk23/ohxJxl+3B5sc0H/3TgRYBqbYhs7CSHEV3RalYg01S2MfNF5fep11rwkpBqeQTCSgGaB4IJt/aHzkWRwyjxzPWkx/lvg5zzxy0nVcfTwGsWRiaPchAu4MVBQQFxBM9DOJiqYdz8SkTr8yKFWn7Dc/PD8EiSNtWlXm1sExrHZftjfbIKORD/+5h1kyQj9ZP+iKwPQHwcQYKh+rF4p3z9E8f9Gwbn2iaNNCLBgJGX1q7fMMbrGtw9fi2WwlnvKDsj34bch82lcrOQotBiNtQBLx9Ts6HD3ayhRFm6GaEUp0iPT4eNjFWdwnq1sPmKMs6utp3YIWKlfJ4n6QzSXQBG4m2iZsnm0gc1bHh49V3v3AJ5mS3Q9DDpyu6NiQi6hg1+0tXwd0+iJuZnS/Wa1v2uL5fAX3GyunoYgcctzaozBwe5CcCLImeGVKiWNb1f4/H+aDexWWZPdfQB9zSJDaYjkMO5k58Xr2n9lkej2oktFaWbmSniC/lySa4491bzeyN/6G1hJB7O9+is/CgByz4GJQNzBjf40uMZa7lbxwefJGDtUpg5mmnaCnb72D1O4cpgTTu/wvouqzHgN1c6nH1KAxIE/K90un+BkIkZzfRakPTJHO0I46f5KOn/h0ScNhJ24f4SCuYgV0jvygreiFfZfhDO9qC010zAAGf5eNwaS0H8AiJI8QKmlF4ygiNk0BuAZMVE5xdvlYkVNHaTTNENGy9IxNrOHicQy9K8IkDhYnpnaUP6Gf/TSzrrtgYL38mtu7j/VqzlOsTQOwncuYXr1/k3f32zMx0eGb8CPxrPBAhgOwESDk6g8sQoLU8nrfbmJAVxuYWCygg1qYCKZnYEWPk2iB6kUBZ1x5ihPx7HHk6JZ7ggKjF1LOgCEPYpgEcBmWyFMGYD7Ksr4/AHdp71jiq8mnjhkgkcmJBuM2kfVx6whV8pl70wxSJ8lFIyM+lU/2o5NrgVYEX3sqcrA7PqBEr8EUkr9XSZJXh1T13/G10XVDEWgS7zFRCMZfdTQaFY60iqu8RTnkJteeIvEn0SmpqVXEu6xRLxMbQ+kzj8G/zbFPnb66IyESn4AeWDCVfv74PjfNNk88cM6fVBHfgzA0RsE4WmEYeoOkNgJ7bjxC5HzkXh2uGufNchRSaXJFw9VNm523oRZxhIdYntm0fL81VPCwAAD/zj7HbaK6W/zi8BAD+cfLOwjxr3hm5KdbH/BMepM6Br3GYhsm59RENBi1PqRS6ehRBd7yHcGEU+y4DEqRdMqxYbWeCVxuliYD1tW6vllM7y2kVIv9CSjAVJKNYVjZGkcDozACzvJ17Do4Ln42JBXlt7JSOfu+MLtsIBQaX9l0O7vFkIuWLJ6PeOVbnwr7PkzT9zVf6Ab4A7KQOHlKcsJtRYJd4ZGOq1rado8eEilKPS+X7ooe6v8R5qCad1jJkPPuRobLF4XmGdxD9qKGQiCxLE9FsxRnmdwCpSVEo1tL6Tr+aqbq6JH/keD3IiE/K9WujPhgcJ17aBo/J+GGET/m95vGCobcjAA4ajVp5vIWOM6/gdpZ6Wo100w4OP135hboIMhyEe5s40QfdgFsXc6KW4z+DBmquIznmDfMpkPjEn6sl/+vQ/VFuT+CU1LCXnwgff8r1s3qnZUs4azTHy0C605CCQtPR4/p4Vx7kpdsb5OoaPGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy solution that I have not compiled or run on any input.\n\n1. Orders are processed from smallest to largest by number of items, so small orders finish early and score more.\n2. For each order, the drone that becomes free earliest takes a trip. For each product type in the order, it loads from the warehouse nearest the customer that still has stock, until the payload is full. It then delivers everything to the customer.\n3. Warehouse stock is deducted when a trip is planned. Stock only ever decreases, so the stock check is valid whatever the real timing of the commands.\n4. Each trip's finishing time is computed before it is emitted. If it would pass the deadline T, the stock is restored, the trip is dropped, and the rest of that order is abandoned. This keeps every output valid.\n5. Flight cost is the rounded-up Euclidean distance, computed with integer arithmetic. Each command costs that plus one turn.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\ntypedef long long ll;\nstatic ll cd(ll ax,ll ay,ll bx,ll by){\n    ll x=(ax-bx)*(ax-bx)+(ay-by)*(ay-by);\n    ll d=(ll)sqrt((double)x);\n    while(d*d<x)d++;\n    while(d>0&&(d-1)*(d-1)>=x)d--;\n    return d;\n}\nint main(){\n    int R,Cc,D,T,ML;\n    scanf(\"%d %d %d %d %d\",&R,&Cc,&D,&T,&ML);\n    int P;scanf(\"%d\",&P);\n    vector<int> wt(P);\n    for(auto&x:wt)scanf(\"%d\",&x);\n    int W;scanf(\"%d\",&W);\n    vector<int> wr(W),wc(W);\n    vector<vector<int>> st(W,vector<int>(P));\n    for(int i=0;i<W;i++){\n        scanf(\"%d %d\",&wr[i],&wc[i]);\n        for(int j=0;j<P;j++)scanf(\"%d\",&st[i][j]);\n    }\n    int C;scanf(\"%d\",&C);\n    vector<int> orr(C),oc(C),ol(C);\n    vector<map<int,int>> need(C);\n    for(int i=0;i<C;i++){\n        scanf(\"%d %d %d\",&orr[i],&oc[i],&ol[i]);\n        for(int j=0;j<ol[i];j++){int p;scanf(\"%d\",&p);need[i][p]++;}\n    }\n    vector<int> ord(C);\n    iota(ord.begin(),ord.end(),0);\n    stable_sort(ord.begin(),ord.end(),[&](int a,int b){return ol[a]<ol[b];});\n    vector<ll> dt(D,0),dr(D,wr[0]),dcc(D,wc[0]);\n    priority_queue<pair<ll,int>,vector<pair<ll,int>>,greater<pair<ll,int>>> pq;\n    for(int i=0;i<D;i++)pq.push({0,i});\n    string out;\n    ll Q=0;\n    for(int o:ord){\n        auto &nd=need[o];\n        bool fail=false;\n        while(!fail){\n            // remaining?\n            bool any=false;\n            for(auto&kv:nd)if(kv.second>0){any=true;break;}\n            if(!any)break;\n            auto top=pq.top();pq.pop();\n            int d=top.second;\n            struct Rec{int w,p,k;};\n            vector<Rec> recs;\n            ll cap=ML;\n            for(auto&kv:nd){\n                int p=kv.first;\n                int cnt=kv.second;\n                while(cnt>0&&cap>=wt[p]){\n                    int bw=-1;ll bd=LLONG_MAX;\n                    for(int w=0;w<W;w++){\n                        if(st[w][p]<=0)continue;\n                        ll dd=(ll)(wr[w]-orr[o])*(wr[w]-orr[o])+(ll)(wc[w]-oc[o])*(wc[w]-oc[o]);\n                        if(dd<bd){bd=dd;bw=w;}\n                    }\n                    if(bw<0)break;\n                    ll k=min<ll>({(ll)cnt,(ll)st[bw][p],cap/wt[p]});\n                    if(k<=0)break;\n                    st[bw][p]-=k;cnt-=k;cap-=k*wt[p];\n                    recs.push_back({bw,p,(int)k});\n                }\n            }\n            if(recs.empty()){pq.push(top);fail=true;break;}\n            stable_sort(recs.begin(),recs.end(),[](const Rec&a,const Rec&b){return a.w<b.w;});\n            ll t=dt[d],r=dr[d],c=dcc[d];\n            for(auto&x:recs){\n                t+=cd(r,c,wr[x.w],wc[x.w])+1;r=wr[x.w];c=wc[x.w];\n            }\n            bool first=true;\n            for(auto&x:recs){\n                if(first){t+=cd(r,c,orr[o],oc[o]);r=orr[o];c=oc[o];first=false;}\n                t+=1;\n            }\n            if(t>T){\n                for(auto&x:recs)st[x.w][x.p]+=x.k;\n                pq.push(top);\n                fail=true;break;\n            }\n            for(auto&x:recs){\n                out+=to_string(d)+\" L \"+to_string(x.w)+\" \"+to_string(x.p)+\" \"+to_string(x.k)+\"\\n\";\n                Q++;\n            }\n            for(auto&x:recs){\n                out+=to_string(d)+\" D \"+to_string(o)+\" \"+to_string(x.p)+\" \"+to_string(x.k)+\"\\n\";\n                Q++;\n                nd[x.p]-=x.k;\n            }\n            dt[d]=t;dr[d]=r;dcc[d]=c;\n            pq.push({t,d});\n        }\n    }\n    printf(\"%lld\\n\",Q);\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 20429,
+   "output_tokens": 3430,
+   "output_tokens_details": {
+    "thinking_tokens": 1373
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

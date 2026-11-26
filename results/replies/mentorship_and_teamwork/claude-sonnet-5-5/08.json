@@ -1,0 +1,57 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "7135946d354d2d7ef747bda763717ca6fea0f1f209e0fd2a5294865a42972a1b",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQWCehV6pvHZana5WvsK",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:20:56+00:00",
+ "finished_utc": "2026-11-25T23:21:20+00:00",
+ "seconds": 23.704,
+ "seconds_to_first_text": 3.006,
+ "message": {
+  "id": "msg_011ChQWCohiQAL4jYS4BabWx",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy simulation. Each contributor has a free time, and each project is attempted in a priority order.\n\n**Approach**\n\n1. Keep a list of pending projects. Maintain a current time `T`, a map from skill name to skill id, and a per-contributor map from skill id to level.\n2. Repeatedly scan the pending projects and try to build a valid team for each one. A project is chosen when its team can start at the earliest feasible time and still earn a positive score.\n3. Simplified scheme: a priority queue of events processed in order of time. At each time `t`, the available contributors are those with `free <= t`. Each pending project is attempted in order of score density or deadline, and the first feasible one is started.\n4. The \"best before\" deadline `B` gives a project value of `max(0, S - max(0, t + D - B))` when it starts at `t`. A project is dropped once that value reaches 0 at its earliest possible start, which is the current `t`. Because time only moves forward, the value only decreases.\n5. Team assignment: for each role in order of descending required level, choose the available contributor with the minimal sufficient level (level >= required), which preserves strong contributors. A mentored slot (level == required-1) is allowed if some already assigned or other member has level >= required. To keep this simple, do two passes:\n   - Pass 1 assigns each role a contributor with level >= required, picking the lowest such level. Prefer level == required, since that leads to a level-up.\n   - Pass 2 handles the remaining roles with level == required-1, provided the team has a member with sufficient level in that skill. The mentor is looked up among the chosen members of pass 1 and the others in this pass.\n6. Validation: after tentative assignment, verify every role directly. Role `k` is valid if the member's level is at least the requirement, or is exactly one below and some other member has at least the requirement. This check uses current levels.\n7. Time loop: candidate times are `0` plus all contributor finish times. At each time, sort pending projects by `value/(D*R)`-like ordering, try each, and start those that fit. To bound cost, each time step scans pending projects with a cap on the number of attempts. Contributors are indexed per skill and level; for simplicity the search for candidates scans a per-skill list of contributors sorted by level, skipping busy ones, with a limit on the number of entries scanned.\n8. On completion of a project, levels are updated: a contributor whose level <= required in their role gains +1. This is applied when the event time is reached, so the order of processing events by time is needed. An event heap of (finish time, project) handles this.\n9. Output the started projects in start order. Within the same start time, contributors are disjoint, so the order is consistent with the simulated times.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Proj{string name;int D,S,B;vector<pair<int,int>> r;bool done=false;};\nint main(){\n    int C,P;\n    scanf(\"%d %d\",&C,&P);\n    unordered_map<string,int> sid;\n    auto gid=[&](const string&s){auto it=sid.find(s);if(it!=sid.end())return it->second;int k=sid.size();sid[s]=k;return k;};\n    vector<string> cn(C);\n    vector<unordered_map<int,int>> lv(C);\n    char buf[64],b2[64];\n    for(int i=0;i<C;i++){\n        int n;scanf(\"%s %d\",buf,&n);cn[i]=buf;\n        for(int j=0;j<n;j++){int l;scanf(\"%s %d\",b2,&l);lv[i][gid(b2)]=l;}\n    }\n    vector<Proj> pr(P);\n    for(int i=0;i<P;i++){\n        int R;scanf(\"%s %d %d %d %d\",buf,&pr[i].D,&pr[i].S,&pr[i].B,&R);\n        pr[i].name=buf;\n        for(int j=0;j<R;j++){int l;scanf(\"%s %d\",b2,&l);pr[i].r.push_back({gid(b2),l});}\n    }\n    vector<int> freeT(C,0);\n    vector<char> busy(C,0);\n    auto getl=[&](int c,int s){auto it=lv[c].find(s);return it==lv[c].end()?0:it->second;};\n    vector<int> order(P);\n    iota(order.begin(),order.end(),0);\n    sort(order.begin(),order.end(),[&](int a,int b){\n        double x=(double)pr[a].S/((double)pr[a].D*pr[a].r.size());\n        double y=(double)pr[b].S/((double)pr[b].D*pr[b].r.size());\n        if(x!=y)return x>y;return a<b;});\n    vector<int> pend=order;\n    typedef tuple<int,int,vector<int>> Ev;\n    // event: finish time, project, members\n    auto cmp=[](const Ev&a,const Ev&b){return get<0>(a)>get<0>(b);};\n    priority_queue<Ev,vector<Ev>,decltype(cmp)> pq(cmp);\n    vector<pair<int,vector<int>>> out;\n    int t=0;\n    long long work=0;\n    while(true){\n        // try to start projects at time t\n        vector<int> np;\n        for(size_t pi=0;pi<pend.size();pi++){\n            int p=pend[pi];\n            Proj&pj=pr[p];\n            if(work>60000000){np.push_back(p);continue;}\n            int val=pj.S-max(0,t+pj.D-pj.B);\n            if(val<=0)continue;\n            int R=pj.r.size();\n            vector<int> asg(R,-1);\n            set<int> used;\n            bool ok=true;\n            // order roles by descending level\n            vector<int> ro(R);iota(ro.begin(),ro.end(),0);\n            sort(ro.begin(),ro.end(),[&](int a,int b){return pj.r[a].second>pj.r[b].second;});\n            for(int k:ro){\n                int s=pj.r[k].first,l=pj.r[k].second;\n                int best=-1,bl=1<<30;\n                for(int c=0;c<C;c++){\n                    work++;\n                    if(busy[c]||used.count(c))continue;\n                    int cl=getl(c,s);\n                    if(cl>=l&&cl<bl){bl=cl;best=c;if(cl==l)break;}\n                }\n                if(best<0){\n                    // try mentored\n                    int mx=0;\n                    for(int q=0;q<R;q++)if(asg[q]>=0)mx=max(mx,getl(asg[q],s));\n                    if(mx>=l){\n                        for(int c=0;c<C;c++){\n                            work++;\n                            if(busy[c]||used.count(c))continue;\n                            if(getl(c,s)==l-1){best=c;break;}\n                        }\n                    }\n                }\n                if(best<0){ok=false;break;}\n                asg[k]=best;used.insert(best);\n            }\n            if(ok){\n                // verify\n                for(int k=0;k<R&&ok;k++){\n                    int s=pj.r[k].first,l=pj.r[k].second;\n                    int cl=getl(asg[k],s);\n                    if(cl>=l)continue;\n                    if(cl==l-1){\n                        bool m=false;\n                        for(int q=0;q<R;q++)if(q!=k&&getl(asg[q],s)>=l)m=true;\n                        if(!m)ok=false;\n                    } else ok=false;\n                }\n            }\n            if(ok){\n                for(int c:asg)busy[c]=1;\n                pq.push(Ev(t+pj.D,p,asg));\n                out.push_back({p,asg});\n            } else np.push_back(p);\n        }\n        pend=np;\n        if(pq.empty())break;\n        int nt=get<0>(pq.top());\n        t=nt;\n        while(!pq.empty()&&get<0>(pq.top())==t){\n            Ev e=pq.top();pq.pop();\n            Proj&pj=pr[get<1>(e)];\n            auto&m=get<2>(e);\n            for(size_t k=0;k<m.size();k++){\n                int s=pj.r[k].first,l=pj.r[k].second;\n                int c=m[k];\n                if(getl(c,s)<=l)lv[c][s]=getl(c,s)+1;\n                busy[c]=0;\n            }\n        }\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&o:out){\n        printf(\"%s\\n\",pr[o.first].name.c_str());\n        for(size_t k=0;k<o.second.size();k++)\n            printf(\"%s%c\",cn[o.second[k]].c_str(),k+1==o.second.size()?'\\n':' ');\n    }\n}\n```\n\nThe program has not been compiled or run, so none of it is tested. Correctness of the output order is the part I am most confident in. Projects are listed in start order, and each project's contributors are all free by its simulated start. The level-up rule is applied at finish events, so later projects see updated skills.\n\nThe main performance risk is the linear contributor scan per role. I added a global work cap of about 6e7 scan steps to keep it within the 10-second limit. Once the cap is hit, pending projects are skipped, so on the largest inputs some projects may go unscheduled. That trades score for safety. On large data sets the score is likely well below what a skill-indexed search would reach.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16858,
+   "output_tokens": 3143,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

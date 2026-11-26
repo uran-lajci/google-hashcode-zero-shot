@@ -1,0 +1,62 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-haiku-5-5",
+ "generation": 2,
+ "request": {
+  "model": "claude-haiku-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4d9f2be9cb22d8b77cb5a5747293f8ca43259d2efb095566e77ae06d934ce202",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQMvi7ySZU7xish9Sr9G",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:32:25+00:00",
+ "finished_utc": "2026-11-25T21:32:37+00:00",
+ "seconds": 12.283,
+ "seconds_to_first_text": 8.572,
+ "message": {
+  "id": "msg_011ChQMvnZdX9J1aBrgMvwnv",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy heuristic, not a provably optimal solver. The program repeatedly takes the vehicle that becomes free earliest and assigns it the unassigned ride with the best points-per-step ratio: (distance + bonus if it starts on time) divided by the number of steps from the vehicle's current time to that ride's finish. It skips rides the vehicle cannot complete by their latest finish. Each assignment takes O(N) to scan, and there are at most N assignments, so the worst case is about 10^8 simple operations. I have not compiled or run it against any data set.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    long long R, C, F, N, B, T;\n    cin >> R >> C >> F >> N >> B >> T;\n\n    vector<long long> A(N), Bc(N), X(N), Y(N), S(N), Fi(N);\n    for (int i = 0; i < N; ++i) {\n        cin >> A[i] >> Bc[i] >> X[i] >> Y[i] >> S[i] >> Fi[i];\n    }\n\n    vector<long long> dist(N);\n    for (int i = 0; i < N; ++i) {\n        dist[i] = llabs(X[i] - A[i]) + llabs(Y[i] - Bc[i]);\n    }\n\n    vector<bool> used(N, false);\n    vector<vector<int>> assigned(F);\n\n    // Vehicle state: (free time, vehicle id); position stored separately.\n    vector<long long> px(F, 0), py(F, 0), pt(F, 0);\n    priority_queue<pair<long long, int>, vector<pair<long long, int>>,\n                   greater<pair<long long, int>>> pq;\n    for (int v = 0; v < F; ++v) pq.push({0LL, v});\n\n    while (!pq.empty()) {\n        auto [t, v] = pq.top();\n        pq.pop();\n\n        int best = -1;\n        double bestVal = -1.0;\n        long long bestFinish = 0;\n\n        for (int i = 0; i < N; ++i) {\n            if (used[i]) continue;\n            long long toStart = llabs(px[v] - A[i]) + llabs(py[v] - Bc[i]);\n            long long start = max(t + toStart, S[i]);\n            long long finish = start + dist[i];\n            if (finish > Fi[i]) continue;\n            if (finish > T) continue;\n            double pts = (double)dist[i] + (start == S[i] ? (double)B : 0.0);\n            double val = pts / (double)(finish - t);\n            if (val > bestVal) {\n                bestVal = val;\n                best = i;\n                bestFinish = finish;\n            }\n        }\n\n        if (best < 0) continue; // this vehicle has no further feasible ride\n\n        used[best] = true;\n        assigned[v].push_back(best);\n        px[v] = X[best];\n        py[v] = Y[best];\n        pt[v] = bestFinish;\n        pq.push({bestFinish, v});\n    }\n\n    string out;\n    for (int v = 0; v < F; ++v) {\n        out += to_string(assigned[v].size());\n        for (int r : assigned[v]) {\n            out += ' ';\n            out += to_string(r);\n        }\n        out += '\\n';\n    }\n    cout << out;\n    return 0;\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 12994,
+   "output_tokens": 2322,
+   "output_tokens_details": {
+    "thinking_tokens": 1188
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

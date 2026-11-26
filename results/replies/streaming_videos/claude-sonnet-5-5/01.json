@@ -1,0 +1,57 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "c276ea8b06a193981074bba62c6d3766b8f628310015012d061ea97eac57b233",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQLWGJvmoEXUbp1vueMv",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:13:47+00:00",
+ "finished_utc": "2026-11-25T21:14:01+00:00",
+ "seconds": 14.441,
+ "seconds_to_first_text": 1.961,
+ "message": {
+  "id": "msg_011ChQLWM5fUiBV3ks3tYNFi",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with lazy evaluation, so I have not compiled or run it.\n\n**Approach**\n- For each (video, cache) pair, the gain is the sum over endpoints connected to that cache of the saved latency (against the endpoint's current best latency for that video) times the request count.\n- The greedy picks the pair with the highest gain divided by video size, subject to remaining capacity.\n- After a pick, the endpoints' best latencies for that video are updated, and the gains of other caches for that video drop.\n- A lazy priority queue handles this. Each entry holds a stale score. When popped, the gain is recomputed, and if it is still at least the next top entry's score it is accepted, otherwise it is pushed back with the new score.\n\n**Data**\n- Requests are aggregated per (endpoint, video) in a map, giving for each video a list of (endpoint, count).\n- For each endpoint, `lat[e][c]` is the cache latency, or 0 if not connected. This is 1000\u00d71000 ints, which is fine.\n- `best[(e,v)]` is the current best latency. It is stored per request entry, with an array indexed by the request index in the video's list, initialised to LD.\n- Computing the gain of (v, c) iterates over the video's request list, so per-video lists matter. For each entry (endpoint e, count n, request index i), if `lat[e][c] > 0` and `lat[e][c] < best[i]`, add n \u00d7 (best[i] \u2212 lat[e][c]).\n- The cost is the total requests (up to 1e6, fewer after aggregation) times caches per endpoint, which is manageable. Initial scoring of all (v, c) pairs costs sum over requests of K, up to 1e9 in the worst case. To cut this, for each request I iterate only over that endpoint's connected caches and accumulate into `gain[v][c]` in a sparse map per video. Only pairs with positive gain become candidates. This is at most about 1e9 simple operations in the worst case, but real data has far fewer.\n- Per-video storage is a vector of (c, gain) built through a temporary dense array of size C that is reset between videos.\n\n**Lazy loop**\n- Score = gain / size, stored as a double.\n- Pop the top entry. If the video is already in that cache or it does not fit, skip it.\n- Recompute the gain. If it is zero, skip it.\n- If the new score is at least the top of the heap's score, accept it. Otherwise push it back with the new score.\n- On accept, update `best` for the video's requests connected to that cache.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int V,E,R,C,X;\n    scanf(\"%d %d %d %d %d\",&V,&E,&R,&C,&X);\n    vector<int> S(V);\n    for(auto&s:S)scanf(\"%d\",&s);\n    vector<int> LD(E);\n    vector<vector<pair<int,int>>> conn(E);\n    vector<vector<int>> lat(E,vector<int>(C,0));\n    for(int e=0;e<E;e++){\n        int k;\n        scanf(\"%d %d\",&LD[e],&k);\n        for(int j=0;j<k;j++){\n            int c,l;\n            scanf(\"%d %d\",&c,&l);\n            conn[e].push_back({c,l});\n            lat[e][c]=l;\n        }\n    }\n    vector<map<int,int>> agg(V);\n    for(int i=0;i<R;i++){\n        int v,e,n;\n        scanf(\"%d %d %d\",&v,&e,&n);\n        agg[v][e]+=n;\n    }\n    struct Rq{int e,n,best;};\n    vector<vector<Rq>> rq(V);\n    for(int v=0;v<V;v++)\n        for(auto&p:agg[v])\n            rq[v].push_back({p.first,p.second,LD[p.first]});\n    typedef tuple<double,int,int> T;\n    priority_queue<T> pq;\n    vector<long long> tmp(C,0);\n    for(int v=0;v<V;v++){\n        if(S[v]>X)continue;\n        vector<int> touched;\n        for(auto&r:rq[v]){\n            for(auto&cl:conn[r.e]){\n                if(tmp[cl.first]==0)touched.push_back(cl.first);\n                tmp[cl.first]+=(long long)r.n*(r.best-cl.second);\n            }\n        }\n        for(int c:touched){\n            if(tmp[c]>0)pq.push(T((double)tmp[c]/S[v],v,c));\n            tmp[c]=0;\n        }\n    }\n    vector<int> cap(C,X);\n    vector<vector<int>> out(C);\n    set<pair<int,int>> has;\n    while(!pq.empty()){\n        auto [sc,v,c]=pq.top();\n        pq.pop();\n        if(cap[c]<S[v])continue;\n        if(has.count({v,c}))continue;\n        long long g=0;\n        for(auto&r:rq[v]){\n            int l=lat[r.e][c];\n            if(l>0&&l<r.best)g+=(long long)r.n*(r.best-l);\n        }\n        if(g<=0)continue;\n        double ns=(double)g/S[v];\n        if(!pq.empty()&&ns<get<0>(pq.top())){\n            pq.push(T(ns,v,c));\n            continue;\n        }\n        has.insert({v,c});\n        cap[c]-=S[v];\n        out[c].push_back(v);\n        for(auto&r:rq[v]){\n            int l=lat[r.e][c];\n            if(l>0&&l<r.best)r.best=l;\n        }\n    }\n    int N=0;\n    for(int c=0;c<C;c++)if(!out[c].empty())N++;\n    printf(\"%d\\n\",N);\n    for(int c=0;c<C;c++){\n        if(out[c].empty())continue;\n        printf(\"%d\",c);\n        for(int v:out[c])printf(\" %d\",v);\n        printf(\"\\n\");\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 14504,
+   "output_tokens": 2007,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

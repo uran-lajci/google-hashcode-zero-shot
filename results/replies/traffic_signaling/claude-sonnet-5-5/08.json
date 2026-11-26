@@ -1,0 +1,57 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "3c399150cebae003136d76aebe3a64243b25a544a167bc3dff974f7755cf6a62",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQX9vRZt5FPNgsmpe9Zc",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:33:26+00:00",
+ "finished_utc": "2026-11-25T23:33:46+00:00",
+ "seconds": 20.528,
+ "seconds_to_first_text": 4.424,
+ "message": {
+  "id": "msg_011ChQXA6DRzyZfVyUyD8zjv",
+  "container": null,
+  "content": [
+   {
+    "text": "I'm going to write a solver that builds an initial schedule from traffic counts, simulates it exactly, and improves it with a deterministic local search.\n\n**Initial schedule.** For each intersection, count how many cars use each incoming street. A car's last street is excluded, because it is removed at the end of that street and never queues at the light. Streets with a nonzero count get a green slot of length 1, ordered by descending count. The order matters: streets with cars waiting at time 0 should come first.\n\n**Simulation.**\n- Each street has a queue of waiting cars.\n- A car at the end of its street at time t joins the queue.\n- At time t the light is green for the street whose slot contains t mod cycle.\n- The first car in the queue crosses, at most one per second per street. Only one street is green at a time, so one car per intersection per second.\n- The car then enters the next street and arrives at t + L.\n- If that street is the car's last, it finishes at t + L, and scores F + D \u2212 T when T \u2264 D.\n\nEach second t from 0 to D, I process in order:\n1. Arrivals at time t are added to the queues. A car that arrives at t and finds a green light crosses at t. Cars arriving at the same time are ordered by arrival time, then by car index. Only the initial cars have a defined order, so ties in the rest are broken by car index.\n2. For each intersection with a schedule, the green street pops one car if its queue is non-empty. It is pushed into an arrival bucket at t + L of the next street, or scored if that is the last street.\n\nArrival buckets are indexed by time, so a bucket at time t is filled before processing t, because L \u2265 1. A car that arrives at t+L at the end of a non-last street is queued in the bucket at t+L and is processed in step 1 at that time.\n\nCost per simulation is about D plus the total number of car-street moves (up to 10^6), so roughly 10^6 operations. That allows a few hundred simulations in the time limit.\n\n**Local search.** Until about 8 seconds have elapsed, repeatedly pick a random intersection (fixed-seed RNG) and apply one of two moves:\n- swap two streets in its order, or\n- change one street's duration by \u00b11 (minimum 1).\n\nEvaluate by full simulation. Keep the change if the score does not decrease, otherwise revert. To keep this deterministic I bound the loop by an iteration count rather than wall time, calibrated by the first simulation's cost: iterations = budget / measured work, where work is the number of simulated operations (not time). Concretely, the budget is about 3\u00b710^8 operation units.\n\nOnly intersections with at least 2 scheduled streets are chosen for moves.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nint D,I,S,V,F;\nvector<int> sb,se,sl;\nvector<vector<int>> path;\nvector<vector<pair<int,int>>> sch; // per intersection: (street,dur)\nlong long opsCount;\n\nlong long simulate(){\n    vector<vector<int>> cyc(I); // not used\n    vector<int> cycleLen(I,0);\n    vector<vector<int>> slot(I);\n    for(int i=0;i<I;i++){\n        int tot=0;\n        for(auto&p:sch[i])tot+=p.second;\n        cycleLen[i]=tot;\n        slot[i].resize(tot);\n        int k=0;\n        for(auto&p:sch[i])for(int d=0;d<p.second;d++)slot[i][k++]=p.first;\n    }\n    vector<deque<int>> q(S);\n    vector<int> pos(V,0);\n    vector<vector<int>> bucket(D+1);\n    for(int c=0;c<V;c++)q[path[c][0]].push_back(c);\n    vector<int> active;\n    for(int i=0;i<I;i++)if(cycleLen[i]>0)active.push_back(i);\n    long long score=0;\n    for(int t=0;t<=D;t++){\n        for(int c:bucket[t])q[path[c][pos[c]]].push_back(c);\n        opsCount+=bucket[t].size();\n        for(int i:active){\n            int s=slot[i][t%cycleLen[i]];\n            if(q[s].empty())continue;\n            int c=q[s].front();q[s].pop_front();\n            pos[c]++;\n            int ns=path[c][pos[c]];\n            int at=t+sl[ns];\n            if(at>D)continue;\n            if(pos[c]==(int)path[c].size()-1){\n                score+=F+D-at;\n            } else bucket[at].push_back(c);\n        }\n        opsCount+=active.size();\n    }\n    return score;\n}\n\nint main(){\n    scanf(\"%d %d %d %d %d\",&D,&I,&S,&V,&F);\n    sb.resize(S);se.resize(S);sl.resize(S);\n    vector<string> name(S);\n    unordered_map<string,int> id;\n    char buf[64];\n    for(int i=0;i<S;i++){\n        scanf(\"%d %d %s %d\",&sb[i],&se[i],buf,&sl[i]);\n        name[i]=buf;id[name[i]]=i;\n    }\n    path.resize(V);\n    vector<int> cnt(S,0);\n    for(int c=0;c<V;c++){\n        int p;scanf(\"%d\",&p);\n        path[c].resize(p);\n        for(int j=0;j<p;j++){\n            scanf(\"%s\",buf);\n            path[c][j]=id[buf];\n            if(j<p-1)cnt[path[c][j]]++;\n        }\n    }\n    sch.assign(I,{});\n    vector<vector<int>> inc(I);\n    for(int s=0;s<S;s++)if(cnt[s]>0)inc[se[s]].push_back(s);\n    for(int i=0;i<I;i++){\n        sort(inc[i].begin(),inc[i].end(),[&](int a,int b){\n            if(cnt[a]!=cnt[b])return cnt[a]>cnt[b];\n            return a<b;});\n        for(int s:inc[i])sch[i].push_back({s,1});\n    }\n    opsCount=0;\n    long long best=simulate();\n    long long perSim=max(1LL,opsCount);\n    long long iters=min(3000LL,max(0LL,300000000LL/perSim));\n    vector<int> cand;\n    for(int i=0;i<I;i++)if(sch[i].size()>=2)cand.push_back(i);\n    mt19937 rng(12345);\n    if(!cand.empty()){\n        for(long long it=0;it<iters;it++){\n            int i=cand[rng()%cand.size()];\n            auto old=sch[i];\n            int n=sch[i].size();\n            if(rng()%2){\n                int a=rng()%n,b=rng()%n;\n                if(a==b)continue;\n                swap(sch[i][a],sch[i][b]);\n            } else {\n                int a=rng()%n;\n                if(rng()%2)sch[i][a].second++;\n                else{\n                    if(sch[i][a].second<=1)continue;\n                    sch[i][a].second--;\n                }\n            }\n            long long sc=simulate();\n            if(sc>=best)best=sc;\n            else sch[i]=old;\n        }\n    }\n    int A=0;\n    for(int i=0;i<I;i++)if(!sch[i].empty())A++;\n    printf(\"%d\\n\",A);\n    for(int i=0;i<I;i++){\n        if(sch[i].empty())continue;\n        printf(\"%d\\n%d\\n\",i,(int)sch[i].size());\n        for(auto&p:sch[i])printf(\"%s %d\\n\",name[p.first].c_str(),min(p.second,D));\n    }\n}\n```\n\nI have not compiled or run this, so it is untested against the sample.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 21224,
+   "output_tokens": 2590,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

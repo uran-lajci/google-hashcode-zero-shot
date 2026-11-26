@@ -1,0 +1,62 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "79f0b9fd2dce77a12feb8a441c62cc5f373d23877c26faf3c77ce4d35168e38f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQV2DMqghC72oAo2Cgg5",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:05:27+00:00",
+ "finished_utc": "2026-11-25T23:05:37+00:00",
+ "seconds": 9.778,
+ "seconds_to_first_text": 7.565,
+ "message": {
+  "id": "msg_011ChQV2NwJexvV5H9UdV8hm",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This solution takes only the gifts whose recipients are within range D of Lapland, and loads and delivers each one on the spot. The sleigh never moves, so no acceleration or weight limits come into play. The output is always valid, but it scores nothing for gifts outside that range. I did not implement any trip planning for distant gifts.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    long long T,D,W,G;\n    cin>>T>>D>>W>>G;\n    for(int i=0;i<W;i++){long long l,a;cin>>l>>a;}\n    vector<string> acts;\n    for(int i=0;i<G;i++){\n        string n;long long s,w,c,r;\n        cin>>n>>s>>w>>c>>r;\n        if(c*c+r*r<=D*D){\n            acts.push_back(\"LoadGift \"+n);\n            acts.push_back(\"DeliverGift \"+n);\n        }\n    }\n    printf(\"%d\\n\",(int)acts.size());\n    for(auto&a:acts)printf(\"%s\\n\",a.c_str());\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 24495,
+   "output_tokens": 842,
+   "output_tokens_details": {
+    "thinking_tokens": 476
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

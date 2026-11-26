@@ -1,0 +1,57 @@
+{
+ "problem": "traffic_signaling",
+ "model": "claude-sonnet-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "3c399150cebae003136d76aebe3a64243b25a544a167bc3dff974f7755cf6a62",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQVdDm8N7oBCg3kH7pwz",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:13:22+00:00",
+ "finished_utc": "2026-11-25T23:13:42+00:00",
+ "seconds": 19.904,
+ "seconds_to_first_text": 4.027,
+ "message": {
+  "id": "msg_011ChQVdNQXDLZTmXhZSNBwm",
+  "container": null,
+  "content": [
+   {
+    "text": "The approach is a simulator plus a local search over the schedules.\n\n**Setup**\n- Each intersection has a list of incoming streets that cars actually use, with a green duration for each.\n- The initial order is by descending count of cars whose path crosses that street, and the initial duration is 1.\n- The simulation follows the rules in the statement. At time t, a street is green if (t mod cycle) falls inside its slot. Only the first car in the queue crosses per second.\n- A car that crosses at time t into a street of length L arrives at the end at t+L. If that street is the car's last one, the car finishes at t+L, and it scores if t+L \u2264 D. Otherwise it joins the queue at the end of the street at time t+L.\n- Initial cars are queued at time 0 in input order.\n\n**Simulation details**\n- Each second, first process arrivals into queues, then process crossings.\n- Arrivals are bucketed by time, in a vector of lists per time step. Cars arriving at the same time are ordered by the order in which they were inserted. Insertion happens while processing intersections in order, which is deterministic. I treat this as an approximation of the exact tie-breaking.\n- Per second, a green street lookup is needed for each intersection that has a schedule. To keep this fast, I precompute for each intersection and each time t mod cycle the green street, but only iterate over the streets that have non-empty queues. I keep a list of active streets and check each street's greenness with a cumulative offset array and a binary search or linear scan. Per-intersection cycle lengths are small, so the check is cheap.\n- A car that arrives at time t in a street with a green light and an empty queue crosses at t. This works naturally if arrivals are processed before crossings at the same t.\n- When a car crosses an intersection at time t and the street has more than one car, the next car crosses at t+1. A single pop per street per second handles this.\n\n**Optimization**\n- Evaluate the score with the full simulation. The cost is roughly D times the number of active streets, and a time limit guards the loop.\n- Hill climbing: a random move either swaps two adjacent streets in an intersection's order or changes a duration between 1 and 3. A move is kept if the score does not decrease.\n- The time budget is about 8 seconds of wall clock, measured with the clock. It is not strictly deterministic, so to stay deterministic I use a fixed iteration budget based on simulated work (a count of simulated steps) rather than time. The random generator uses a fixed seed.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint D,I,S,V,F;\nvector<int> Bq,Eq,Lq;\nvector<vector<int>> paths;\nvector<vector<int>> order_,dur;\nvector<int> posIn; \nlong long work=0;\nlong long simulate(){\n    vector<int> cyc(I,0);\n    vector<vector<int>> off(I);\n    for(int i=0;i<I;i++){\n        int c=0;\n        for(size_t k=0;k<order_[i].size();k++){off[i].push_back(c);c+=dur[i][k];}\n        cyc[i]=c;\n    }\n    vector<int> slotStart(S,-1),slotEnd(S,-1);\n    for(int i=0;i<I;i++)for(size_t k=0;k<order_[i].size();k++){\n        slotStart[order_[i][k]]=off[i][k];\n        slotEnd[order_[i][k]]=off[i][k]+dur[i][k];\n    }\n    vector<deque<int>> q(S);\n    vector<int> idx(V,0);\n    vector<vector<pair<int,int>>> arr(D+2);\n    vector<int> active;\n    vector<char> inAct(S,0);\n    for(int v=0;v<V;v++){\n        int s=paths[v][0];\n        q[s].push_back(v);\n        if(!inAct[s]){inAct[s]=1;active.push_back(s);}\n    }\n    long long score=0;\n    for(int t=0;t<=D;t++){\n        for(auto&p:arr[t]){\n            int v=p.first;\n            if(idx[v]==(int)paths[v].size()-1){\n                score+=F+(D-t);\n            } else {\n                int s=paths[v][idx[v]];\n                q[s].push_back(v);\n                if(!inAct[s]){inAct[s]=1;active.push_back(s);}\n            }\n        }\n        if(t==D)break;\n        work+=active.size()+1;\n        vector<int> na;\n        for(int s:active){\n            if(!q[s].empty() && slotStart[s]>=0){\n                int e=Eq[s];\n                int m=t%cyc[e];\n                if(m>=slotStart[s]&&m<slotEnd[s]){\n                    int v=q[s].front();q[s].pop_front();\n                    idx[v]++;\n                    int ns=paths[v][idx[v]];\n                    int at=t+Lq[ns];\n                    if(at<=D)arr[at].push_back({v,0});\n                }\n            }\n            if(!q[s].empty())na.push_back(s);\n            else inAct[s]=0;\n        }\n        active=na;\n    }\n    return score;\n}\nint main(){\n    scanf(\"%d %d %d %d %d\",&D,&I,&S,&V,&F);\n    Bq.resize(S);Eq.resize(S);Lq.resize(S);\n    vector<string> names(S);\n    unordered_map<string,int> id;\n    char buf[64];\n    for(int i=0;i<S;i++){\n        scanf(\"%d %d %s %d\",&Bq[i],&Eq[i],buf,&Lq[i]);\n        names[i]=buf;id[names[i]]=i;\n    }\n    paths.resize(V);\n    vector<int> cnt(S,0);\n    for(int v=0;v<V;v++){\n        int p;scanf(\"%d\",&p);\n        for(int j=0;j<p;j++){\n            scanf(\"%s\",buf);\n            int s=id[buf];\n            paths[v].push_back(s);\n            if(j<p-1)cnt[s]++;\n        }\n    }\n    order_.assign(I,{});dur.assign(I,{});\n    for(int s=0;s<S;s++)if(cnt[s]>0)order_[Eq[s]].push_back(s);\n    vector<int> used;\n    for(int i=0;i<I;i++){\n        sort(order_[i].begin(),order_[i].end(),[&](int a,int b){\n            if(cnt[a]!=cnt[b])return cnt[a]>cnt[b];\n            return a<b;});\n        dur[i].assign(order_[i].size(),1);\n        if(!order_[i].empty())used.push_back(i);\n    }\n    long long best=simulate();\n    mt19937 rng(12345);\n    const long long budget=1200000000LL;\n    while(work<budget && !used.empty()){\n        int i=used[rng()%used.size()];\n        int n=order_[i].size();\n        int type=rng()%2;\n        if(type==0){\n            if(n<2)continue;\n            int a=rng()%(n-1);\n            swap(order_[i][a],order_[i][a+1]);\n            swap(dur[i][a],dur[i][a+1]);\n            long long sc=simulate();\n            if(sc>=best)best=sc;\n            else{\n                swap(order_[i][a],order_[i][a+1]);\n                swap(dur[i][a],dur[i][a+1]);\n            }\n        } else {\n            int a=rng()%n;\n            int old=dur[i][a];\n            int nd=1+rng()%3;\n            if(nd==old)continue;\n            dur[i][a]=nd;\n            long long sc=simulate();\n            if(sc>=best)best=sc;\n            else dur[i][a]=old;\n        }\n    }\n    printf(\"%d\\n\",(int)used.size());\n    for(int i:used){\n        printf(\"%d\\n%d\\n\",i,(int)order_[i].size());\n        for(size_t k=0;k<order_[i].size();k++)\n            printf(\"%s %d\\n\",names[order_[i][k]].c_str(),dur[i][k]);\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 21224,
+   "output_tokens": 2701,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

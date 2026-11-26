@@ -1,0 +1,57 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "c276ea8b06a193981074bba62c6d3766b8f628310015012d061ea97eac57b233",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQZjhsBgkkfFhUAhLuzo",
+ "attempts": 1,
+ "started_utc": "2026-11-26T00:07:18+00:00",
+ "finished_utc": "2026-11-26T00:07:33+00:00",
+ "seconds": 15.748,
+ "seconds_to_first_text": 1.967,
+ "message": {
+  "id": "msg_011ChQZjnRmxqrHS49FJoERo",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with lazy evaluation, which is the standard approach for this problem.\n\n**Data.** For each (endpoint, video) request I keep the request count and the endpoint's current best latency. Requests with the same (video, endpoint) pair are merged. Each endpoint starts with its data-center latency as the best latency for every video.\n\n**Gain.** For a pair (cache c, video v), the gain is the sum over endpoints e connected to c with a request for v of n\u00b7max(0, best[e][v] \u2212 L(e,c)). The greedy picks the pair with the highest gain/size ratio that still fits in the cache. After a pick, the best latencies of the affected endpoints are updated.\n\n**Storage.** There can be up to 1M requests, so the best latency is stored per request, in an array `best[reqIdx]`. For each video, I keep a list of its requests. For each endpoint, I keep a list of its connected caches with latencies, and a lookup `lat[e][c]` (1000\u00d71000 ints = 4 MB, with 0 meaning not connected).\n\n**Computing a gain.** For (c, v), iterate over the requests of v and check `lat[e][c]`. The cost is the number of requests for v, which averages about 100 and is at most 1M. Computing the gain for all C\u00d7V pairs this way costs C \u00d7 R = 1e9 in total, which is borderline, so I make it cheaper:\n\n- Iterate over requests once, and for each connected cache of the request's endpoint add the gain to `gain[c][v]`. This costs R \u00d7 K, where K is up to 1000, so up to 1e9 in the worst case. It is a simple loop and should be acceptable, but it needs 10M doubles or int64s (80 MB), which is fine.\n\n**Lazy greedy.** Use a priority queue of (ratio, c, v, version). Gains only decrease (the submodular property), so when I pop an entry I recompute its gain, and if it still beats the next top I accept it. The recompute loops over the requests of v and checks `lat[e][c]`. If the cache lacks capacity for the video, I discard the entry. If c already holds v, I discard it as well, tracked with a `has` bitset.\n\nThe heap holds up to 10M entries of 16 bytes each (ratio as a double, c and v as 16-bit values packed in an int), which is about 160 MB. I only push entries with a positive gain.\n\n**Updating after a pick (c, v).** For each request of v, with endpoint e and latency l = lat[e][c]: if l is nonzero and l < best[req], set best[req] = l. Lazy recomputation then handles the stale gains.\n\n**Time safeguard.** I check the clock and stop if it passes about 8.5 seconds. The output is always valid because capacity is checked on each acceptance.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int V,E,R,C,X;\n    scanf(\"%d %d %d %d %d\",&V,&E,&R,&C,&X);\n    vector<int> S(V);\n    for(auto&s:S)scanf(\"%d\",&s);\n    vector<int> LD(E);\n    vector<vector<pair<int,int>>> conn(E);\n    vector<int> lat((size_t)E*C,0);\n    for(int e=0;e<E;e++){\n        int k;\n        scanf(\"%d %d\",&LD[e],&k);\n        for(int i=0;i<k;i++){\n            int c,l;\n            scanf(\"%d %d\",&c,&l);\n            conn[e].push_back({c,l});\n            lat[(size_t)e*C+c]=l;\n        }\n    }\n    vector<int> rv(R),re(R),rn(R),best(R);\n    vector<vector<int>> byV(V);\n    for(int i=0;i<R;i++){\n        scanf(\"%d %d %d\",&rv[i],&re[i],&rn[i]);\n        best[i]=LD[re[i]];\n        byV[rv[i]].push_back(i);\n    }\n    vector<long long> gain((size_t)C*V,0);\n    for(int i=0;i<R;i++){\n        for(auto&p:conn[re[i]]){\n            gain[(size_t)p.first*V+rv[i]]+=(long long)rn[i]*(best[i]-p.second);\n        }\n    }\n    struct En{double r;int c,v;};\n    auto cmp=[](const En&a,const En&b){return a.r<b.r;};\n    vector<En> init;\n    init.reserve((size_t)C*V);\n    for(int c=0;c<C;c++)for(int v=0;v<V;v++){\n        long long g=gain[(size_t)c*V+v];\n        if(g>0&&S[v]<=X)init.push_back({(double)g/S[v],c,v});\n    }\n    vector<long long>().swap(gain);\n    priority_queue<En,vector<En>,decltype(cmp)> pq(cmp,std::move(init));\n    vector<int> cap(C,X);\n    vector<vector<int>> out(C);\n    vector<char> has((size_t)C*V,0);\n    auto t0=chrono::steady_clock::now();\n    int iter=0;\n    while(!pq.empty()){\n        if((++iter&1023)==0){\n            double el=chrono::duration<double>(chrono::steady_clock::now()-t0).count();\n            if(el>8.0)break;\n        }\n        En t=pq.top();pq.pop();\n        int c=t.c,v=t.v;\n        if(has[(size_t)c*V+v]||S[v]>cap[c])continue;\n        long long g=0;\n        for(int i:byV[v]){\n            int l=lat[(size_t)re[i]*C+c];\n            if(l&&l<best[i])g+=(long long)rn[i]*(best[i]-l);\n        }\n        if(g<=0)continue;\n        double r=(double)g/S[v];\n        if(!pq.empty()&&r<pq.top().r){\n            pq.push({r,c,v});\n            continue;\n        }\n        has[(size_t)c*V+v]=1;\n        cap[c]-=S[v];\n        out[c].push_back(v);\n        for(int i:byV[v]){\n            int l=lat[(size_t)re[i]*C+c];\n            if(l&&l<best[i])best[i]=l;\n        }\n    }\n    int N=0;\n    for(int c=0;c<C;c++)if(!out[c].empty())N++;\n    printf(\"%d\\n\",N);\n    for(int c=0;c<C;c++)if(!out[c].empty()){\n        printf(\"%d\",c);\n        for(int v:out[c])printf(\" %d\",v);\n        printf(\"\\n\");\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 14504,
+   "output_tokens": 2214,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

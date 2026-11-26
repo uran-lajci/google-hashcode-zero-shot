@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQPcvAWCeT3FTxCGUgqg",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:54:37+00:00",
+ "finished_utc": "2026-11-25T21:55:44+00:00",
+ "seconds": 66.976,
+ "seconds_to_first_text": 52.899,
+ "message": {
+  "id": "msg_011ChQPgjmoEmbcWjGaJFxo3",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy heuristic: cars move one at a time, each choosing a route that favors streets not yet covered. It is not an optimal solution, and I have not compiled or run it.\n\n**Input.** The real data set is Paris with N=11348 junctions, M=17958 streets, T=54000, C=8. Each street j has A, B, D, cost and length, and the code stores adjacency with a street id per directed edge.\n\n**Move rule.** Each car is simulated greedily, and cars advance in an interleaved fashion so they spread out. For each step, from the current node, the code runs a bounded Dijkstra search to find the best target. The target is an edge with unvisited length reachable within the remaining time. The score for a candidate is the gain divided by the time to get there plus the edge cost. The car then follows the path to that target.\n\n**Cost.** Running Dijkstra for every step over a graph of 11k nodes would be too slow, so the search is limited. Each search stops after about 300 popped nodes, which is roughly 300 \u00b7 log operations per decision.\n\n- A car makes about 54000 / (average cost of about 10) = a few thousand moves, so about 8 \u00b7 5000 = 40k decisions.\n- Each decision costs roughly 300 pops plus edge scans, so about 40k \u00b7 3000 = 120M operations, which fits in the time limit.\n- To be safe, a time check on the clock stops the search early, but this would break determinism. Instead I use fixed node limits.\n\n**Decision per search.** The search pops nodes in order of distance, up to the node limit. For each popped node u at distance d, it looks at each outgoing edge e with an unvisited street, where d + cost \u2264 remaining time and the edge is traversable. The value is length / (d + cost). The best-valued edge is chosen, and the path to u plus that edge is taken. The parent pointers are stored in per-search arrays reset through a touched list.\n\n**Fallback.** If no unvisited street is found within the limit, the search is repeated with a much larger limit (the full graph). If that also finds nothing, the car stops.\n\n**Cars.** Cars are processed round-robin, each taking one path segment per turn. Each car tracks its own time and stops when it cannot move. Marking visited streets happens as the path is walked.\n\n**Output.** Each car's node list is printed, starting from S. A car with no moves prints 1 and S.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct E{int to,id,c;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<E>> g(N);\n    vector<int> L(M);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;\n        scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        L[j]=l;\n        g[a].push_back({b,j,c});\n        if(d==2)g[b].push_back({a,j,c});\n    }\n    vector<char> vis(M,0);\n    vector<int> pos(C,S),tm(C,0);\n    vector<char> done(C,0);\n    vector<vector<int>> path(C,vector<int>{S});\n    vector<int> dist(N,INT_MAX),par(N,-1);\n    vector<int> touched;\n    int active=C;\n    while(active>0){\n        for(int c=0;c<C;c++){\n            if(done[c])continue;\n            int rem=T-tm[c];\n            bool found=false;\n            for(int pass=0;pass<2&&!found;pass++){\n                int limit=pass==0?300:N+5;\n                touched.clear();\n                priority_queue<pair<int,int>,vector<pair<int,int>>,greater<>> pq;\n                dist[pos[c]]=0;par[pos[c]]=-1;touched.push_back(pos[c]);\n                pq.push({0,pos[c]});\n                int pops=0;\n                double best=0;int bu=-1,be=-1;\n                vector<char> closed;\n                while(!pq.empty()&&pops<limit){\n                    auto [d,u]=pq.top();pq.pop();\n                    if(d>dist[u])continue;\n                    pops++;\n                    for(int k=0;k<(int)g[u].size();k++){\n                        E&e=g[u][k];\n                        int nd=d+e.c;\n                        if(nd>rem)continue;\n                        if(!vis[e.id]){\n                            double v=(double)L[e.id]/nd;\n                            if(v>best){best=v;bu=u;be=k;}\n                        }\n                        if(nd<dist[e.to]){\n                            if(dist[e.to]==INT_MAX)touched.push_back(e.to);\n                            dist[e.to]=nd;par[e.to]=u;\n                            pq.push({nd,e.to});\n                        }\n                    }\n                }\n                if(bu>=0){\n                    found=true;\n                    vector<int> seq;\n                    int x=bu;\n                    while(x!=-1){seq.push_back(x);x=par[x];}\n                    reverse(seq.begin(),seq.end());\n                    seq.push_back(g[bu][be].to);\n                    int totalT=dist[bu]+g[bu][be].c;\n                    // mark visited along the path\n                    for(size_t i=0;i+1<seq.size();i++){\n                        int u=seq[i],w=seq[i+1];\n                        int bi=-1,bc=INT_MAX;\n                        for(auto&e:g[u])if(e.to==w&&e.c<bc){bc=e.c;bi=e.id;}\n                        if(i+2==seq.size()){bi=g[bu][be].id;}\n                        vis[bi]=1;\n                        path[c].push_back(w);\n                    }\n                    tm[c]+=totalT;\n                    pos[c]=seq.back();\n                }\n                for(int t:touched){dist[t]=INT_MAX;par[t]=-1;}\n            }\n            if(!found){done[c]=1;active--;}\n        }\n    }\n    printf(\"%d\\n\",C);\n    for(int c=0;c<C;c++){\n        printf(\"%d\\n\",(int)path[c].size());\n        for(int x:path[c])printf(\"%d\\n\",x);\n    }\n}\n```\n\nOne thing to check: when walking a path, intermediate hops pick the cheapest parallel edge between two nodes. Since each pair of junctions has at most one street, this is unambiguous.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2193,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

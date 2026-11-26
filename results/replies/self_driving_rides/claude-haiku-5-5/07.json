@@ -1,0 +1,62 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-haiku-5-5",
+ "generation": 7,
+ "request": {
+  "model": "claude-haiku-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4d9f2be9cb22d8b77cb5a5747293f8ca43259d2efb095566e77ae06d934ce202",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQVNnM1sTswyL3U4BAyv",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:10:06+00:00",
+ "finished_utc": "2026-11-25T23:10:20+00:00",
+ "seconds": 13.768,
+ "seconds_to_first_text": 10.503,
+ "message": {
+  "id": "msg_011ChQVNrY2xiYxQPtvj5ava",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy event-driven heuristic. It repeatedly takes the vehicle that becomes free earliest and assigns it the unassigned ride with the best points-per-step ratio among rides it can still finish on time. A vehicle with no feasible ride left is dropped, since waiting only makes later rides harder to reach. The work is at most about N\u00b2 = 10\u2078 simple operations, well within the limits. I have not compiled or run it against the official data sets, so the score is unverified.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios_strings_dummy:;\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    long long R, C, F, N, B, T;\n    cin >> R >> C >> F >> N >> B >> T;\n\n    vector<long long> a(N), b(N), x(N), y(N), s(N), f(N), dist(N);\n    for (int i = 0; i < N; ++i) {\n        cin >> a[i] >> b[i] >> x[i] >> y[i] >> s[i] >> f[i];\n        dist[i] = llabs(a[i] - x[i]) + llabs(b[i] - y[i]);\n    }\n\n    vector<int> active(N);\n    for (int i = 0; i < N; ++i) active[i] = i;\n\n    vector<long long> px(F, 0), py(F, 0);\n    vector<vector<int>> assign(F);\n\n    // min-heap of (free time, vehicle)\n    priority_queue<pair<long long, int>, vector<pair<long long, int>>,\n                   greater<pair<long long, int>>> pq;\n    for (int v = 0; v < F; ++v) pq.push({0LL, v});\n\n    while (!pq.empty() && !active.empty()) {\n        auto [t, v] = pq.top();\n        pq.pop();\n\n        int bestK = -1;\n        double bestVal = -1.0;\n        long long bestFin = 0;\n\n        for (int k = 0; k < (int)active.size(); ++k) {\n            int r = active[k];\n            long long d = llabs(px[v] - a[r]) + llabs(py[v] - b[r]);\n            long long st = max(t + d, s[r]);\n            long long fin = st + dist[r];\n            if (fin > f[r]) continue;\n            long long bonus = (st == s[r]) ? B : 0;\n            double val = (double)(dist[r] + bonus) / (double)(fin - t);\n            if (val > bestVal) {\n                bestVal = val;\n                bestK = k;\n                bestFin = fin;\n            }\n        }\n\n        if (bestK < 0) continue; // vehicle cannot do any more rides\n\n        int r = active[bestK];\n        active[bestK] = active.back();\n        active.pop_back();\n\n        assign[v].push_back(r);\n        px[v] = x[r];\n        py[v] = y[r];\n        pq.push({bestFin, v});\n    }\n\n    string out;\n    out.reserve(1 << 20);\n    for (int v = 0; v < F; ++v) {\n        out += to_string(assign[v].size());\n        for (int r : assign[v]) {\n            out += ' ';\n            out += to_string(r);\n        }\n        out += '\\n';\n    }\n    cout << out;\n    return 0;\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 12994,
+   "output_tokens": 2690,
+   "output_tokens_details": {
+    "thinking_tokens": 1599
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

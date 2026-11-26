@@ -1,0 +1,57 @@
+{
+ "problem": "book_scanning",
+ "model": "claude-sonnet-5-5",
+ "generation": 8,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4160bd670311857fe2979c72b02de463f0d2b856f491a680aae991df96e5e911",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQVpZEwhMmRtsrNPbuRC",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:15:56+00:00",
+ "finished_utc": "2026-11-25T23:16:09+00:00",
+ "seconds": 12.465,
+ "seconds_to_first_text": 2.01,
+ "message": {
+  "id": "msg_011ChQVpe7PeEnypax8q2THa",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy solution with a local-search-free design, written to run well inside the time limit.\n\n**Approach.** Libraries are picked one at a time, always choosing the best remaining library given the current start time, with lazy re-evaluation.\n\n- If the current time is `t` and library `j` has signup time `T`, its scanning window is `rem = D - t - T` days (it must be positive).\n- It can scan at most `rem*M` books.\n- Its value is the sum of the top `min(N, rem*M)` scores among its books that have not been used yet.\n- Its priority is `value / T`.\n\n**Lazy evaluation.** Priorities only decrease as books get used and as time advances (a smaller window means a smaller value). So a max-heap works with lazy updates:\n\n1. Pop the top library and recompute its priority at the current time.\n2. If the recomputed priority is still at least the next heap top, select it. Otherwise push it back with the new priority.\n\nEach recomputation costs O(N) when done naively, because it needs the top-k of the unused books. To avoid sorting every time, each library's books are pre-sorted by score descending. A recomputation then scans the list, skipping used books, and stops after `rem*M` taken books. The cost is bounded by N per recomputation, and the number of recomputations is manageable in practice. I also cap the total work with an operation counter: once it exceeds a budget, the program stops recomputing and accepts the popped library as-is, with its value recalculated.\n\n**Output.** When a library is selected, I take its first `rem*M` unused books in sorted order and mark them used. If a library ends up with zero unused books, I skip it. The books are shipped in descending score order. The time advances by `T`.\n\nPriorities are compared as doubles. The heap holds (priority, id), with ties broken by id, so the output is deterministic.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int B,L,D;\n    scanf(\"%d %d %d\",&B,&L,&D);\n    vector<int> S(B);\n    for(auto&x:S)scanf(\"%d\",&x);\n    vector<int> T(L),M(L);\n    vector<vector<int>> bk(L);\n    for(int j=0;j<L;j++){\n        int n;\n        scanf(\"%d %d %d\",&n,&T[j],&M[j]);\n        bk[j].resize(n);\n        for(auto&x:bk[j])scanf(\"%d\",&x);\n        sort(bk[j].begin(),bk[j].end(),[&](int a,int b){\n            if(S[a]!=S[b])return S[a]>S[b];\n            return a<b;});\n    }\n    vector<char> used(B,0);\n    long long ops=0;\n    const long long BUDGET=300000000LL;\n    long long t=0;\n    auto eval=[&](int j,long long t)->double{\n        long long rem=D-t-T[j];\n        if(rem<=0)return -1;\n        long long cap=rem*(long long)M[j];\n        long long taken=0,val=0;\n        for(int b:bk[j]){\n            ops++;\n            if(taken>=cap)break;\n            if(!used[b]){taken++;val+=S[b];}\n        }\n        return (double)val/T[j];\n    };\n    priority_queue<pair<double,int>> pq;\n    for(int j=0;j<L;j++){\n        double p=eval(j,0);\n        if(p>0)pq.push({p,j});\n    }\n    vector<pair<int,vector<int>>> res;\n    while(!pq.empty()){\n        auto [p,j]=pq.top();pq.pop();\n        if(t+T[j]>=D)continue;\n        if(ops<BUDGET){\n            double np=eval(j,t);\n            if(np<=0)continue;\n            if(!pq.empty()){\n                auto tp=pq.top();\n                if(np<tp.first||(np==tp.first&&j>tp.second)){\n                    pq.push({np,j});\n                    continue;\n                }\n            }\n        }\n        long long rem=D-t-T[j];\n        long long cap=rem*(long long)M[j];\n        vector<int> sel;\n        for(int b:bk[j]){\n            if((long long)sel.size()>=cap)break;\n            if(!used[b]){sel.push_back(b);}\n        }\n        if(sel.empty())continue;\n        for(int b:sel)used[b]=1;\n        res.push_back({j,sel});\n        t+=T[j];\n    }\n    string out;\n    out+=to_string(res.size())+\"\\n\";\n    for(auto&r:res){\n        out+=to_string(r.first)+\" \"+to_string(r.second.size())+\"\\n\";\n        for(size_t i=0;i<r.second.size();i++){\n            if(i)out+=' ';\n            out+=to_string(r.second[i]);\n        }\n        out+=\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 15946,
+   "output_tokens": 1622,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 2,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQN5AgNcVNgrMRfuW5Bs",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:34:20+00:00",
+ "finished_utc": "2026-11-25T21:36:36+00:00",
+ "seconds": 136.257,
+ "seconds_to_first_text": 119.734,
+ "message": {
+  "id": "msg_011ChQNDvb41YjCAm9B56K8J",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem. The real data set has about 11,348 junctions, 17,958 streets, T=54000, 8 cars and start junction 4516. I'll write a greedy solver that works for any input.\n\n**Approach:** Cars are simulated one at a time, each with a remaining time budget. At its current junction a car picks the next move by greedy scoring. For each outgoing edge, the gain is the edge length if the edge is unvisited, otherwise 0. If it is feasible, the car moves along the best-ratio edge.\n\nA purely local choice gets stuck when all neighbouring edges are visited. To handle that, when no neighbouring edge has gain, the car runs a Dijkstra search from its current junction, limited by its remaining time. It finds the best unvisited edge by value: length divided by (path time to the edge's start + edge cost). It requires that the car can still be anywhere at the end, since no return is needed.\n\nCost control: a Dijkstra per step could be heavy. Steps with no immediate gain trigger a search over a bounded region. The search stops after popping a limited number of nodes (say 3000) and uses the first few candidates found. The step count per car is about T/avg cost, at most a few thousand, and the number of search steps is smaller, so this fits in the time limit.\n\nScoring in the greedy: for each outgoing edge to v with an unvisited edge, score = L/C. To add some lookahead, I use L/C plus a small bonus for how many unvisited edges are at v. The Dijkstra fallback picks the target edge maximizing L/(dist+C), then follows the path to it, marking edges visited as it goes.\n\nTo interleave cars, I process them round-robin by time: always advance the car with the least elapsed time. This spreads the cars out, because visited marks are shared.\n\nImplementation details:\n- Directed adjacency: for each street, add an arc A\u2192B, and B\u2192A if D=2. The arc stores the edge id.\n- The Dijkstra uses a timestamp array to avoid reinitialization, and records the parent arc.\n- Candidates: during the search, each popped node u with dist d considers its arcs to unvisited edges with d+C \u2264 remaining. The best ratio L/(d+C) is tracked. The search ends after the pop limit or when the distance exceeds the remaining time.\n- Path reconstruction: walk the parents back from u, then append the target edge's endpoint. Moves are pushed onto the car's path and edges are marked visited.\n- A car is finished when no candidate exists. Total cars is C.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Arc{int to,id,c;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<Arc>> adj(N);\n    vector<int> L(M);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;\n        scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        L[j]=l;\n        adj[a].push_back({b,j,c});\n        if(d==2)adj[b].push_back({a,j,c});\n    }\n    vector<char> vis(M,0);\n    vector<vector<int>> path(C,vector<int>(1,S));\n    vector<int> cur(C,S),tm(C,0);\n    vector<char> done(C,0);\n    vector<long long> stamp(N,-1);\n    vector<int> dist(N),par(N),parNode(N);\n    long long st=0;\n    typedef pair<int,int> P;\n    int active=C;\n    while(active>0){\n        int k=-1;\n        for(int i=0;i<C;i++)if(!done[i]&&(k<0||tm[i]<tm[k]))k=i;\n        int u=cur[k];\n        int rem=T-tm[k];\n        // greedy local\n        int bestA=-1;double bs=0;\n        for(int i=0;i<(int)adj[u].size();i++){\n            Arc&a=adj[u][i];\n            if(vis[a.id]||a.c>rem)continue;\n            double s=(double)L[a.id]/a.c;\n            int cnt=0;\n            for(auto&b:adj[a.to])if(!vis[b.id])cnt++;\n            s*=(1+0.1*cnt);\n            if(s>bs){bs=s;bestA=i;}\n        }\n        if(bestA>=0){\n            Arc a=adj[u][bestA];\n            vis[a.id]=1;\n            tm[k]+=a.c;cur[k]=a.to;path[k].push_back(a.to);\n            continue;\n        }\n        // dijkstra\n        st++;\n        priority_queue<P,vector<P>,greater<P>> pq;\n        stamp[u]=st;dist[u]=0;par[u]=-1;\n        pq.push({0,u});\n        double best=0;int bu=-1,bi=-1;\n        int pops=0;\n        vector<char> closed;\n        static vector<long long> cl;\n        if(cl.size()!=(size_t)N)cl.assign(N,-1);\n        while(!pq.empty()&&pops<4000){\n            auto [d,x]=pq.top();pq.pop();\n            if(cl[x]==st||d!=dist[x])continue;\n            cl[x]=st;pops++;\n            if(d>=rem)break;\n            for(int i=0;i<(int)adj[x].size();i++){\n                Arc&a=adj[x][i];\n                int nd=d+a.c;\n                if(nd>rem)continue;\n                if(!vis[a.id]){\n                    double s=(double)L[a.id]/nd;\n                    if(s>best){best=s;bu=x;bi=i;}\n                }\n                if(stamp[a.to]!=st||nd<dist[a.to]){\n                    stamp[a.to]=st;dist[a.to]=nd;par[a.to]=x;\n                    pq.push({nd,a.to});\n                }\n            }\n        }\n        if(bu<0){done[k]=1;active--;continue;}\n        vector<int> seq;\n        int x=bu;\n        while(x!=u){seq.push_back(x);x=par[x];}\n        reverse(seq.begin(),seq.end());\n        for(int y:seq){\n            // find arc cur->y cheapest unvisited-or-any\n            int bc=INT_MAX,bid=-1;\n            for(auto&a:adj[cur[k]])if(a.to==y&&a.c<bc){bc=a.c;bid=a.id;}\n            vis[bid]=1;\n            tm[k]+=bc;cur[k]=y;path[k].push_back(y);\n        }\n        Arc a=adj[bu][bi];\n        vis[a.id]=1;\n        tm[k]+=a.c;cur[k]=a.to;path[k].push_back(a.to);\n    }\n    printf(\"%d\\n\",C);\n    for(int i=0;i<C;i++){\n        printf(\"%d\\n\",(int)path[i].size());\n        for(int v:path[i])printf(\"%d\\n\",v);\n    }\n}\n```\n\nOne caveat: the path to the target follows parent pointers, which were set using the shortest distance (the parent arc may not be the cheapest parallel arc, but each pair has at most one street, so it is consistent). The time accounting matches the Dijkstra distances, so the final time stays within T.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2508,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

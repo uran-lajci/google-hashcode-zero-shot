@@ -1,0 +1,57 @@
+{
+ "problem": "street_view_routing",
+ "model": "claude-sonnet-5-5",
+ "generation": 4,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "36c6007dde8baf1082f2379adfcfef0c6fc07870ea307ffb20db6e659b9051c6",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQR7E98fwp7jnH1Rcyuv",
+ "attempts": 1,
+ "started_utc": "2026-11-25T22:14:08+00:00",
+ "finished_utc": "2026-11-25T22:15:40+00:00",
+ "seconds": 92.316,
+ "seconds_to_first_text": 78.611,
+ "message": {
+  "id": "msg_011ChQRCwRijnTyUwKsQR56x",
+  "container": null,
+  "content": [
+   {
+    "text": "This is the Street View Routing problem from Hash Code 2014. The real instance has about 11,348 junctions, 17,958 streets, T = 54,000 seconds, 8 cars, and start junction 4516. The program does not hard-code any of these and reads them from the input.\n\n**Approach:** a greedy walk for each car, one car at a time, with a shared set of covered streets.\n\n1. For each car, at each step, run a Dijkstra search from the current junction over the directed graph, bounded by the remaining time.\n2. Pick the best target among the reachable junctions, using a cheaper local rule for speed. The score of a candidate is the gain divided by the cost, where the gain is the length of uncovered edges leaving that junction (counting the first uncovered edge reached).\n3. Simpler version used here: at each step, look at the outgoing edges from the current junction.\n   - If any are uncovered and affordable, take the best one by length/cost, as long as time remains to still return... (no return is needed, since cars may end anywhere).\n   - If none are uncovered, run a bounded Dijkstra to find the nearest junction that has an uncovered outgoing edge, and walk the path there. Choose the one minimizing dist divided by (gain + eps). Use only the nearest by distance, and require that the remaining time covers the path plus that edge.\n4. Stop a car when nothing further is affordable.\n\n**Cost control:** Dijkstra runs only when the local neighbourhood is exhausted. It stops early at the first junction popped that has an uncovered, affordable outgoing edge, so each search is cheap on average. A worst case would be many searches over the full graph. Each search is about 10^4 nodes, and there may be tens of thousands of searches, giving roughly 10^8\u201310^9 operations. I add a safety check on elapsed time (clock) of about 8.5 s, after which the cars stop. The remaining cars then simply output their current itinerary, so the output stays valid.\n\n**Cars move in turn:** to spread coverage, cars take steps in round-robin order, each with its own time used. The Dijkstra step moves the car along the whole path to the target, and the greedy local step moves one edge.\n\n**Edge ids:** adjacency stores the edge id. For two-way streets, the covered flag is shared, so traversal in either direction marks the same street.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct E{int to,id,c,l;};\nint main(){\n    int N,M,T,C,S;\n    scanf(\"%d %d %d %d %d\",&N,&M,&T,&C,&S);\n    for(int i=0;i<N;i++){double a,b;scanf(\"%lf %lf\",&a,&b);}\n    vector<vector<E>> g(N);\n    for(int j=0;j<M;j++){\n        int a,b,d,c,l;scanf(\"%d %d %d %d %d\",&a,&b,&d,&c,&l);\n        g[a].push_back({b,j,c,l});\n        if(d==2)g[b].push_back({a,j,c,l});\n    }\n    vector<char> cov(M,0);\n    vector<vector<int>> route(C,vector<int>(1,S));\n    vector<int> cur(C,S),used(C,0);\n    vector<char> done(C,0);\n    auto t0=clock();\n    vector<long long> dist(N);\n    vector<int> par(N),pe(N),stamp(N,0);\n    int st=0;\n    int active=C;\n    while(active>0){\n        for(int k=0;k<C;k++){\n            if(done[k])continue;\n            double el=(double)(clock()-t0)/CLOCKS_PER_SEC;\n            if(el>8.5){done[k]=1;active--;continue;}\n            int u=cur[k];\n            int rem=T-used[k];\n            int best=-1;double bs=-1;\n            for(int i=0;i<(int)g[u].size();i++){\n                E&e=g[u][i];\n                if(cov[e.id]||e.c>rem)continue;\n                double s=(double)e.l/(e.c+1);\n                if(s>bs){bs=s;best=i;}\n            }\n            if(best>=0){\n                E&e=g[u][best];\n                cov[e.id]=1;used[k]+=e.c;cur[k]=e.to;route[k].push_back(e.to);\n                continue;\n            }\n            // dijkstra\n            st++;\n            priority_queue<pair<long long,int>,vector<pair<long long,int>>,greater<>> pq;\n            dist[u]=0;stamp[u]=st;par[u]=-1;\n            pq.push({0,u});\n            vector<char> fin;\n            int target=-1;\n            static vector<int> fst(N,0);\n            while(!pq.empty()){\n                auto [d,x]=pq.top();pq.pop();\n                if(d>dist[x]||fst[x]==st)continue;\n                fst[x]=st;\n                if(d>rem)break;\n                bool ok=false;\n                for(E&e:g[x])if(!cov[e.id]&&d+e.c<=rem){ok=true;break;}\n                if(ok&&x!=u){target=x;break;}\n                for(E&e:g[x]){\n                    long long nd=d+e.c;\n                    if(nd>rem)continue;\n                    if(stamp[e.to]!=st||nd<dist[e.to]){\n                        stamp[e.to]=st;dist[e.to]=nd;par[e.to]=x;\n                        pq.push({nd,e.to});\n                    }\n                }\n            }\n            if(target<0){done[k]=1;active--;continue;}\n            vector<int> path;\n            int x=target;\n            while(x!=u){path.push_back(x);x=par[x];}\n            reverse(path.begin(),path.end());\n            int p=u;\n            for(int y:path){\n                for(E&e:g[p])if(e.to==y){\n                    // choose min cost edge (only one exists per pair)\n                    cov[e.id]=1;used[k]+=e.c;break;\n                }\n                route[k].push_back(y);\n                p=y;\n            }\n            cur[k]=target;\n        }\n    }\n    string out;\n    out+=to_string(C)+\"\\n\";\n    for(int k=0;k<C;k++){\n        out+=to_string(route[k].size())+\"\\n\";\n        for(int v:route[k])out+=to_string(v)+\"\\n\";\n    }\n    fputs(out.c_str(),stdout);\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 9092,
+   "output_tokens": 2143,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

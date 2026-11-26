@@ -1,0 +1,57 @@
+{
+ "problem": "mentorship_and_teamwork",
+ "model": "claude-sonnet-5-5",
+ "generation": 10,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "7135946d354d2d7ef747bda763717ca6fea0f1f209e0fd2a5294865a42972a1b",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQZ53mgTfgY6Z7H5W3U9",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:58:33+00:00",
+ "finished_utc": "2026-11-25T23:58:53+00:00",
+ "seconds": 19.604,
+ "seconds_to_first_text": 3.005,
+ "message": {
+  "id": "msg_011ChQZ5CpdzUguAhRPwU8bY",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy simulation, written without testing, so I can't confirm the scores.\n\n**Approach**\n- Keep an event-driven simulation with a current time `t`.\n- Repeatedly pick the project with the best score potential that can be staffed right now with contributors free at time `t`.\n- If nothing can be staffed, advance `t` to the next contributor free time.\n- Stop when no project can ever be staffed or no contributors remain busy.\n\n**Simplified version**\n- Maintain a list of unscheduled projects, ordered by a priority key: the effective score at the earliest possible start, divided by duration and role count. Projects that would score zero are dropped.\n- Loop over rounds. In each round, scan the projects in priority order and try to staff each one at time `t`, using only contributors whose free time is \u2264 `t`. If staffing succeeds, schedule it.\n- Because projects are scheduled in time order, contributors' skills at that moment are correct. A project started at `t` finishes at `t+D`, and the contributors' skills are updated immediately. This is safe because they are busy until `t+D`.\n- Skill levels are updated at scheduling time. Another project scheduled later starts at a time \u2265 `t+D` for those contributors, so this is consistent.\n- A project is scheduled only when all its contributors are free at `t`, so it starts exactly at `t`. Output order is by scheduling order, which is non-decreasing in `t`, so the judge's simulation matches.\n\n**Staffing a project**\n- For each role in order, pick a free contributor not already used on this project, with level \u2265 required, choosing the lowest level (minimising waste).\n- If none qualifies, allow a contributor at level required\u22121, provided a mentor exists. A mentor is any team member, already chosen or to be chosen, with level \u2265 required. To keep this simple, I check mentor availability against the already-chosen members plus a pre-pass: process roles in descending required level, then verify the mentoring condition at the end. If the final check fails, the staffing is rejected.\n- Each contributor has a map from skill to level, and each skill has a list of contributors. The lowest-level search scans the skill's contributor list, which is acceptable for the time limit when capped at a number of scans per round.\n\n**Efficiency**\n- Each round scans the remaining projects, which could be 1e5 per round.\n- To bound the time, I sort the projects once by priority and cap the number of rounds through a time check.\n- I use the clock and stop at about 8 seconds.\n- When a project fails to staff at time `t`, it is retried at later rounds. Each round advances `t` to the next distinct free time.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int C,P;\n    scanf(\"%d %d\",&C,&P);\n    unordered_map<string,int> sid;\n    vector<string> cn(C);\n    vector<unordered_map<int,int>> sk(C);\n    char b[64];\n    auto gs=[&](const char*s){string x=s;auto it=sid.find(x);if(it!=sid.end())return it->second;int k=sid.size();sid[x]=k;return k;};\n    for(int i=0;i<C;i++){\n        int n;scanf(\"%s %d\",b,&n);cn[i]=b;\n        for(int j=0;j<n;j++){int l;scanf(\"%s %d\",b,&l);sk[i][gs(b)]=l;}\n    }\n    vector<string> pn(P);\n    vector<int> D(P),S(P),B(P);\n    vector<vector<pair<int,int>>> R(P);\n    for(int i=0;i<P;i++){\n        int r;scanf(\"%s %d %d %d %d\",b,&D[i],&S[i],&B[i],&r);pn[i]=b;\n        for(int j=0;j<r;j++){int l;scanf(\"%s %d\",b,&l);R[i].push_back({gs(b),l});}\n    }\n    vector<int> freeAt(C,0);\n    vector<int> order(P);\n    iota(order.begin(),order.end(),0);\n    sort(order.begin(),order.end(),[&](int a,int c){\n        double x=(double)S[a]/D[a]/R[a].size(),y=(double)S[c]/D[c]/R[c].size();\n        return x>y;});\n    vector<int> rem=order;\n    vector<pair<int,vector<int>>> out;\n    long long t=0;\n    auto st=chrono::steady_clock::now();\n    vector<char> used(C,0);\n    while(!rem.empty()){\n        if(chrono::duration<double>(chrono::steady_clock::now()-st).count()>7.5)break;\n        vector<int> nrem;\n        for(int p:rem){\n            long long end=t+D[p];\n            if(S[p]-max(0LL,end-B[p])<=0)continue;\n            int r=R[p].size();\n            vector<int> asg(r,-1);\n            vector<int> ro(r);iota(ro.begin(),ro.end(),0);\n            sort(ro.begin(),ro.end(),[&](int a,int c){return R[p][a].second>R[p][c].second;});\n            vector<int> team;bool ok=true;\n            auto lvl=[&](int c,int s){auto it=sk[c].find(s);return it==sk[c].end()?0:it->second;};\n            for(int k:ro){\n                int s=R[p][k].first,l=R[p][k].second;\n                int best=-1,bl=1e9;\n                bool mentor=false;\n                for(int c:team)if(lvl(c,s)>=l)mentor=true;\n                for(int c=0;c<C;c++){\n                    if(freeAt[c]>t||used[c])continue;\n                    int v=lvl(c,s);\n                    if(v>=l||(v==l-1&&mentor)){\n                        if(v<bl){bl=v;best=c;}\n                    }\n                }\n                if(best<0){ok=false;break;}\n                used[best]=1;team.push_back(best);asg[k]=best;\n            }\n            if(ok){\n                // verify mentoring\n                for(int k=0;k<r&&ok;k++){\n                    int s=R[p][k].first,l=R[p][k].second;\n                    if(lvl(asg[k],s)<l){\n                        bool m=false;\n                        for(int j=0;j<r;j++)if(j!=k&&lvl(asg[j],s)>=l)m=true;\n                        if(!m)ok=false;\n                    }\n                }\n            }\n            for(int c:team)used[c]=0;\n            if(!ok){nrem.push_back(p);continue;}\n            for(int k=0;k<r;k++){\n                int c=asg[k],s=R[p][k].first,l=R[p][k].second;\n                if(lvl(c,s)<=l)sk[c][s]=lvl(c,s)+1;\n                freeAt[c]=end;\n            }\n            out.push_back({p,asg});\n        }\n        rem=nrem;\n        long long nt=LLONG_MAX;\n        for(int c=0;c<C;c++)if(freeAt[c]>t)nt=min(nt,(long long)freeAt[c]);\n        if(nt==LLONG_MAX)break;\n        t=nt;\n    }\n    printf(\"%d\\n\",(int)out.size());\n    for(auto&o:out){\n        printf(\"%s\\n\",pn[o.first].c_str());\n        for(size_t i=0;i<o.second.size();i++)printf(\"%s%s\",i?\" \":\"\",cn[o.second[i]].c_str());\n        printf(\"\\n\");\n    }\n}\n```\n\n**Known weaknesses**\n- The per-role scan over all contributors is O(C) per role, which can be slow on large inputs. The 7.5 s time guard prevents timeouts, but may cut off scheduling early.\n- The skill level update uses `lvl \u2264 l`, matching the statement's rule that levels increase when the required level is equal or higher.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 16858,
+   "output_tokens": 2634,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

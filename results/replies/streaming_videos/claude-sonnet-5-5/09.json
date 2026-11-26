@@ -1,0 +1,57 @@
+{
+ "problem": "streaming_videos",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "c276ea8b06a193981074bba62c6d3766b8f628310015012d061ea97eac57b233",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQYMcbDYm5CuKaRX83AB",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:49:11+00:00",
+ "finished_utc": "2026-11-25T23:49:27+00:00",
+ "seconds": 16.173,
+ "seconds_to_first_text": 2.416,
+ "message": {
+  "id": "msg_011ChQYMiwCyJNVZFgMhAiEZ",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy approach with lazy evaluation, followed by output.\n\n**Approach.** Each request description is stored as (video, endpoint, count). For each endpoint, I keep the current best latency `best[e][v]` for each video, which starts at the data center latency. The endpoint-video pair is the key, and R is at most 1e6, so I aggregate requests per (e, v) and index them by an id.\n\nFor each cache c and video v, the gain of placing v in c is the sum over endpoints e connected to c with a request for v of n * max(0, best[e][v] - Lc(e,c)). The score is gain / size, and the greedy picks the best ratio that fits.\n\n**Data structures.**\n- For each request id r: endpoint e, video v, count n, current latency cur[r] (initially LD[e]).\n- For each video v, a list of request ids.\n- For each endpoint, a list of (cache, latency) connections, and a lookup latency[e][c]. Storing this as a dense E\u00d7C array of ints is 1000\u00d71000\u00d74 = 4 MB, which is fine.\n- For each cache c, the candidate videos come from the requests of its connected endpoints. I build the pair list by iterating over requests r and over each cache connected to e(r). That is up to 1e6 \u00d7 1000 = 1e9 in the worst case, which is too heavy. Realistically K is smaller, but I can't rely on that, so I cap the total pair count. Memory for the pairs is also a concern.\n\n**Lazy greedy.** A priority queue holds entries (ratio, c, v). To evaluate the gain of (c, v), I iterate over the requests of v, check whether endpoint e is connected to c via the dense latency array, and add n * max(0, cur[r] - L). This costs the number of requests for v per evaluation. The initial evaluation of all (c, v) pairs costs C \u00d7 sum of requests per video, which is C \u00d7 R = 1e9 in the worst case. That is borderline but simple array operations may fit in 10 seconds. To be safer, I compute the initial gains by iterating over requests and their connected caches, accumulating into gain[c][v]. This is a 1000\u00d710000 array of long long = 80 MB, which is fine. Its cost is the sum over requests of K(e), which is at most 1e9 in the worst case but typically much less.\n\nGains only decrease (submodular), so lazy evaluation is valid. I pop the top entry and recompute its gain. If the new ratio is still at least the next top, I accept it, provided the video fits and is not already in the cache. Otherwise I push it back with the updated value. Entries whose video doesn't fit in the remaining capacity are dropped. After accepting, I update cur[r] for the requests of v at the endpoints connected to c.\n\nThe heap holds up to C\u00d7V = 1e7 entries at 16 bytes each, which is 160 MB, so I only push entries with gain > 0. Ratios are compared as doubles.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    int V,E,R,C,X;\n    scanf(\"%d %d %d %d %d\",&V,&E,&R,&C,&X);\n    vector<int> S(V);\n    for(auto&s:S)scanf(\"%d\",&s);\n    vector<int> LD(E);\n    vector<vector<pair<int,int>>> con(E);\n    vector<int> lat((size_t)E*C,0);\n    for(int e=0;e<E;e++){\n        int k;\n        scanf(\"%d %d\",&LD[e],&k);\n        for(int i=0;i<k;i++){\n            int c,l;\n            scanf(\"%d %d\",&c,&l);\n            con[e].push_back({c,l});\n            lat[(size_t)e*C+c]=l;\n        }\n    }\n    vector<int> rv(R),re(R),rn(R);\n    vector<vector<int>> byv(V);\n    for(int i=0;i<R;i++){\n        scanf(\"%d %d %d\",&rv[i],&re[i],&rn[i]);\n        byv[rv[i]].push_back(i);\n    }\n    vector<int> cur(R);\n    for(int i=0;i<R;i++)cur[i]=LD[re[i]];\n    vector<long long> gain((size_t)C*V,0);\n    for(int i=0;i<R;i++){\n        for(auto&p:con[re[i]]){\n            gain[(size_t)p.first*V+rv[i]]+=(long long)rn[i]*(LD[re[i]]-p.second);\n        }\n    }\n    typedef pair<double,pair<int,int>> T;\n    priority_queue<T> pq;\n    for(int c=0;c<C;c++)\n        for(int v=0;v<V;v++){\n            long long g=gain[(size_t)c*V+v];\n            if(g>0&&S[v]<=X)pq.push({(double)g/S[v],{c,v}});\n        }\n    vector<long long>().swap(gain);\n    vector<int> rem(C,X);\n    vector<vector<int>> out(C);\n    while(!pq.empty()){\n        T t=pq.top();pq.pop();\n        int c=t.second.first,v=t.second.second;\n        if(S[v]>rem[c])continue;\n        long long g=0;\n        for(int r:byv[v]){\n            int l=lat[(size_t)re[r]*C+c];\n            if(l&&cur[r]>l)g+=(long long)rn[r]*(cur[r]-l);\n        }\n        if(g<=0)continue;\n        double ratio=(double)g/S[v];\n        if(!pq.empty()&&ratio<pq.top().first){\n            pq.push({ratio,{c,v}});\n            continue;\n        }\n        rem[c]-=S[v];\n        out[c].push_back(v);\n        for(int r:byv[v]){\n            int l=lat[(size_t)re[r]*C+c];\n            if(l&&cur[r]>l)cur[r]=l;\n        }\n    }\n    printf(\"%d\\n\",C);\n    for(int c=0;c<C;c++){\n        printf(\"%d\",c);\n        for(int v:out[c])printf(\" %d\",v);\n        printf(\"\\n\");\n    }\n}\n```\n\nDuplicate (c, v) pairs cannot arise: each pair is pushed once and re-pushed only after being popped. After acceptance it is never pushed again. Duplicate requests for the same (e, v) are handled correctly because each request id is processed separately.",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 14504,
+   "output_tokens": 2131,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

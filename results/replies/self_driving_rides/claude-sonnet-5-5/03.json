@@ -1,0 +1,57 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4d9f2be9cb22d8b77cb5a5747293f8ca43259d2efb095566e77ae06d934ce202",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQPRadha16vCfPbC7LXf",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:52:04+00:00",
+ "finished_utc": "2026-11-25T21:52:15+00:00",
+ "seconds": 11.916,
+ "seconds_to_first_text": 2.992,
+ "message": {
+  "id": "msg_011ChQPRjxHrxMJFJ9eXuT9j",
+  "container": null,
+  "content": [
+   {
+    "text": "The approach is a greedy assignment with a local-search style choice. It was not compiled or run against any data set.\n\n**Strategy:** Simulate all vehicles in time order. Repeatedly pick the vehicle that frees up earliest, and give it the best feasible ride.\n\n1. For a vehicle at position p and time t, and a ride with start (a,b), finish (x,y), earliest start s and latest finish f:\n   - arrival = t + dist(p, start)\n   - start time = max(arrival, s)\n   - finish time = start time + dist\n   - The ride is feasible only if finish time \u2264 f.\n2. Score the candidate as (dist + bonus if start time == s) divided by (start time \u2212 t + dist). This is points per time spent, which includes the waiting time.\n3. Take the candidate with the highest ratio. Compare ratios exactly with 64-bit cross-multiplication. Break ties by smaller index, so the output is deterministic.\n4. Use a priority queue over vehicles keyed by free time. Each step scans all remaining rides, which is O(N) per assignment. At most N assignments happen, so the total is about 10^8 operations, which fits in the limit.\n5. If a vehicle has no feasible ride, retire it permanently. Its position and time stay fixed and the remaining rides only get harder to reach, so this is safe.\n6. Rides are kept in a compact array and removed by swapping with the last element, which keeps the scan fast.\n7. Every vehicle is printed on its own line, including vehicles with zero rides.\n\nThe scoring function is a weighted ratio. A pure ratio favours short rides, so the value is also weighted toward on-time starts. Specifically, I use score = (dist + bonus_if_on_time) / (wait + travel_to_start + dist), where wait + travel_to_start is start \u2212 t.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nstruct Ride{int a,b,x,y,s,f,id,d;};\nint main(){\n    int R,C,F,N,B;long long T;\n    scanf(\"%d %d %d %d %d %lld\",&R,&C,&F,&N,&B,&T);\n    vector<Ride> rs(N);\n    for(int i=0;i<N;i++){\n        Ride&r=rs[i];\n        scanf(\"%d %d %d %d %d %d\",&r.a,&r.b,&r.x,&r.y,&r.s,&r.f);\n        r.id=i;r.d=abs(r.x-r.a)+abs(r.y-r.b);\n    }\n    vector<vector<int>> out(F);\n    vector<int> px(F,0),py(F,0);\n    vector<long long> tm(F,0);\n    priority_queue<pair<long long,int>,vector<pair<long long,int>>,greater<>> pq;\n    for(int i=0;i<F;i++)pq.push({0,i});\n    while(!pq.empty()&&!rs.empty()){\n        auto [t,v]=pq.top();pq.pop();\n        int n=rs.size();\n        int best=-1;long long bn=0,bd=1;\n        for(int i=0;i<n;i++){\n            const Ride&r=rs[i];\n            long long arr=t+abs(px[v]-r.a)+abs(py[v]-r.b);\n            long long st=max(arr,(long long)r.s);\n            long long fin=st+r.d;\n            if(fin>r.f)continue;\n            long long num=r.d+(st==r.s?B:0);\n            long long den=fin-t;\n            if(best<0||num*bd>bn*den){best=i;bn=num;bd=den;}\n        }\n        if(best<0)continue;\n        Ride r=rs[best];\n        long long arr=t+abs(px[v]-r.a)+abs(py[v]-r.b);\n        long long st=max(arr,(long long)r.s);\n        tm[v]=st+r.d;\n        px[v]=r.x;py[v]=r.y;\n        out[v].push_back(r.id);\n        rs[best]=rs.back();rs.pop_back();\n        if(tm[v]<T)pq.push({tm[v],v});\n    }\n    for(int i=0;i<F;i++){\n        printf(\"%d\",(int)out[i].size());\n        for(int id:out[i])printf(\" %d\",id);\n        printf(\"\\n\");\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 12994,
+   "output_tokens": 1441,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

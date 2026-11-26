@@ -1,0 +1,57 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-sonnet-5-5",
+ "generation": 9,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4d9f2be9cb22d8b77cb5a5747293f8ca43259d2efb095566e77ae06d934ce202",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQYErJGsmZ2wFi8cHugp",
+ "attempts": 1,
+ "started_utc": "2026-11-25T23:47:39+00:00",
+ "finished_utc": "2026-11-25T23:47:50+00:00",
+ "seconds": 10.685,
+ "seconds_to_first_text": 1.639,
+ "message": {
+  "id": "msg_011ChQYEuS2thQUFZ1mA9nTG",
+  "container": null,
+  "content": [
+   {
+    "text": "This is a greedy simulation with a small local-search-free scoring rule, so it runs fast and is deterministic.\n\n**Approach:**\n- Process vehicles by their free time using a min-heap, so the vehicle that becomes free earliest picks next.\n- For the chosen vehicle, scan all unassigned rides and compute the arrival time at the ride's start, `arr = t + dist(pos, start)`, and the actual start time `st = max(arr, s)`. The ride is feasible only if `st + d <= f`.\n- Score each feasible ride as `d + (st == s ? B : 0)`, minus the time cost `(finish_time - t)`. The score is `(d + bonus) / (finish_time - t)`, a points-per-time rate. Compare candidates as fractions with cross-multiplication in 64-bit integers.\n- If a vehicle has no feasible ride, it is retired.\n- Complexity is O(F\u00b7N) per round in the worst case: each assignment scans N rides, and there are at most N assignments in total, so about 10^4 \u00d7 10^4 = 10^8 operations. This is fine.\n- To make the scan cheaper, I keep a compact list of unassigned rides and remove a ride by swapping it with the last element.\n\n**Rate details:** the denominator is `finish - t`, which includes the travel and wait time plus the ride distance, and it is always at least 1 because the ride distance is at least 1. Comparison is `(num1 * den2 > num2 * den1)`. Ties are broken by the lower ride index, since the scan order is deterministic after swap-removal.\n\n**Heap details:** the heap holds `(time, vehicle)` pairs. After a vehicle is assigned a ride, it is pushed back with its finish time. Rides that finish after `T` cannot satisfy `f <= T`, so they are excluded by the feasibility check.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\ntypedef long long ll;\nint main(){\n    int R,C,F,N;ll B,T;\n    scanf(\"%d %d %d %d %lld %lld\",&R,&C,&F,&N,&B,&T);\n    vector<int> a(N),b(N),x(N),y(N);vector<ll> s(N),f(N);\n    for(int i=0;i<N;i++){\n        scanf(\"%d %d %d %d %lld %lld\",&a[i],&b[i],&x[i],&y[i],&s[i],&f[i]);\n    }\n    vector<int> rem(N);\n    for(int i=0;i<N;i++)rem[i]=i;\n    vector<int> px(F,0),py(F,0);\n    vector<vector<int>> res(F);\n    priority_queue<pair<ll,int>,vector<pair<ll,int>>,greater<pair<ll,int>>> pq;\n    for(int i=0;i<F;i++)pq.push({0,i});\n    while(!pq.empty()&&!rem.empty()){\n        auto [t,v]=pq.top();pq.pop();\n        ll bn=-1,bd=1;int bi=-1;\n        for(int k=0;k<(int)rem.size();k++){\n            int r=rem[k];\n            ll d=abs(x[r]-a[r])+abs(y[r]-b[r]);\n            ll arr=t+abs(px[v]-a[r])+abs(py[v]-b[r]);\n            ll st=max(arr,s[r]);\n            ll fin=st+d;\n            if(fin>f[r])continue;\n            ll num=d+(st==s[r]?B:0);\n            ll den=fin-t;\n            if(bi<0||num*bd>bn*den){bn=num;bd=den;bi=k;}\n        }\n        if(bi<0)continue;\n        int r=rem[bi];\n        ll d=abs(x[r]-a[r])+abs(y[r]-b[r]);\n        ll arr=t+abs(px[v]-a[r])+abs(py[v]-b[r]);\n        ll st=max(arr,s[r]);\n        res[v].push_back(r);\n        px[v]=x[r];py[v]=y[r];\n        pq.push({st+d,v});\n        rem[bi]=rem.back();rem.pop_back();\n    }\n    for(int i=0;i<F;i++){\n        printf(\"%d\",(int)res[i].size());\n        for(int r:res[i])printf(\" %d\",r);\n        printf(\"\\n\");\n    }\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 12994,
+   "output_tokens": 1472,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "problem": "self_driving_rides",
+ "model": "claude-haiku-5-5",
+ "generation": 1,
+ "request": {
+  "model": "claude-haiku-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "4d9f2be9cb22d8b77cb5a5747293f8ca43259d2efb095566e77ae06d934ce202",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQLKuq6hCtz3D8QGWoBk",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:11:26+00:00",
+ "finished_utc": "2026-11-25T21:11:40+00:00",
+ "seconds": 13.69,
+ "seconds_to_first_text": 10.549,
+ "message": {
+  "id": "msg_011ChQLKxxN1c8Ptnn8qUFMT",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This is a greedy heuristic, not an optimal solver. It repeatedly takes the vehicle that becomes free earliest and gives it the unassigned ride with the best points-per-time-consumed ratio among rides it can still finish before their deadline. Rides are never reassigned, so the score is not guaranteed to be maximal. I have not compiled or run it against the data sets.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\ntypedef long long ll;\n\nstruct Ride {\n    int a, b, x, y;\n    ll s, f;\n    ll d;\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int R, C, F, N;\n    ll B, T;\n    cin >> R >> C >> F >> N >> B >> T;\n\n    vector<Ride> rides(N);\n    for (int i = 0; i < N; ++i) {\n        Ride& r = rides[i];\n        cin >> r.a >> r.b >> r.x >> r.y >> r.s >> r.f;\n        r.d = llabs((ll)r.a - r.x) + llabs((ll)r.b - r.y);\n    }\n\n    vector<bool> used(N, false);\n    vector<vector<int>> routes(F);\n    vector<int> px(F, 0), py(F, 0);\n\n    // min-heap of (free time, vehicle)\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> pq;\n    for (int v = 0; v < F; ++v) pq.push({0LL, v});\n\n    while (!pq.empty()) {\n        auto [t, v] = pq.top();\n        pq.pop();\n\n        int cx = px[v], cy = py[v];\n        int best = -1;\n        double bestVal = -1.0;\n        ll bestFinish = 0;\n\n        for (int i = 0; i < N; ++i) {\n            if (used[i]) continue;\n            const Ride& r = rides[i];\n            ll dToStart = llabs((ll)cx - r.a) + llabs((ll)cy - r.b);\n            ll start = max(t + dToStart, r.s);\n            ll finish = start + r.d;\n            if (finish > r.f || finish > T) continue;\n\n            ll score = r.d + (start == r.s ? B : 0);\n            ll cost = finish - t; // >= 1 since r.d >= 1\n            double val = (double)score / (double)cost;\n            if (val > bestVal) {\n                bestVal = val;\n                best = i;\n                bestFinish = finish;\n            }\n        }\n\n        if (best == -1) continue; // vehicle retires\n\n        used[best] = true;\n        routes[v].push_back(best);\n        px[v] = rides[best].x;\n        py[v] = rides[best].y;\n        pq.push({bestFinish, v});\n    }\n\n    string out;\n    out.reserve(1 << 20);\n    for (int v = 0; v < F; ++v) {\n        out += to_string(routes[v].size());\n        for (int r : routes[v]) {\n            out += ' ';\n            out += to_string(r);\n        }\n        out += '\\n';\n    }\n    cout << out;\n    return 0;\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 12994,
+   "output_tokens": 2687,
+   "output_tokens_details": {
+    "thinking_tokens": 1622
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

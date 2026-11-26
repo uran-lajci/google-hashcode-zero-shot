@@ -1,0 +1,62 @@
+{
+ "problem": "santa_tracker",
+ "model": "claude-sonnet-5-5",
+ "generation": 3,
+ "request": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 64000,
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "medium"
+  },
+  "statement_sha256": "79f0b9fd2dce77a12feb8a441c62cc5f373d23877c26faf3c77ce4d35168e38f",
+  "prompt_sha256": "cef015ae429daee07c6d2f454ef2b0a8c4af2757a8453beb3ad99df48a98c902",
+  "sdk": "anthropic 2.14.0"
+ },
+ "request_id": "req_011ChQPB7vxCNWDJqLah2oK9",
+ "attempts": 1,
+ "started_utc": "2026-11-25T21:48:47+00:00",
+ "finished_utc": "2026-11-25T21:48:59+00:00",
+ "seconds": 11.38,
+ "seconds_to_first_text": 9.153,
+ "message": {
+  "id": "msg_011ChQPBJpoFj3nwSkDJsdty",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "text": "This program only delivers gifts that are already in reach of Lapland, so it scores low but never breaks a rule. For each gift whose location is within distance D of (0,0), it loads the gift and delivers it straight away while the sleigh stays at (0,0). No carrots, acceleration or floating are needed, so every output is valid. It does not plan any trips to gifts farther away.\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n    long long T,D,W,G;\n    cin>>T>>D>>W>>G;\n    for(int i=0;i<W;i++){long long a,b;cin>>a>>b;}\n    vector<string> acts;\n    for(int i=0;i<G;i++){\n        string n;long long s,w,c,r;\n        cin>>n>>s>>w>>c>>r;\n        if(c*c+r*r<=D*D){\n            acts.push_back(\"LoadGift \"+n);\n            acts.push_back(\"DeliverGift \"+n);\n        }\n    }\n    printf(\"%d\\n\",(int)acts.size());\n    for(auto&a:acts)printf(\"%s\\n\",a.c_str());\n}\n```",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-sonnet-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 24495,
+   "output_tokens": 997,
+   "output_tokens_details": {
+    "thinking_tokens": 614
+   },
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}
