@@ -1,0 +1,4 @@
+measure,friedman_statistic,p_value,critical_difference,mean_rank_claude-opus-5-5,mean_rank_claude-sonnet-5-5,mean_rank_claude-haiku-5-5,pairs_separated
+relative_total,23.194029850746258,9.193490070835848e-06,0.8036423699777965,1.0588235294117647,2.5588235294117645,2.3823529411764706,claude-opus-5-5 / claude-sonnet-5-5; claude-opus-5-5 / claude-haiku-5-5
+per_instance_score,22.95522388059702,1.035944452033697e-05,0.8036423699777965,1.0588235294117647,2.5,2.4411764705882355,claude-opus-5-5 / claude-sonnet-5-5; claude-opus-5-5 / claude-haiku-5-5
+relative_total_strict,20.268656716417908,3.9693291745691354e-05,0.8036423699777965,1.1176470588235294,2.5,2.3823529411764706,claude-opus-5-5 / claude-sonnet-5-5; claude-opus-5-5 / claude-haiku-5-5

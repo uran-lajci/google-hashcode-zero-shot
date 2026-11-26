@@ -1,0 +1,4 @@
+model,median_interquartile_range,median_range,median_generations_valid_on_every_instance
+claude-opus-5-5,0.03570694777324035,0.23334851201792156,10
+claude-sonnet-5-5,0.010269147809306767,0.16715071470409915,10
+claude-haiku-5-5,0.06994500102101864,0.25715426638784133,10
